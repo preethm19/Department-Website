@@ -290,8 +290,3 @@ The system includes sample data for testing:
 - Test all new features
 - Update documentation
 - Maintain code quality standards
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
