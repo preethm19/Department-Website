@@ -12,14 +12,11 @@ document.getElementById('logout').addEventListener('click', async () => {
     console.error('Logout API call failed:', error);
   }
 
-  // Clear SMS authentication data
-  localStorage.removeItem('token');
-  localStorage.removeItem('role');
+  // Clear ALL authentication data
+  localStorage.clear();
 
-  // Clear shared authentication data
-  localStorage.removeItem('sms_token');
-  localStorage.removeItem('sms_role');
-  localStorage.removeItem('user_usn');
+  // Also clear sessionStorage if used
+  sessionStorage.clear();
 
   // Clear browser cache to prevent back button access
   if ('caches' in window) {
@@ -37,6 +34,16 @@ document.getElementById('logout').addEventListener('click', async () => {
     });
   }
 
-  // Redirect back to main website with logout flag
-  window.location.href = 'http://localhost:8080/?logout=success';
+  // Prevent browser from caching this logout action
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister();
+      });
+    });
+  }
+
+  // Force redirect with cache-busting and replace current history entry
+  const logoutUrl = `http://localhost:3000/?logout=success&t=${Date.now()}`;
+  window.location.replace(logoutUrl);
 });

@@ -78,6 +78,7 @@
       </div>
     </main>
   </div>
+  <script src="../js/auth.js"></script>
   <script src="../js/student.js"></script>
   <script>
     // Register service worker for security
@@ -92,136 +93,14 @@
     }
   </script>
   <script>
-    // Immediate authentication check before anything loads
-    (function() {
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-
-      if (!token || !role || role !== 'student') {
-        // Clear any cached data immediately
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('sms_token');
-        localStorage.removeItem('sms_role');
-        localStorage.removeItem('user_usn');
-
-        // Redirect immediately without loading the page
-        window.location.replace('http://localhost:8080/');
-        return;
-      }
-    })();
-
-    // Check authentication on page load
+    // Load dashboard data after authentication is verified
     document.addEventListener('DOMContentLoaded', function() {
-      // Force fresh authentication check - no delay
-      checkAuthentication();
-
-      // Prevent browser back button access
-      window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-          // Page was loaded from cache, force refresh
-          window.location.reload(true);
-        }
-      });
-
-      // Replace current history entry to prevent back navigation
-      if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-      }
-
-      // Clear cache on page unload
-      window.addEventListener('beforeunload', function() {
-        if ('caches' in window) {
-          caches.keys().then(names => {
-            names.forEach(name => {
-              caches.delete(name);
-            });
-          });
-        }
-      });
-
-      // Additional protection: Clear localStorage on visibility change
-      document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-          // Page is hidden, clear cache
-          if ('caches' in window) {
-            caches.keys().then(names => {
-              names.forEach(name => {
-                caches.delete(name);
-              });
-            });
-          }
-        }
-      });
-
-      // Additional check for cached pages
-      if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
-        // This was a back/forward navigation, force authentication check
-        setTimeout(checkAuthentication, 50);
-      }
+      // Authentication is handled by auth.js, just load dashboard data
+      loadNotificationCount();
+      loadRecentNotifications();
+      loadDocumentCount();
+      loadRecentDocuments();
     });
-
-    // Check if user is authenticated
-    function checkAuthentication() {
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-
-      console.log('Auth check - Token:', !!token, 'Role:', role);
-
-      if (!token || !role || role !== 'student') {
-        console.log('Auth failed - missing token or wrong role');
-        // No token or wrong role found, redirect to login
-        clearAllAuthData();
-        window.location.replace('http://localhost:8080/');
-        return;
-      }
-
-      // Verify token is still valid with server
-      fetch('/profile', {
-        headers: { 'Authorization': token },
-        cache: 'no-cache'
-      })
-      .then(response => {
-        console.log('Profile response status:', response.status);
-        if (!response.ok) {
-          console.log('Token invalid, redirecting to main site');
-          // Token is invalid, clear it and redirect
-          clearAllAuthData();
-          window.location.replace('http://localhost:8080/');
-          return;
-        }
-        console.log('Token valid, loading dashboard');
-        // Token is valid, load dashboard data
-        loadNotificationCount();
-        loadRecentNotifications();
-        loadDocumentCount();
-        loadRecentDocuments();
-      })
-      .catch(error => {
-        console.error('Auth check failed:', error);
-        // On error, clear tokens and redirect
-        clearAllAuthData();
-        window.location.replace('http://localhost:8080/');
-      });
-    }
-
-    // Clear all authentication data
-    function clearAllAuthData() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      localStorage.removeItem('sms_token');
-      localStorage.removeItem('sms_role');
-      localStorage.removeItem('user_usn');
-
-      // Clear browser cache
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => {
-            caches.delete(name);
-          });
-        });
-      }
-    }
 
     // Mobile navigation toggle
     function toggleNav() {

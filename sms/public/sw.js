@@ -52,9 +52,9 @@ self.addEventListener('fetch', event => {
             <!DOCTYPE html>
             <html>
             <head>
-              <meta http-equiv="refresh" content="0;url=http://localhost:8080/">
+              <meta http-equiv="refresh" content="0;url=http://localhost:3000/">
               <script>
-                window.location.replace('http://localhost:8080/');
+                window.location.href = 'http://localhost:3000/';
               </script>
             </head>
             <body>Redirecting...</body>

@@ -37,56 +37,36 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use('/uploads', express.static('uploads'));
 
-// Serve static files FIRST (before authentication middleware)
-app.use(express.static('public'));
-app.use('/images', express.static('public/images'));
-
-// Enhanced cache control middleware for sensitive pages
-app.use('/student/', (req, res, next) => {
-  // Comprehensive cache prevention headers
-  res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, private');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set('Surrogate-Control', 'no-store');
-  res.set('X-Frame-Options', 'DENY');
-  res.set('X-Content-Type-Options', 'nosniff');
-  res.set('X-XSS-Protection', '1; mode=block');
-  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
-});
-
-app.use('/admin/', (req, res, next) => {
-  // Comprehensive cache prevention headers
-  res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, private');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set('Surrogate-Control', 'no-store');
-  res.set('X-Frame-Options', 'DENY');
-  res.set('X-Content-Type-Options', 'nosniff');
-  res.set('X-XSS-Protection', '1; mode=block');
-  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
-});
-
-// Authentication middleware for protected routes (excluding static files)
+// Authentication middleware for protected routes
 const requireAuth = (req, res, next) => {
-  // Skip authentication for static files (.html, .css, .js, .png, etc.)
-  if (req.path.match(/\.(html|css|js|png|jpg|jpeg|gif|ico|svg)$/)) {
+  // Allow access to login page and main SMS index
+  if (req.path === '/login.html' || req.path === '/index.html' || req.path === '/') {
+    return next();
+  }
+
+  // Allow access to static assets (CSS, JS, images) for all pages
+  if (req.path.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+    return next();
+  }
+
+  // For HTML pages, we need to allow them to load so JavaScript can handle authentication
+  // The JavaScript will check localStorage and redirect if needed
+  if (req.path.match(/\.html$/)) {
     return next();
   }
 
   const token = req.header('Authorization');
 
-  // If no token, redirect to main website immediately
+  // If no token in header, redirect to main website
   if (!token) {
-    console.log('No token found, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/');
+    console.log('No token in Authorization header, redirecting to main website');
+    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/');
   }
 
   // Check if token is blacklisted
   if (tokenBlacklist.has(token)) {
     console.log('Token blacklisted, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/');
   }
 
   // Verify token validity
@@ -96,13 +76,50 @@ const requireAuth = (req, res, next) => {
     next();
   } catch (err) {
     console.log('Invalid token, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/');
   }
 };
 
-// Apply authentication to protected routes
+// Apply authentication to protected routes FIRST
 app.use('/student/', requireAuth);
 app.use('/admin/', requireAuth);
+
+// Enhanced cache control middleware for sensitive pages
+app.use('/student/', (req, res, next) => {
+  // Ultra-aggressive cache prevention headers
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, private, no-transform');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+  res.set('X-Frame-Options', 'DENY');
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-XSS-Protection', '1; mode=block');
+  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.set('X-Accel-Expires', '0');
+  res.set('X-Kong-Upstream-Latency', '0');
+  res.set('X-Kong-Proxy-Latency', '0');
+  next();
+});
+
+app.use('/admin/', (req, res, next) => {
+  // Ultra-aggressive cache prevention headers
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0, private, no-transform');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+  res.set('X-Frame-Options', 'DENY');
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-XSS-Protection', '1; mode=block');
+  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.set('X-Accel-Expires', '0');
+  res.set('X-Kong-Upstream-Latency', '0');
+  res.set('X-Kong-Proxy-Latency', '0');
+  next();
+});
+
+// Serve static files AFTER authentication middleware
+app.use(express.static('public'));
+app.use('/images', express.static('public/images'));
 
 // Token blacklist for logout
 const tokenBlacklist = new Set();
@@ -157,7 +174,7 @@ app.post('/logout', (req, res) => {
   res.json({
     message: 'Logged out successfully',
     timestamp: new Date().toISOString(),
-    redirect: process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/'
+    redirect: process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/'
   });
 });
 

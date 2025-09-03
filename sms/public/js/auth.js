@@ -1,77 +1,83 @@
 // Common Authentication Script for SMS Pages
 (function() {
-  // Immediate authentication check before anything loads
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  // Enhanced authentication check with frequent validation
+  function checkAuthentication() {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
-  // Check if we're on a student or admin page
-  const isStudentPage = window.location.pathname.includes('/student/');
-  const isAdminPage = window.location.pathname.includes('/admin/');
+    // Check if we're on a student or admin page
+    const isStudentPage = window.location.pathname.includes('/student/');
+    const isAdminPage = window.location.pathname.includes('/admin/');
 
-  if (!token || !role) {
-    // No token or role found, redirect to login
-    clearAllAuthData();
-    window.location.replace('http://localhost:8080/');
-    return;
-  }
-
-  if (isStudentPage && role !== 'student') {
-    // Wrong role for student page
-    clearAllAuthData();
-    window.location.replace('http://localhost:8080/');
-    return;
-  }
-
-  if (isAdminPage && role !== 'admin') {
-    // Wrong role for admin page
-    clearAllAuthData();
-    window.location.replace('http://localhost:8080/');
-    return;
-  }
-
-  // Verify token is still valid with server
-  fetch('/profile', {
-    headers: { 'Authorization': token },
-    cache: 'no-cache'
-  })
-  .then(response => {
-    if (!response.ok) {
-      // Token is invalid, clear it and redirect
+    // Always redirect if no authentication data
+    if (!token || !role) {
+      console.log('No authentication data found, redirecting to main website');
       clearAllAuthData();
-      window.location.replace('http://localhost:8080/');
-      return;
+      window.location.replace('http://localhost:3000/');
+      return false;
     }
-    // Token is valid, continue loading page
-    console.log('Authentication successful');
-  })
-  .catch(error => {
-    console.error('Auth check failed:', error);
-    // On error, clear tokens and redirect
-    clearAllAuthData();
-    window.location.replace('http://localhost:8080/');
-  });
+
+    // Check role consistency
+    if (isStudentPage && role !== 'student') {
+      console.log('Wrong role for student page, redirecting');
+      clearAllAuthData();
+      window.location.replace('http://localhost:3000/');
+      return false;
+    }
+
+    if (isAdminPage && role !== 'admin') {
+      console.log('Wrong role for admin page, redirecting');
+      clearAllAuthData();
+      window.location.replace('http://localhost:3000/');
+      return false;
+    }
+
+    return true;
+  }
 
   function clearAllAuthData() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('sms_token');
-    localStorage.removeItem('sms_role');
-    localStorage.removeItem('user_usn');
-
-    // Clear browser cache
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => {
-          caches.delete(name);
-        });
-      });
-    }
+    localStorage.clear();
+    sessionStorage.clear();
   }
+
+  // Initial authentication check
+  if (!checkAuthentication()) {
+    return; // Stop execution if not authenticated
+  }
+
+  // Set up periodic authentication checks
+  setInterval(checkAuthentication, 5000); // Check every 5 seconds
+
+  // Check authentication on page visibility change (when user switches tabs)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      checkAuthentication();
+    }
+  });
+
+  // Check authentication before any navigation
+  window.addEventListener('beforeunload', function() {
+    // This helps prevent cached pages from loading
+  });
+
+  // Override browser back/forward navigation
+  window.addEventListener('popstate', function(event) {
+    // Force a fresh authentication check on navigation
+    setTimeout(checkAuthentication, 100);
+  });
+
+  // Prevent browser from caching this page
+  window.addEventListener('load', function() {
+    // Force page refresh if loaded from cache
+    if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
+      window.location.reload();
+    }
+  });
 })();
 
 // Page load authentication check
 document.addEventListener('DOMContentLoaded', function() {
-  // Register service worker for security
+  // Register service worker for basic functionality
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('../sw.js')
       .then(registration => {
@@ -82,58 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // Prevent browser back button access
-  window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-      // Page was loaded from cache, force refresh
-      window.location.reload(true);
-    }
-  });
-
-  // Replace current history entry to prevent back navigation
-  if (window.history.replaceState) {
-    window.history.replaceState(null, null, window.location.href);
-  }
-
-  // Clear cache on page unload
-  window.addEventListener('beforeunload', function() {
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => {
-          caches.delete(name);
-        });
-      });
-    }
-  });
-
-  // Additional protection: Clear localStorage on visibility change
-  document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-      // Page is hidden, clear cache
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => {
-            caches.delete(name);
-          });
-        });
-      }
-    }
-  });
-
-  // Additional check for cached pages
-  if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
-    // This was a back/forward navigation, force authentication check
-    setTimeout(function() {
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-      const isStudentPage = window.location.pathname.includes('/student/');
-      const isAdminPage = window.location.pathname.includes('/admin/');
-
-      if (!token || !role ||
-          (isStudentPage && role !== 'student') ||
-          (isAdminPage && role !== 'admin')) {
-        window.location.replace('http://localhost:8080/');
-      }
-    }, 50);
-  }
+  // Allow normal browser navigation - server will validate authentication on API requests
+  // No need to block back/forward buttons or manipulate history
 });
