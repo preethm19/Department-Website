@@ -1,7 +1,9 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const csv = require('csv-parser');
@@ -15,13 +17,9 @@ const app = express();
 // CORS configuration for cross-origin requests from main website
 const corsOptions = {
     origin: function (origin, callback) {
-        // Allow requests from the main website (same domain)
-        const allowedOrigins = [
-            'http://localhost:3000',    // SMS server
-            'http://localhost:8080',    // Main website (adjust port as needed)
-            'http://127.0.0.1:3000',    // Alternative localhost
-            'http://127.0.0.1:8080'     // Alternative localhost
-        ];
+        // Get allowed origins from environment variable
+        const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:8080,http://localhost:3000,http://127.0.0.1:8080,http://127.0.0.1:3000';
+        const allowedOrigins = corsOrigins.split(',').map(url => url.trim());
 
         // Allow requests with no origin (mobile apps, etc.)
         if (!origin || allowedOrigins.some(url => origin.startsWith(url.split(':')[1]))) {
@@ -82,23 +80,23 @@ const requireAuth = (req, res, next) => {
   // If no token, redirect to main website immediately
   if (!token) {
     console.log('No token found, redirecting to main website');
-    return res.redirect('http://localhost:8080/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/');
   }
 
   // Check if token is blacklisted
   if (tokenBlacklist.has(token)) {
     console.log('Token blacklisted, redirecting to main website');
-    return res.redirect('http://localhost:8080/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/');
   }
 
   // Verify token validity
   try {
-    const verified = jwt.verify(token, 'secret_key');
+    const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
     req.user = verified;
     next();
   } catch (err) {
     console.log('Invalid token, redirecting to main website');
-    return res.redirect('http://localhost:8080/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/');
   }
 };
 
@@ -125,7 +123,7 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, 'secret_key');
+    const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
     req.user = verified;
     next();
   } catch (err) {
@@ -159,7 +157,7 @@ app.post('/logout', (req, res) => {
   res.json({
     message: 'Logged out successfully',
     timestamp: new Date().toISOString(),
-    redirect: 'http://localhost:8080/'
+    redirect: process.env.MAIN_WEBSITE_URL || 'http://localhost:8080/'
   });
 });
 
@@ -172,7 +170,7 @@ app.post('/login', async (req, res) => {
     const user = results[0];
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.id, role: user.role }, 'secret_key', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'secret_key', { expiresIn: process.env.JWT_EXPIRES_IN || '1h' });
     res.json({ token, role: user.role });
   });
 });
@@ -313,7 +311,7 @@ app.post('/admin/classes', authenticate, (req, res) => {
   }
 
   db.query('INSERT INTO subjects (name, description, subject_code, department, semester) VALUES (?, ?, ?, ?, ?)',
-    [name, description, subjectCode, 'AI', semester], (err, result) => {
+    [name, description, subjectCode, process.env.DEPARTMENT || 'AI', semester], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Database error' });
@@ -853,11 +851,11 @@ app.post('/admin/create-admin', authenticate, async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, process.env.BCRYPT_ROUNDS || 10);
 
     // Insert admin
     await db.promise().query('INSERT INTO users (name, email, password, role, department) VALUES (?, ?, ?, ?, ?)',
-      [name, email, hashedPassword, 'admin', 'AI']);
+      [name, email, hashedPassword, 'admin', process.env.DEPARTMENT || 'AI']);
 
     res.json({ message: 'Admin created successfully' });
   } catch (err) {
@@ -1027,11 +1025,11 @@ app.post('/admin/bulk-import', authenticate, upload.single('csvFile'), async (re
           }
 
           // Hash password
-          const hashedPassword = await bcrypt.hash('password', 10);
+          const hashedPassword = await bcrypt.hash('password', process.env.BCRYPT_ROUNDS || 10);
 
           // Insert student
           await db.promise().query('INSERT INTO users (name, usn, email, password, role, semester, phone, dob, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [name, usn, email, hashedPassword, 'student', semester, phone || null, dob || null, 'AI']);
+            [name, usn, email, hashedPassword, 'student', semester, phone || null, dob || null, process.env.DEPARTMENT || 'AI']);
 
           results.push({ name, usn, email, semester });
         } catch (err) {
@@ -1248,7 +1246,7 @@ app.post('/upload-attendance-proof', authenticate, upload.single('file'), (req, 
   }
 
   // Check file size (max 5MB)
-  if (req.file.size > 5 * 1024 * 1024) {
+  if (req.file.size > (process.env.MAX_FILE_SIZE || 5242880)) {
     return res.status(400).json({ error: 'File size must be less than 5MB' });
   }
 
@@ -1441,6 +1439,8 @@ app.delete('/admin/notifications/:id', authenticate, (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

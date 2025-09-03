@@ -1,5 +1,5 @@
 const db = require('./db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 async function insertSample() {
   const hashed = await bcrypt.hash('password', 10);
