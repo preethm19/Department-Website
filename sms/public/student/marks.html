@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Student Results</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - My Marks</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="assignments.html">Assignments</a></li>
+        <li><a href="attendance.html">Attendance</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>My Results</h3>
+      <div id="results">
+        <!-- Results will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Function to handle IA toggle buttons
+    function showIAMarks(button, iaType, subjectName) {
+      const subjectId = subjectName.replace(/\s+/g, '-');
+
+      // Remove active class from all buttons in this result item
+      const buttons = button.parentElement.querySelectorAll('.ia-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      // Add active class to clicked button
+      button.classList.add('active');
+
+      // Hide all marks displays for this subject
+      const allMarks = document.querySelectorAll(`[id^="marks-${subjectId}"], [id^="ia1-${subjectId}"], [id^="ia2-${subjectId}"], [id^="ia3-${subjectId}"]`);
+      allMarks.forEach(mark => mark.style.display = 'none');
+
+      // Show the selected IA marks
+      const selectedMarks = document.getElementById(`${iaType}-${subjectId}`);
+      if (selectedMarks) {
+        selectedMarks.style.display = 'block';
+      }
+    }
+
+    // Load results after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      loadMarks();
+    });
+
+    // Load results
+    function loadMarks() {
+      fetch('/marks', {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.length === 0) {
+          document.getElementById('results').innerHTML = '<p>No results available.</p>';
+        } else {
+          let html = '<div class="results-list">';
+          data.forEach(result => {
+            // IA marks (only these are available now)
+            const ia1Marks = result.ia1_marks ? result.ia1_marks.toString() : 'Not entered';
+            const ia2Marks = result.ia2_marks ? result.ia2_marks.toString() : 'Not entered';
+            const ia3Marks = result.ia3_marks ? result.ia3_marks.toString() : 'Not entered';
+
+            const uploadedDate = result.uploaded_at ? new Date(result.uploaded_at).toLocaleDateString() : '';
+            const uploadedBy = result.uploaded_by_name ? ` by ${result.uploaded_by_name}` : '';
+
+            html += `
+              <div class="result-item">
+                <div class="result-header">
+                  <strong>${result.subject_name} (${result.subject_code})</strong>
+                  <span class="subject-info">Semester ${result.semester}${uploadedBy ? ' - Uploaded' + uploadedBy : ''}</span>
+                </div>
+
+                <!-- IA Marks Display -->
+                <div class="marks-container">
+                  <div class="ia-marks-summary">
+                    <div class="ia-mark-item">
+                      <span class="ia-label">IA1:</span>
+                      <span class="ia-value">${ia1Marks}</span>
+                    </div>
+                    <div class="ia-mark-item">
+                      <span class="ia-label">IA2:</span>
+                      <span class="ia-value">${ia2Marks}</span>
+                    </div>
+                    <div class="ia-mark-item">
+                      <span class="ia-label">IA3:</span>
+                      <span class="ia-value">${ia3Marks}</span>
+                    </div>
+                  </div>
+                  ${uploadedDate ? `<div class="upload-info"><small>Uploaded on: ${uploadedDate}</small></div>` : ''}
+                </div>
+              </div>
+            `;
+          });
+          html += '</div>';
+          document.getElementById('results').innerHTML = html;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading marks:', error);
+      });
+    }
+  </script>
+</body>
+</html>

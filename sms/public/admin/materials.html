@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Materials</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Manage Materials</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Upload Study Materials</h3>
+      <form id="uploadMaterialForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="materialSubject">Subject:</label>
+          <select id="materialSubject" required>
+            <option value="">Select Subject</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="materialTitle">Material Title:</label>
+          <input type="text" id="materialTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="materialFile">Select File:</label>
+          <input type="file" id="materialFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" required>
+        </div>
+        <button type="submit" class="btn">Upload Material</button>
+      </form>
+      <div id="uploadMessage"></div>
+
+      <h3>All Materials</h3>
+      <div id="materials">
+        <!-- Materials will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Load subjects for dropdown
+    fetch('/admin/classes', {
+      headers: { 'Authorization': localStorage.getItem('token') }
+    })
+    .then(response => response.json())
+    .then(data => {
+      const select = document.getElementById('materialSubject');
+      data.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject.id;
+        option.textContent = `${subject.name} (Semester ${subject.semester})`;
+        select.appendChild(option);
+      });
+    });
+
+    // Load materials
+    const selectedSemester = localStorage.getItem('selectedSemester') || 'all';
+    fetch(`/admin/materials?semester=${selectedSemester}`, {
+      headers: { 'Authorization': localStorage.getItem('token') }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.length === 0) {
+        document.getElementById('materials').innerHTML = '<p>No materials uploaded yet.</p>';
+      } else {
+        let html = '<ul>';
+        data.forEach(material => {
+          html += `<li><strong>${material.title}</strong> - ${material.subject_name} (Semester ${material.semester}) <button onclick="downloadFile('material', ${material.id})" class="btn">Download</button></li>`;
+        });
+        html += '</ul>';
+        document.getElementById('materials').innerHTML = html;
+      }
+    });
+
+    // Upload material form handler
+    document.getElementById('uploadMaterialForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('subjectId', document.getElementById('materialSubject').value);
+      formData.append('title', document.getElementById('materialTitle').value);
+      formData.append('file', document.getElementById('materialFile').files[0]);
+
+      const response = await fetch('/admin/materials', {
+        method: 'POST',
+        headers: { 'Authorization': localStorage.getItem('token') },
+        body: formData
+      });
+
+      const data = await response.json();
+      document.getElementById('uploadMessage').innerText = data.message || data.error;
+
+      if (response.ok) {
+        document.getElementById('uploadMaterialForm').reset();
+        location.reload();
+      }
+    });
+
+    // Download file function
+    async function downloadFile(type, id) {
+      try {
+        const response = await fetch(`/download/${type}/${id}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(error.error || 'Download failed');
+          return;
+        }
+
+        const blob = await response.blob();
+
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'download';
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename="([^"]+)"/);
+          if (matches) filename = matches[1];
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download error:', error);
+        alert('Download failed');
+      }
+    }
+  </script>
+</body>
+</html>

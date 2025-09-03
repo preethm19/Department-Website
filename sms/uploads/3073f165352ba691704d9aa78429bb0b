@@ -1,0 +1,6 @@
+USN,First Name,Last Name,Email Address,Phone Number,Date of Birth,Address,Race,Age,Emergency Contact Name,Emergency Contact Phone,Emergency Contact Relationship,Fee Balance,Semester,Year,Status
+1001,John,Doe,john.doe@email.com,555-0101,2000-05-15,123 Maple St,Caucasian,25,Jane Doe,555-0102,Mother,0,Fall,2025,Active
+1002,Aisha,Patel,aisha.patel@email.com,555-0103,2001-08-22,456 Oak Ave,Asian,24,Raj Patel,555-0104,Father,150,Spring,2025,Active
+1003,Maria,Gonzalez,maria.gonzalez@email.com,555-0105,1999-03-10,789 Pine Rd,Hispanic,26,Luis Gonzalez,555-0106,Brother,300,Fall,2025,Probation
+1004,James,Smith,james.smith@email.com,555-0107,2002-11-30,321 Birch Ln,Black,23,Emma Smith,555-0108,Sister,50,Summer,2025,Active
+1005,Li,Chen,li.chen@email.com,555-0109,2000-07-07,654 Cedar Dr,Asian,25,Wei Chen,555-0110,Father,0,Fall,2025,Active

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Attendance</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Mark Attendance</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Mark Attendance</h3>
+      <div class="attendance-controls">
+        <div class="form-group">
+          <label for="attendanceSemester">Semester:</label>
+          <select id="attendanceSemester" required>
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="attendanceSubject">Subject:</label>
+          <select id="attendanceSubject" required disabled>
+            <option value="">Select Subject</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="attendanceDate">Date:</label>
+          <input type="date" id="attendanceDate" required>
+        </div>
+      </div>
+
+      <div id="attendanceTable" style="display: none;">
+        <h4>Mark Attendance for <span id="subjectName"></span> on <span id="selectedDate"></span></h4>
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th>USN</th>
+              <th>Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="studentsList">
+          </tbody>
+        </table>
+        <button id="saveAttendance" class="btn">Save Attendance</button>
+        <div id="attendanceMessage"></div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Semester selection handler
+    document.getElementById('attendanceSemester').addEventListener('change', async function() {
+      const semester = this.value;
+      const subjectSelect = document.getElementById('attendanceSubject');
+
+      if (!semester) {
+        subjectSelect.disabled = true;
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        document.getElementById('attendanceTable').style.display = 'none';
+        return;
+      }
+
+      // Load subjects for selected semester
+      const response = await fetch(`/admin/classes?semester=${semester}`, {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      });
+
+      const subjects = await response.json();
+
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+      subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject.id;
+        option.textContent = `${subject.subject_code} - ${subject.name}`;
+        subjectSelect.appendChild(option);
+      });
+
+      subjectSelect.disabled = false;
+    });
+
+    // Subject selection handler - automatically load students
+    document.getElementById('attendanceSubject').addEventListener('change', async function() {
+      const subjectId = this.value;
+      const date = document.getElementById('attendanceDate').value;
+
+      if (!subjectId) {
+        document.getElementById('attendanceTable').style.display = 'none';
+        return;
+      }
+
+      if (!date) {
+        alert('Please select a date first');
+        this.value = '';
+        return;
+      }
+
+      await loadStudentsForAttendance(subjectId, date);
+    });
+
+    // Date change handler - reload students if subject is selected
+    document.getElementById('attendanceDate').addEventListener('change', async function() {
+      const subjectId = document.getElementById('attendanceSubject').value;
+      const date = this.value;
+
+      if (subjectId && date) {
+        await loadStudentsForAttendance(subjectId, date);
+      }
+    });
+
+    // Function to load students for attendance
+    async function loadStudentsForAttendance(subjectId, date) {
+      try {
+        // Load students for the subject
+        const studentsResponse = await fetch(`/admin/attendance/students?subjectId=${subjectId}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        const students = await studentsResponse.json();
+
+        if (students.length === 0) {
+          alert('No students found for this subject');
+          document.getElementById('attendanceTable').style.display = 'none';
+          return;
+        }
+
+        // Load existing attendance records for this subject and date
+        const attendanceResponse = await fetch(`/admin/attendance/existing?subjectId=${subjectId}&date=${date}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        const existingAttendance = await attendanceResponse.json();
+
+        // Create a map of student ID to attendance status
+        const attendanceMap = {};
+        existingAttendance.forEach(record => {
+          attendanceMap[record.student_id] = record.status;
+        });
+
+        // Display attendance table
+        const subjectSelect = document.getElementById('attendanceSubject');
+        const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
+        document.getElementById('subjectName').textContent = subjectText;
+        document.getElementById('selectedDate').textContent = date;
+        document.getElementById('attendanceTable').style.display = 'block';
+
+        const tbody = document.getElementById('studentsList');
+        tbody.innerHTML = '';
+
+        students.forEach(student => {
+          const existingStatus = attendanceMap[student.id] || 'present'; // Default to present if no record exists
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${student.usn}</td>
+            <td>${student.name}</td>
+            <td>
+              <select class="attendance-status" data-student-id="${student.id}">
+                <option value="present" ${existingStatus === 'present' ? 'selected' : ''}>Present</option>
+                <option value="absent" ${existingStatus === 'absent' ? 'selected' : ''}>Absent</option>
+              </select>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error loading students:', error);
+        alert('Error loading students for attendance');
+      }
+    }
+
+    // Save attendance
+    document.getElementById('saveAttendance').addEventListener('click', async () => {
+      const subjectId = document.getElementById('attendanceSubject').value;
+      const date = document.getElementById('attendanceDate').value;
+      const attendanceData = [];
+
+      document.querySelectorAll('.attendance-status').forEach(select => {
+        attendanceData.push({
+          studentId: select.dataset.studentId,
+          status: select.value
+        });
+      });
+
+      if (attendanceData.length === 0) {
+        alert('No students to mark attendance for');
+        return;
+      }
+
+      const response = await fetch('/admin/attendance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token')
+        },
+        body: JSON.stringify({
+          subjectId,
+          date,
+          attendance: attendanceData
+        })
+      });
+
+      const data = await response.json();
+      document.getElementById('attendanceMessage').innerText = data.message || data.error;
+
+      if (response.ok) {
+        setTimeout(() => {
+          document.getElementById('attendanceMessage').innerText = '';
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

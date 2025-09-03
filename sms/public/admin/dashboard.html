@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>MIT AI SMS - Admin Dashboard</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/logo.png">
+  <link rel="icon" type="image/x-icon" href="../images/logo.png">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/logo.png">
+  <link rel="icon" sizes="192x192" href="../images/logo.png">
+  <meta name="msapplication-TileImage" content="../images/logo.png">
+  <meta name="msapplication-TileColor" content="#4f46e5">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Admin Dashboard</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Welcome to Admin Dashboard</h3>
+      <p>Monitor and manage your academic system</p>
+
+      <div class="user-management-section">
+        <h4>User Overview</h4>
+        <div class="user-filters">
+          <div class="form-group">
+            <label for="userTypeSelect">User Type:</label>
+            <select id="userTypeSelect">
+              <option value="">Select</option>
+              <option value="students">Students</option>
+              <option value="admins">Admins</option>
+            </select>
+          </div>
+          <div class="form-group" id="semesterGroup" style="display: none;">
+            <label for="semesterSelect">Semester:</label>
+            <select id="semesterSelect">
+              <option value="">Select</option>
+              <option value="all">All Semesters</option>
+              <option value="1">Semester 1</option>
+              <option value="2">Semester 2</option>
+              <option value="3">Semester 3</option>
+              <option value="4">Semester 4</option>
+              <option value="5">Semester 5</option>
+              <option value="6">Semester 6</option>
+              <option value="7">Semester 7</option>
+              <option value="8">Semester 8</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="userSearch">Search Users:</label>
+            <input type="text" id="userSearch" placeholder="Search by name, USN, or email..." style="padding: 8px 12px; border: 2px solid #e1e8ed; border-radius: 6px; font-size: 14px; width: 250px;">
+          </div>
+        </div>
+
+        <div id="userOverview">
+          <p>Select user type to view users</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Initialize dashboard after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDashboard();
+    });
+
+    // Initialize dashboard after authentication check
+    function initializeDashboard() {
+      // Initialize other dashboard functions here
+    }
+
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    let allUsersData = []; // Store all users data for search functionality
+
+    // Function to load users with current filters
+    function loadUsers() {
+      const userType = document.getElementById('userTypeSelect').value;
+      const semester = document.getElementById('semesterSelect').value;
+      const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+
+      if (!userType) {
+        document.getElementById('userOverview').innerHTML = '<p>Select user type to view users</p>';
+        return;
+      }
+
+      if (userType === 'students' && !semester) {
+        document.getElementById('userOverview').innerHTML = '<p>Select semester to view students</p>';
+        return;
+      }
+
+      // Build query parameters
+      let queryParams = `userType=${userType}`;
+
+      // Only include semester for students
+      if (userType === 'students' && semester && semester !== 'all') {
+        queryParams += `&semester=${semester}`;
+      }
+
+      fetch(`/admin/users?${queryParams}`, {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        allUsersData = data; // Store data for search functionality
+        displayUsers(data, searchTerm);
+      })
+      .catch(error => {
+        console.error('Error loading users:', error);
+        document.getElementById('userOverview').innerHTML = '<p>Error loading users.</p>';
+      });
+    }
+
+    // Function to display users with search filtering
+    function displayUsers(users, searchTerm) {
+      // Filter users based on search term
+      let filteredUsers = users;
+      if (searchTerm) {
+        filteredUsers = users.filter(user => {
+          const name = user.name.toLowerCase();
+          const usn = (user.usn || '').toLowerCase();
+          const email = (user.email || '').toLowerCase();
+          return name.includes(searchTerm) || usn.includes(searchTerm) || email.includes(searchTerm);
+        });
+      }
+
+      if (filteredUsers.length === 0) {
+        const noResultsMsg = searchTerm ? 'No users found matching your search.' : 'No users found for selected filters.';
+        document.getElementById('userOverview').innerHTML = `<p>${noResultsMsg}</p>`;
+      } else {
+        let html = '<ul class="user-list">';
+        filteredUsers.forEach(user => {
+          const roleDisplay = user.role === 'admin' ? 'Admin' : 'Student';
+          const semesterDisplay = user.semester ? `Semester: ${user.semester}` : 'N/A';
+          const identifier = user.role === 'admin' ? user.email : user.usn;
+          const canDelete = user.role !== 'admin'; // Only allow deleting non-admin users
+          const deleteButton = canDelete ? `<button class="delete-btn" onclick="deleteUser(${user.id}, '${user.name}')">Delete</button>` : '';
+          html += `<li><strong>${user.name}</strong> - Role: ${roleDisplay} (${identifier}, ${semesterDisplay}) ${deleteButton}</li>`;
+        });
+        html += '</ul>';
+        document.getElementById('userOverview').innerHTML = html;
+      }
+    }
+
+    // Handle user type selection
+    document.getElementById('userTypeSelect').addEventListener('change', function() {
+      const userType = this.value;
+      const semesterGroup = document.getElementById('semesterGroup');
+
+      if (userType === 'students') {
+        semesterGroup.style.display = 'block';
+        document.getElementById('semesterSelect').value = '';
+        document.getElementById('userSearch').value = ''; // Clear search when changing user type
+        document.getElementById('userOverview').innerHTML = '<p>Select semester to view students</p>';
+      } else if (userType === 'admins') {
+        semesterGroup.style.display = 'none';
+        document.getElementById('userSearch').value = ''; // Clear search when changing user type
+        loadUsers();
+      } else {
+        semesterGroup.style.display = 'none';
+        document.getElementById('userOverview').innerHTML = '<p>Select user type to view users</p>';
+      }
+    });
+
+    // Handle semester selection for students
+    document.getElementById('semesterSelect').addEventListener('change', function() {
+      const semester = this.value;
+      if (semester) {
+        document.getElementById('userSearch').value = ''; // Clear search when changing semester
+        loadUsers();
+      } else {
+        document.getElementById('userOverview').innerHTML = '<p>Select semester to view students</p>';
+      }
+    });
+
+    // Handle search input
+    document.getElementById('userSearch').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      if (allUsersData.length > 0) {
+        displayUsers(allUsersData, searchTerm);
+      }
+    });
+
+    // Delete user function
+    async function deleteUser(userId, userName) {
+      if (confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+        try {
+          const response = await fetch(`/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': localStorage.getItem('token') }
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            alert('User deleted successfully');
+            loadUsers(); // Refresh the user list
+          } else {
+            alert(data.error || 'Failed to delete user');
+          }
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          alert('Error deleting user');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

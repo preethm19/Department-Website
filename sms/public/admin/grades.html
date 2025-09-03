@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Results</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Upload Results</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Upload Results</h3>
+      <div class="grade-controls">
+        <div class="form-group">
+          <label for="resultSemester">Semester:</label>
+          <select id="resultSemester" required>
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="resultSubject">Subject:</label>
+          <select id="resultSubject" required disabled>
+            <option value="">Select Subject</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- IA Type Selection -->
+      <div id="iaSelection" style="display: none; margin: 20px 0;">
+        <label style="display: block; margin-bottom: 10px; font-weight: bold;">Select Assessment Type:</label>
+        <div class="ia-segmented-controls">
+          <button class="ia-segment-btn active" data-ia-type="ia1">IA1</button>
+          <button class="ia-segment-btn" data-ia-type="ia2">IA2</button>
+          <button class="ia-segment-btn" data-ia-type="ia3">IA3</button>
+        </div>
+      </div>
+
+      <div id="studentsTable" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h4>Enter Results for <span id="subjectName"></span></h4>
+          <button id="editResults" class="edit-btn" style="display: none;">Edit Existing Results</button>
+        </div>
+
+        <!-- Search Bar -->
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="studentSearch" placeholder="Search students by USN or name..."
+                 style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+        </div>
+        <table class="grades-table">
+          <thead>
+            <tr>
+              <th>USN</th>
+              <th>Student Name</th>
+              <th>Marks</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentsList">
+          </tbody>
+        </table>
+        <button id="saveResults" class="btn">Save All Results</button>
+        <div id="resultMessage"></div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    let currentSubjectCode = '';
+    let currentSemester = '';
+    let currentIaType = 'ia1';
+
+    // Semester selection handler
+    document.getElementById('resultSemester').addEventListener('change', async function() {
+      const semester = this.value;
+      const subjectSelect = document.getElementById('resultSubject');
+
+      if (!semester) {
+        subjectSelect.disabled = true;
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        document.getElementById('studentsTable').style.display = 'none';
+        return;
+      }
+
+      // Load subjects for selected semester
+      const response = await fetch(`/admin/classes?semester=${semester}`, {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      });
+
+      const subjects = await response.json();
+
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+      subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject.subject_code; // Use subject_code instead of ID
+        option.textContent = `${subject.subject_code} - ${subject.name}`;
+        subjectSelect.appendChild(option);
+      });
+
+      subjectSelect.disabled = false;
+    });
+
+    // Subject selection handler - show IA controls and load students
+    document.getElementById('resultSubject').addEventListener('change', async function() {
+      const subjectCode = this.value;
+
+      if (!subjectCode) {
+        document.getElementById('iaSelection').style.display = 'none';
+        document.getElementById('studentsTable').style.display = 'none';
+        return;
+      }
+
+      currentSubjectCode = subjectCode;
+      currentSemester = document.getElementById('resultSemester').value;
+
+      // Show IA selection controls
+      document.getElementById('iaSelection').style.display = 'block';
+
+      await loadStudentsForResults(subjectCode);
+    });
+
+    // IA Type Selection Handler
+    document.querySelectorAll('.ia-segment-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.ia-segment-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+
+        // Add active class to clicked button
+        this.classList.add('active');
+
+        // Update current IA type
+        currentIaType = this.dataset.iaType;
+
+        // Update the subject name display with IA type
+        const subjectSelect = document.getElementById('resultSubject');
+        const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
+        const iaLabel = `IA${currentIaType.slice(-1).toUpperCase()}`;
+        document.getElementById('subjectName').textContent = `${subjectText} - ${iaLabel}`;
+
+        // Reload students with new IA type
+        if (currentSubjectCode) {
+          loadStudentsForResults(currentSubjectCode);
+        }
+      });
+    });
+
+    // Function to load students for results entry
+    async function loadStudentsForResults(subjectCode) {
+      try {
+        // Load students for the subject (based on semester)
+        const response = await fetch(`/admin/classes?semester=${currentSemester}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        const subjects = await response.json();
+        const currentSubject = subjects.find(s => s.subject_code === subjectCode);
+
+        if (!currentSubject) {
+          alert('Subject not found');
+          return;
+        }
+
+        // Load students for this semester
+        const studentsResponse = await fetch(`/admin/users?userType=students&semester=${currentSemester}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        const students = await studentsResponse.json();
+
+        if (students.length === 0) {
+          alert('No students found for this semester');
+          document.getElementById('studentsTable').style.display = 'none';
+          return;
+        }
+
+        // Display students table
+        const subjectSelect = document.getElementById('resultSubject');
+        const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
+        const iaLabel = `IA${currentIaType.slice(-1).toUpperCase()}`;
+        document.getElementById('subjectName').textContent = `${subjectText} - ${iaLabel}`;
+        document.getElementById('studentsTable').style.display = 'block';
+
+        const tbody = document.getElementById('studentsList');
+        tbody.innerHTML = '';
+
+        // Load existing results for this subject and IA type
+        const existingResults = await loadExistingResults(subjectCode, currentIaType);
+
+        // Check if any marks exist for this IA type
+        const hasAnyMarks = existingResults.length > 0;
+
+        students.forEach(student => {
+          const existingResult = existingResults.find(r => r.student_usn === student.usn);
+          const marksValue = existingResult ? getMarksValue(existingResult, currentIaType) : null;
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${student.usn}</td>
+            <td>${student.name}</td>
+            <td class="marks-cell" data-student-id="${student.id}">
+              ${hasAnyMarks ?
+                // If marks exist, show as text with edit button
+                (marksValue !== null ?
+                  `<span class="marks-display">${marksValue}</span>` :
+                  `<span class="no-marks">Not entered</span>`
+                ) :
+                // If no marks exist, show input box for first-time entry
+                `<input type="number" class="marks-input" data-student-id="${student.id}"
+                        placeholder="Enter marks" min="0" max="100"
+                        style="width: 100px; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">`
+              }
+            </td>
+            <td>
+              ${hasAnyMarks ?
+                // Show edit button when marks exist
+                `<button class="edit-btn-small" data-student-id="${student.id}" onclick="editStudentMarks(${student.id})">
+                  ✏️ Edit
+                </button>` :
+                // Hide edit button for first-time entry
+                ''
+              }
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        // Show/hide the "Save All Results" button based on whether marks exist
+        const saveAllBtn = document.getElementById('saveResults');
+        saveAllBtn.style.display = hasAnyMarks ? 'none' : 'block';
+      } catch (error) {
+        console.error('Error loading students:', error);
+        alert('Error loading students for results entry');
+      }
+    }
+
+    // Function to load existing results
+    async function loadExistingResults(subjectCode, iaType) {
+      try {
+        const response = await fetch(`/admin/existing-results?subjectCode=${subjectCode}&semester=${currentSemester}&iaType=${iaType}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          return await response.json();
+        }
+        return [];
+      } catch (error) {
+        console.error('Error loading existing results:', error);
+        return [];
+      }
+    }
+
+    // Function to get marks value based on IA type
+    function getMarksValue(result, iaType) {
+      if (iaType === 'ia1') return result.ia1_marks;
+      if (iaType === 'ia2') return result.ia2_marks;
+      if (iaType === 'ia3') return result.ia3_marks;
+      return null;
+    }
+
+    // Edit student marks function
+    function editStudentMarks(studentId) {
+      const marksCell = document.querySelector(`.marks-cell[data-student-id="${studentId}"]`);
+      const currentDisplay = marksCell.querySelector('.marks-display, .no-marks');
+      const currentValue = currentDisplay.classList.contains('marks-display') ? currentDisplay.textContent : '';
+
+      // Replace display with input field
+      marksCell.innerHTML = `
+        <input type="number" class="marks-input" data-student-id="${studentId}"
+               value="${currentValue}" placeholder="Enter marks"
+               min="0" max="100" style="width: 100px; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+        <button class="save-btn-small" onclick="saveStudentMarks(${studentId})">💾 Save</button>
+        <button class="cancel-btn-small" onclick="cancelEditStudentMarks(${studentId})">❌ Cancel</button>
+      `;
+    }
+
+    // Save student marks function
+    async function saveStudentMarks(studentId) {
+      const input = document.querySelector(`.marks-input[data-student-id="${studentId}"]`);
+      const marks = input.value.trim();
+
+      if (marks === '') {
+        alert('Please enter marks');
+        return;
+      }
+
+      const marksValue = parseFloat(marks);
+      if (marksValue < 0 || marksValue > 100) {
+        alert('Marks must be between 0 and 100');
+        return;
+      }
+
+      try {
+        const response = await fetch('/admin/upload-results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+          body: JSON.stringify({
+            results: [{
+              studentId: studentId,
+              subjectCode: currentSubjectCode,
+              marks: marksValue
+            }],
+            iaType: currentIaType
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Update display with new marks
+          const marksCell = document.querySelector(`.marks-cell[data-student-id="${studentId}"]`);
+          marksCell.innerHTML = `<span class="marks-display">${marksValue}</span>`;
+
+          document.getElementById('resultMessage').innerText = data.message || 'Marks saved successfully';
+          setTimeout(() => {
+            document.getElementById('resultMessage').innerText = '';
+          }, 3000);
+        } else {
+          document.getElementById('resultMessage').innerText = data.error || 'Error saving marks';
+        }
+      } catch (error) {
+        console.error('Error saving marks:', error);
+        document.getElementById('resultMessage').innerText = 'Error saving marks';
+      }
+    }
+
+    // Cancel edit function
+    function cancelEditStudentMarks(studentId) {
+      // Reload the students to refresh the display
+      loadStudentsForResults(currentSubjectCode);
+    }
+
+    // Search functionality
+    document.getElementById('studentSearch').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#studentsList tr');
+
+      rows.forEach(row => {
+        const usn = row.cells[0].textContent.toLowerCase();
+        const name = row.cells[1].textContent.toLowerCase();
+
+        if (usn.includes(searchTerm) || name.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+    // Save all results (for first-time entry)
+    document.getElementById('saveResults').addEventListener('click', async () => {
+      const resultData = [];
+
+      document.querySelectorAll('.marks-input').forEach(input => {
+        const marks = input.value.trim();
+        if (marks !== '') {
+          resultData.push({
+            studentId: input.dataset.studentId,
+            subjectCode: currentSubjectCode,
+            marks: parseFloat(marks)
+          });
+        }
+      });
+
+      if (resultData.length === 0) {
+        alert('Please enter marks for at least one student');
+        return;
+      }
+
+      // Validate marks
+      const invalidMarks = resultData.filter(r => r.marks < 0 || r.marks > 100);
+      if (invalidMarks.length > 0) {
+        alert('Marks must be between 0 and 100');
+        return;
+      }
+
+      try {
+        const response = await fetch('/admin/upload-results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+          body: JSON.stringify({
+            results: resultData,
+            iaType: currentIaType
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('resultMessage').innerText = data.message || 'All marks saved successfully';
+
+          // Reload the page to switch to edit mode
+          setTimeout(() => {
+            loadStudentsForResults(currentSubjectCode);
+          }, 1500);
+        } else {
+          document.getElementById('resultMessage').innerText = data.error || 'Error saving marks';
+        }
+      } catch (error) {
+        console.error('Error saving marks:', error);
+        document.getElementById('resultMessage').innerText = 'Error saving marks';
+      }
+    });
+  </script>
+</body>
+</html>

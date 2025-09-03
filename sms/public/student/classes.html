@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Student Subjects</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - My Subjects</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="assignments.html">Assignments</a></li>
+        <li><a href="attendance.html">Attendance</a></li>
+        <li><a href="marks.html">Marks</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>My Enrolled Subjects</h3>
+      <div id="subjects">
+        <!-- Subjects will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    // Load subjects after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSubjects();
+    });
+
+    // Load subjects
+    function loadSubjects() {
+      fetch('/subjects', {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          if (data.length === 0) {
+            document.getElementById('subjects').innerHTML = '<p>No subjects enrolled.</p>';
+          } else {
+            let html = '<ul>';
+            data.forEach(subject => {
+              html += `<li><strong>${subject.name}</strong> - ${subject.description} (Schedule: ${subject.schedule})</li>`;
+            });
+            html += '</ul>';
+            document.getElementById('subjects').innerHTML = html;
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error loading subjects:', error);
+      });
+    }
+  </script>
+</body>
+</html>

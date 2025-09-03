@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Documents</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Document Management</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Admin Document Management</h3>
+
+      <div class="document-upload">
+        <h4>Upload Document</h4>
+        <form id="uploadDocumentForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="documentTitle">Document Title:</label>
+            <input type="text" id="documentTitle" required placeholder="e.g., Academic Calendar 2025">
+          </div>
+
+          <div class="form-group">
+            <label for="recipientType">Send to:</label>
+            <select id="recipientType" required>
+              <option value="">Select Recipients</option>
+              <option value="all">All Users</option>
+              <option value="students">All Students</option>
+              <option value="admins">All Admins</option>
+              <option value="specific">Specific User</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="specificUserGroup" style="display: none;">
+            <label for="specificUser">Select User:</label>
+            <select id="specificUser">
+              <option value="">Select User</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="semesterGroup" style="display: none;">
+            <label for="semesterSelect">Filter by Semester (Students only):</label>
+            <select id="semesterSelect">
+              <option value="all">All Semesters</option>
+              <option value="1">Semester 1</option>
+              <option value="2">Semester 2</option>
+              <option value="3">Semester 3</option>
+              <option value="4">Semester 4</option>
+              <option value="5">Semester 5</option>
+              <option value="6">Semester 6</option>
+              <option value="7">Semester 7</option>
+              <option value="8">Semester 8</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="documentFile">Select File:</label>
+            <input type="file" id="documentFile" accept=".pdf,.doc,.docx,.txt,.jpg,.png" required>
+          </div>
+
+          <button type="submit" class="btn">Upload Document</button>
+        </form>
+        <div id="uploadMessage"></div>
+      </div>
+
+      <div class="document-list">
+        <h4>Uploaded Documents</h4>
+        <div id="documentsContainer">-</div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Handle recipient type change
+    document.getElementById('recipientType').addEventListener('change', function() {
+      const recipientType = this.value;
+      const specificUserGroup = document.getElementById('specificUserGroup');
+      const semesterGroup = document.getElementById('semesterGroup');
+
+      if (recipientType === 'specific') {
+        specificUserGroup.style.display = 'block';
+        semesterGroup.style.display = 'none';
+        loadUsers();
+      } else if (recipientType === 'students') {
+        specificUserGroup.style.display = 'none';
+        semesterGroup.style.display = 'block';
+      } else {
+        specificUserGroup.style.display = 'none';
+        semesterGroup.style.display = 'none';
+      }
+    });
+
+    // Load users for specific user selection
+    async function loadUsers() {
+      try {
+        const response = await fetch('/admin/users?userType=all', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const users = await response.json();
+
+        const select = document.getElementById('specificUser');
+        select.innerHTML = '<option value="">Select User</option>';
+
+        users.forEach(user => {
+          const role = user.role === 'admin' ? 'Admin' : 'Student';
+          const identifier = user.role === 'admin' ? user.email : user.usn;
+          const option = document.createElement('option');
+          option.value = user.id;
+          option.textContent = `${user.name} (${role} - ${identifier})`;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading users:', error);
+      }
+    }
+
+    // Upload document form handler
+    document.getElementById('uploadDocumentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('documentTitle').value;
+      const recipientType = document.getElementById('recipientType').value;
+      const specificUser = document.getElementById('specificUser').value;
+      const semester = document.getElementById('semesterSelect').value;
+      const file = document.getElementById('documentFile').files[0];
+
+      if (!title || !recipientType || !file) {
+        document.getElementById('uploadMessage').innerText = 'Please fill in all required fields';
+        return;
+      }
+
+      if (recipientType === 'specific' && !specificUser) {
+        document.getElementById('uploadMessage').innerText = 'Please select a specific user';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('recipientType', recipientType);
+      formData.append('specificUser', specificUser || '');
+      formData.append('semester', semester || '');
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('/admin/send-document', {
+          method: 'POST',
+          headers: { 'Authorization': localStorage.getItem('token') },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('uploadMessage').innerText = 'Document sent successfully!';
+          document.getElementById('uploadDocumentForm').reset();
+          loadDocuments();
+        } else {
+          document.getElementById('uploadMessage').innerText = data.error || 'Upload failed';
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        document.getElementById('uploadMessage').innerText = 'Upload failed';
+      }
+    });
+
+
+
+    // Load documents on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDocuments();
+    });
+
+    // Load documents
+    async function loadDocuments() {
+      try {
+        const response = await fetch('/admin/documents', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          const documents = await response.json();
+
+          if (documents.length === 0) {
+            document.getElementById('documentsContainer').innerHTML = '<p>No documents uploaded yet.</p>';
+          } else {
+            let html = '<div class="documents-grid">';
+            documents.forEach(doc => {
+              const uploadDate = new Date(doc.uploaded_at).toLocaleDateString();
+
+              html += `
+                <div class="document-card">
+                  <h5>${doc.title}</h5>
+                  <p><strong>Uploaded:</strong> ${uploadDate}</p>
+                  <div class="document-actions">
+                    <button onclick="downloadDocument(${doc.id})" class="btn">Download</button>
+                    <button onclick="deleteDocument(${doc.id}, '${doc.title}')" class="btn delete-btn">Delete</button>
+                  </div>
+                </div>
+              `;
+            });
+            html += '</div>';
+            document.getElementById('documentsContainer').innerHTML = html;
+          }
+        } else {
+          document.getElementById('documentsContainer').innerHTML = '<p>Error loading documents.</p>';
+        }
+      } catch (error) {
+        console.error('Error loading documents:', error);
+        document.getElementById('documentsContainer').innerHTML = '<p>Error loading documents.</p>';
+      }
+    }
+
+    // Download document
+    async function downloadDocument(docId) {
+      try {
+        const response = await fetch(`/download/admin-document/${docId}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(error.error || 'Download failed');
+          return;
+        }
+
+        const blob = await response.blob();
+
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'document';
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename="([^"]+)"/);
+          if (matches) filename = matches[1];
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download error:', error);
+        alert('Download failed');
+      }
+    }
+
+    // Delete document
+    async function deleteDocument(docId, docTitle) {
+      if (confirm(`Are you sure you want to delete "${docTitle}"? This action cannot be undone.`)) {
+        try {
+          const response = await fetch(`/admin/documents/${docId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': localStorage.getItem('token') }
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            alert('Document deleted successfully');
+            loadDocuments();
+          } else {
+            alert(data.error || 'Failed to delete document');
+          }
+        } catch (error) {
+          console.error('Error deleting document:', error);
+          alert('Error deleting document');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

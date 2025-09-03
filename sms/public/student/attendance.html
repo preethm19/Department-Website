@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Student Attendance</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - My Attendance</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="assignments.html">Assignments</a></li>
+        <li><a href="marks.html">Marks</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>My Attendance Records</h3>
+
+      <!-- Date Selection -->
+      <div class="date-selector" style="margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.9); border-radius: 8px;">
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap; margin-bottom: 15px;">
+          <div>
+            <label for="attendanceDate" style="display: block; margin-bottom: 5px; font-weight: bold;">Select Date:</label>
+            <input type="date" id="attendanceDate" style="padding: 8px 12px; border: 2px solid #e1e8ed; border-radius: 6px; font-size: 16px;">
+          </div>
+          <button id="viewAttendance" class="btn" style="padding: 8px 16px;">View Date</button>
+        </div>
+
+        <!-- Month Selection -->
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap; margin-bottom: 15px;">
+          <div>
+            <label for="monthSelect" style="display: block; margin-bottom: 5px; font-weight: bold;">Select Month:</label>
+            <select id="monthSelect" style="padding: 8px 12px; border: 2px solid #e1e8ed; border-radius: 6px; font-size: 16px;">
+              <option value="">Choose Month</option>
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          </div>
+          <div>
+            <label for="yearSelect" style="display: block; margin-bottom: 5px; font-weight: bold;">Year:</label>
+            <select id="yearSelect" style="padding: 8px 12px; border: 2px solid #e1e8ed; border-radius: 6px; font-size: 16px;">
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+          </div>
+          <button id="viewMonthAttendance" class="btn" style="padding: 8px 16px; background: #28a745;">View Month</button>
+        </div>
+
+        <!-- Date Range Selection -->
+        <div style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+          <div>
+            <label for="dateFrom" style="display: block; margin-bottom: 5px; font-weight: bold;">From Date:</label>
+            <input type="date" id="dateFrom" style="padding: 8px 12px; border: 2px solid #e1e8ed; border-radius: 6px; font-size: 16px;">
+          </div>
+          <div>
+            <label for="dateTo" style="display: block; margin-bottom: 5px; font-weight: bold;">To Date:</label>
+            <input type="date" id="dateTo" style="padding: 8px 12px; border: 2px solid #e1e8ed; border-radius: 6px; font-size: 16px;">
+          </div>
+          <button id="viewRangeAttendance" class="btn" style="padding: 8px 16px; background: #ffc107; color: #000;">View Range</button>
+          <button id="viewAllAttendance" class="btn" style="padding: 8px 16px; background: #17a2b8;">View All</button>
+        </div>
+      </div>
+
+      <!-- Attendance Summary -->
+      <div id="attendanceSummary" style="display: none; margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.9); border-radius: 8px;">
+        <h4>Attendance Summary</h4>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div class="summary-item">
+            <span class="summary-label">Total Classes:</span>
+            <span class="summary-value" id="totalClasses">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Present:</span>
+            <span class="summary-value present" id="presentCount">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Absent:</span>
+            <span class="summary-value absent" id="absentCount">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Attendance %:</span>
+            <span class="summary-value" id="attendancePercentage">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="attendance">
+        <!-- Attendance will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    let allAttendanceData = [];
+
+    // Load attendance data after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAllAttendance();
+    });
+
+    // Load all attendance data
+    async function loadAllAttendance() {
+      try {
+        const response = await fetch('/attendance', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          allAttendanceData = await response.json();
+          displayAttendanceSummary(allAttendanceData);
+          displayAttendanceRecords(allAttendanceData);
+        } else {
+          document.getElementById('attendance').innerHTML = '<p>Error loading attendance records.</p>';
+        }
+      } catch (error) {
+        console.error('Error loading attendance:', error);
+        document.getElementById('attendance').innerHTML = '<p>Error loading attendance records.</p>';
+      }
+    }
+
+    // Display attendance summary
+    function displayAttendanceSummary(data) {
+      const totalClasses = data.length;
+      const presentCount = data.filter(record => record.status === 'present').length;
+      const absentCount = data.filter(record => record.status === 'absent').length;
+      const attendancePercentage = totalClasses > 0 ? Math.round((presentCount / totalClasses) * 100) : 0;
+
+      // Update summary display
+      document.getElementById('totalClasses').textContent = totalClasses;
+      document.getElementById('presentCount').textContent = presentCount;
+      document.getElementById('absentCount').textContent = absentCount;
+      document.getElementById('attendancePercentage').textContent = attendancePercentage + '%';
+
+      // Show summary only if there's data
+      if (totalClasses > 0) {
+        document.getElementById('attendanceSummary').style.display = 'block';
+      } else {
+        document.getElementById('attendanceSummary').style.display = 'none';
+      }
+
+      // Add performance indicator
+      updatePerformanceIndicator(attendancePercentage);
+    }
+
+    // Update performance indicator based on percentage
+    function updatePerformanceIndicator(percentage) {
+      const percentageElement = document.getElementById('attendancePercentage');
+      percentageElement.className = 'summary-value'; // Reset classes
+
+      if (percentage >= 85) {
+        percentageElement.classList.add('excellent');
+      } else if (percentage >= 75) {
+        percentageElement.classList.add('good');
+      } else if (percentage >= 60) {
+        percentageElement.classList.add('average');
+      } else {
+        percentageElement.classList.add('poor');
+      }
+    }
+
+    // Display attendance records
+    function displayAttendanceRecords(data) {
+      if (data.length === 0) {
+        document.getElementById('attendance').innerHTML = '<p>No attendance records found.</p>';
+        return;
+      }
+
+      let html = '<div class="attendance-list">';
+      data.forEach(record => {
+        // Display date without timezone conversion to avoid off-by-one display errors
+        const dateStr = record.date.split('T')[0]; // Get YYYY-MM-DD part only
+        const dateParts = dateStr.split('-');
+        const date = `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`; // MM/DD/YYYY format
+        const isAbsent = record.status === 'absent';
+
+        html += `
+          <div class="attendance-item ${isAbsent ? 'absent' : 'present'}">
+            <div class="attendance-header">
+              <strong>${record.subject_name}</strong>
+              <span class="attendance-date">${date}</span>
+            </div>
+            <div class="attendance-details">
+              <span class="attendance-status ${record.status.toLowerCase()}">${record.status}</span>
+              ${isAbsent ? `
+                <div class="absent-actions">
+                  <button class="upload-proof-btn" onclick="uploadAttendanceProof('${record.date}', '${record.subject_name}')">
+                    📎 Upload Proof
+                  </button>
+                  <div class="proof-status" id="proof-status-${record.date.replace(/-/g, '')}">
+                    No proof uploaded
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      document.getElementById('attendance').innerHTML = html;
+    }
+
+    // View attendance for specific date
+    document.getElementById('viewAttendance').addEventListener('click', function() {
+      const selectedDate = document.getElementById('attendanceDate').value;
+
+      if (!selectedDate) {
+        alert('Please select a date');
+        return;
+      }
+
+      const filteredData = allAttendanceData.filter(record => {
+        // Parse date without timezone conversion to avoid off-by-one errors
+        const recordDateStr = record.date.split('T')[0]; // Get YYYY-MM-DD part only
+        console.log('Comparing:', recordDateStr, '===', selectedDate, 'Result:', recordDateStr === selectedDate);
+        return recordDateStr === selectedDate;
+      });
+
+      console.log('Selected date:', selectedDate);
+      console.log('Filtered data count:', filteredData.length);
+      if (filteredData.length > 0) {
+        console.log('First record date:', filteredData[0].date);
+      }
+
+      if (filteredData.length === 0) {
+        document.getElementById('attendance').innerHTML = `<p>No attendance records found for ${new Date(selectedDate).toLocaleDateString()}.</p>`;
+        document.getElementById('attendanceSummary').style.display = 'none';
+      } else {
+        displayAttendanceSummary(filteredData);
+        displayAttendanceRecords(filteredData);
+      }
+    });
+
+    // View month attendance
+    document.getElementById('viewMonthAttendance').addEventListener('click', function() {
+      const selectedMonth = document.getElementById('monthSelect').value;
+      const selectedYear = document.getElementById('yearSelect').value;
+
+      if (!selectedMonth || !selectedYear) {
+        alert('Please select both month and year');
+        return;
+      }
+
+      const filteredData = allAttendanceData.filter(record => {
+        // Parse date without timezone conversion to avoid off-by-one errors
+        const recordDateStr = record.date.split('T')[0]; // Get YYYY-MM-DD part only
+        const recordDate = new Date(recordDateStr + 'T00:00:00'); // Create date at midnight local time
+        const recordMonth = String(recordDate.getMonth() + 1).padStart(2, '0');
+        const recordYear = String(recordDate.getFullYear());
+
+        return recordMonth === selectedMonth && recordYear === selectedYear;
+      });
+
+      if (filteredData.length === 0) {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+        const monthName = monthNames[parseInt(selectedMonth) - 1];
+        document.getElementById('attendance').innerHTML = `<p>No attendance records found for ${monthName} ${selectedYear}.</p>`;
+        document.getElementById('attendanceSummary').style.display = 'none';
+      } else {
+        displayAttendanceSummary(filteredData);
+        displayAttendanceRecords(filteredData);
+      }
+    });
+
+    // View range attendance
+    document.getElementById('viewRangeAttendance').addEventListener('click', function() {
+      const dateFrom = document.getElementById('dateFrom').value;
+      const dateTo = document.getElementById('dateTo').value;
+
+      if (!dateFrom || !dateTo) {
+        alert('Please select both from and to dates');
+        return;
+      }
+
+      if (new Date(dateFrom) > new Date(dateTo)) {
+        alert('From date cannot be later than to date');
+        return;
+      }
+
+      const filteredData = allAttendanceData.filter(record => {
+        // Parse date without timezone conversion to avoid off-by-one errors
+        const recordDateStr = record.date.split('T')[0]; // Get YYYY-MM-DD part only
+        return recordDateStr >= dateFrom && recordDateStr <= dateTo;
+      });
+
+      if (filteredData.length === 0) {
+        document.getElementById('attendance').innerHTML = `<p>No attendance records found between ${new Date(dateFrom).toLocaleDateString()} and ${new Date(dateTo).toLocaleDateString()}.</p>`;
+        document.getElementById('attendanceSummary').style.display = 'none';
+      } else {
+        displayAttendanceSummary(filteredData);
+        displayAttendanceRecords(filteredData);
+      }
+    });
+
+    // View all attendance
+    document.getElementById('viewAllAttendance').addEventListener('click', function() {
+      displayAttendanceSummary(allAttendanceData);
+      displayAttendanceRecords(allAttendanceData);
+    });
+
+    // Upload attendance proof function
+    async function uploadAttendanceProof(date, subjectName) {
+      // Create file input
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.pdf,.jpg,.jpeg,.png,.doc,.docx';
+      input.style.display = 'none';
+
+      input.onchange = async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size must be less than 5MB');
+          return;
+        }
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('title', `Attendance Proof - ${subjectName} (${date})`);
+        formData.append('type', 'attendance_proof');
+        formData.append('proofDate', date);
+        formData.append('subjectName', subjectName);
+
+        try {
+          const response = await fetch('/upload-attendance-proof', {
+            method: 'POST',
+            headers: { 'Authorization': localStorage.getItem('token') },
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert('Attendance proof uploaded successfully!');
+            const statusElement = document.getElementById(`proof-status-${date.replace(/-/g, '')}`);
+            if (statusElement) {
+              statusElement.innerHTML = '✅ Proof uploaded';
+              statusElement.style.color = '#28a745';
+            }
+          } else {
+            alert('Error uploading proof: ' + (result.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error uploading proof:', error);
+          alert('Error uploading attendance proof');
+        }
+      };
+
+      // Trigger file selection
+      document.body.appendChild(input);
+      input.click();
+      document.body.removeChild(input);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Student Documents</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - My Documents</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="assignments.html">Assignments</a></li>
+        <li><a href="attendance.html">Attendance</a></li>
+        <li><a href="marks.html">Marks</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Upload Document</h3>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input type="text" id="title" required>
+        </div>
+        <div class="form-group">
+          <label for="file">File:</label>
+          <input type="file" id="file" required>
+        </div>
+        <button type="submit" class="btn">Upload</button>
+      </form>
+      <div id="message"></div>
+
+      <h3>My Documents</h3>
+      <div id="documents"></div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Load documents after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDocuments();
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('title', document.getElementById('title').value);
+      formData.append('file', document.getElementById('file').files[0]);
+      const response = await fetch('/upload-document', {
+        method: 'POST',
+        headers: { 'Authorization': localStorage.getItem('token') },
+        body: formData
+      });
+      const data = await response.json();
+      document.getElementById('message').innerText = data.message || data.error;
+      loadDocuments(); // Reload documents after upload
+    });
+
+    // Load documents
+    function loadDocuments() {
+      fetch('/documents', {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.length === 0) {
+          document.getElementById('documents').innerHTML = '<p>No documents available.</p>';
+        } else {
+          let html = '<div class="documents-list">';
+          data.forEach(doc => {
+            const date = new Date(doc.uploaded_at || doc.created_at).toLocaleDateString();
+            const isAdmin = doc.source === 'admin';
+
+            html += `
+              <div class="document-card ${isAdmin ? 'admin-document' : 'student-document'}">
+                <div class="document-header">
+                  <h4>${doc.title}</h4>
+                  <span class="document-source ${isAdmin ? 'admin-source' : 'student-source'}">
+                    ${isAdmin ? '📄 Admin Document' : '📝 Your Document'}
+                  </span>
+                </div>
+                <div class="document-info">
+                  <p><strong>File:</strong> ${doc.original_filename}</p>
+                  <p><strong>Uploaded:</strong> ${date}</p>
+                  ${isAdmin && doc.sender_name ? `<p><strong>From:</strong> ${doc.sender_name}</p>` : ''}
+                </div>
+                <div class="document-actions">
+                  <button onclick="downloadFile('${isAdmin ? 'admin-document' : 'document'}', ${doc.id})" class="btn download-btn">
+                    📥 Download
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          html += '</div>';
+          document.getElementById('documents').innerHTML = html;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading documents:', error);
+        document.getElementById('documents').innerHTML = '<p>Error loading documents.</p>';
+      });
+    }
+
+    // Load documents on page load
+    loadDocuments();
+
+    // Download file function
+    async function downloadFile(type, id) {
+      try {
+        const response = await fetch(`/download/${type}/${id}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(error.error || 'Download failed');
+          return;
+        }
+
+        const blob = await response.blob();
+
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'download';
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename="([^"]+)"/);
+          if (matches) filename = matches[1];
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download error:', error);
+        alert('Download failed');
+      }
+    }
+  </script>
+</body>
+</html>

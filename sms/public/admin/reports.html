@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Reports</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Reports & Analytics</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>System Reports & Analytics</h3>
+
+      <div class="reports-section">
+        <h4>Quick Statistics</h4>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h5>Total Students</h5>
+            <div id="totalStudents">-</div>
+          </div>
+          <div class="stat-card">
+            <h5>Total Admins</h5>
+            <div id="totalAdmins">-</div>
+          </div>
+          <div class="stat-card">
+            <h5>Total Subjects</h5>
+            <div id="totalSubjects">-</div>
+          </div>
+          <div class="stat-card">
+            <h5>Active Assignments</h5>
+            <div id="totalAssignments">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reports-section">
+        <h4>Student Distribution by Semester</h4>
+        <div id="semesterChart">-</div>
+      </div>
+
+      <div class="reports-section">
+        <h4>Recent Activity</h4>
+        <div id="recentActivity">-</div>
+      </div>
+
+      <div class="reports-section">
+        <h4>Export Reports</h4>
+        <button onclick="exportReport('students')" class="btn">Export Student Report</button>
+        <button onclick="exportReport('attendance')" class="btn">Export Attendance Report</button>
+        <button onclick="exportReport('grades')" class="btn">Export Grades Report</button>
+        <div id="exportMessage"></div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Load statistics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadStatistics();
+      loadSemesterDistribution();
+      loadRecentActivity();
+    });
+
+    // Load system statistics
+    async function loadStatistics() {
+      try {
+        // Get total students
+        const studentsResponse = await fetch('/admin/users?userType=students', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const students = await studentsResponse.json();
+        document.getElementById('totalStudents').textContent = students.length;
+
+        // Get total admins
+        const adminsResponse = await fetch('/admin/users?userType=admins', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const admins = await adminsResponse.json();
+        document.getElementById('totalAdmins').textContent = admins.length;
+
+        // Get total subjects
+        const subjectsResponse = await fetch('/admin/classes', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const subjects = await subjectsResponse.json();
+        document.getElementById('totalSubjects').textContent = subjects.length;
+
+        // Get total assignments
+        const assignmentsResponse = await fetch('/admin/assignments', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const assignments = await assignmentsResponse.json();
+        document.getElementById('totalAssignments').textContent = assignments.length;
+
+      } catch (error) {
+        console.error('Error loading statistics:', error);
+      }
+    }
+
+    // Load semester distribution
+    async function loadSemesterDistribution() {
+      try {
+        const response = await fetch('/admin/users?userType=students', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const students = await response.json();
+
+        const semesterCount = {};
+        students.forEach(student => {
+          const semester = student.semester || 'Unknown';
+          semesterCount[semester] = (semesterCount[semester] || 0) + 1;
+        });
+
+        let html = '<div class="semester-distribution">';
+        Object.keys(semesterCount).sort().forEach(semester => {
+          html += `<div class="semester-item">
+            <span>Semester ${semester}:</span>
+            <span>${semesterCount[semester]} students</span>
+          </div>`;
+        });
+        html += '</div>';
+
+        document.getElementById('semesterChart').innerHTML = html;
+
+      } catch (error) {
+        console.error('Error loading semester distribution:', error);
+        document.getElementById('semesterChart').innerHTML = 'Error loading data';
+      }
+    }
+
+    // Load recent activity
+    async function loadRecentActivity() {
+      try {
+        // This would typically fetch from an activity log table
+        // For now, show recent user additions
+        const response = await fetch('/admin/users?userType=all', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const users = await response.json();
+
+        // Sort by ID (assuming higher ID = more recent)
+        const recentUsers = users
+          .sort((a, b) => b.id - a.id)
+          .slice(0, 5);
+
+        let html = '<ul class="activity-list">';
+        recentUsers.forEach(user => {
+          const role = user.role === 'admin' ? 'Admin' : 'Student';
+          html += `<li>${role} "${user.name}" added to system</li>`;
+        });
+        html += '</ul>';
+
+        document.getElementById('recentActivity').innerHTML = html;
+
+      } catch (error) {
+        console.error('Error loading recent activity:', error);
+        document.getElementById('recentActivity').innerHTML = 'Error loading data';
+      }
+    }
+
+    // Export reports
+    async function exportReport(type) {
+      try {
+        let endpoint = '';
+        let filename = '';
+
+        switch (type) {
+          case 'students':
+            endpoint = '/admin/export-users';
+            filename = 'student_report.csv';
+            break;
+          case 'attendance':
+            // This would need a new endpoint for attendance reports
+            alert('Attendance report export coming soon');
+            return;
+          case 'grades':
+            // This would need a new endpoint for grades reports
+            alert('Grades report export coming soon');
+            return;
+        }
+
+        const response = await fetch(endpoint, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          document.getElementById('exportMessage').innerText = error.error || 'Export failed';
+          return;
+        }
+
+        const blob = await response.blob();
+
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let downloadFilename = filename;
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename="([^"]+)"/);
+          if (matches) downloadFilename = matches[1];
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = downloadFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        document.getElementById('exportMessage').innerText = 'Report exported successfully';
+
+      } catch (error) {
+        console.error('Export error:', error);
+        document.getElementById('exportMessage').innerText = 'Export failed';
+      }
+    }
+  </script>
+</body>
+</html>

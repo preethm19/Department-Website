@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Student Notifications</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - My Notifications</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="assignments.html">Assignments</a></li>
+        <li><a href="attendance.html">Attendance</a></li>
+        <li><a href="marks.html">Marks</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>My Notifications</h3>
+      <div id="notifications">
+        <!-- Notifications will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Load notifications after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNotifications();
+    });
+
+    // Load notifications
+    function loadNotifications() {
+      fetch('/notifications', {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.length === 0) {
+          document.getElementById('notifications').innerHTML = '<p>No notifications.</p>';
+        } else {
+          let html = '<div class="notifications-list">';
+          data.forEach(notification => {
+            const date = new Date(notification.created_at).toLocaleDateString();
+            const time = new Date(notification.created_at).toLocaleTimeString();
+
+            if (notification.source === 'admin') {
+              // Admin notification format
+              html += `
+                <div class="notification-card admin-notification">
+                  <div class="notification-header">
+                    <h4>${notification.title || 'Admin Notification'}</h4>
+                    <span class="notification-source">From: ${notification.sender_name || 'Admin'}</span>
+                  </div>
+                  <div class="notification-content">
+                    <p>${notification.message}</p>
+                  </div>
+                  <div class="notification-footer">
+                    <small>Sent: ${date} at ${time}</small>
+                  </div>
+                </div>
+              `;
+            } else {
+              // Student notification format (original system)
+              html += `
+                <div class="notification-card student-notification">
+                  <div class="notification-header">
+                    <h4>System Notification</h4>
+                    <span class="notification-type">${notification.type || 'General'}</span>
+                  </div>
+                  <div class="notification-content">
+                    <p>${notification.message}</p>
+                  </div>
+                  <div class="notification-footer">
+                    <small>Sent: ${date} at ${time}</small>
+                  </div>
+                </div>
+              `;
+            }
+          });
+          html += '</div>';
+          document.getElementById('notifications').innerHTML = html;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading notifications:', error);
+        document.getElementById('notifications').innerHTML = '<p>Error loading notifications.</p>';
+      });
+    }
+  </script>
+</body>
+</html>

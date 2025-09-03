@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Student Profile</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Student Profile</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="assignments.html">Assignments</a></li>
+        <li><a href="attendance.html">Attendance</a></li>
+        <li><a href="marks.html">Marks</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Your Profile</h3>
+      <div id="profile">
+        <!-- Profile info will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/student.js"></script>
+  <script>
+    // Load profile after authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfile();
+    });
+
+    // Load profile
+    function loadProfile() {
+      fetch('/profile', {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          document.getElementById('profile').innerHTML = `
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>USN:</strong> ${data.usn}</p>
+            <p><strong>Semester:</strong> ${data.semester}</p>
+            <p><strong>Phone:</strong> ${data.phone}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Date of Birth:</strong> ${data.dob}</p>
+          `;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading profile:', error);
+      });
+    }
+  </script>
+</body>
+</html>

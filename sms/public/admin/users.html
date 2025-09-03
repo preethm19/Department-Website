@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Users</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Manage Users</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>User Management Tools</h3>
+      <p>Use these tools to add users to the system</p>
+
+      <h3>Bulk Import Students</h3>
+      <div class="bulk-import">
+        <p><button onclick="downloadCSV()" class="btn">Download Current Users CSV</button></p>
+        <form id="bulkImportForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="csvFile">Select CSV File:</label>
+            <input type="file" id="csvFile" accept=".csv" required>
+          </div>
+          <button type="submit" class="btn">Import Students</button>
+        </form>
+        <div id="importMessage"></div>
+      </div>
+
+      <h3>Create New Admin</h3>
+      <form id="createAdminForm">
+        <div class="form-group">
+          <label for="adminName">Name:</label>
+          <input type="text" id="adminName" required>
+        </div>
+        <div class="form-group">
+          <label for="adminEmail">Email:</label>
+          <input type="email" id="adminEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Password:</label>
+          <input type="password" id="adminPassword" required>
+        </div>
+        <button type="submit" class="btn">Create Admin</button>
+      </form>
+      <div id="adminMessage"></div>
+
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Bulk import form handler
+    document.getElementById('bulkImportForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('csvFile', document.getElementById('csvFile').files[0]);
+
+      const response = await fetch('/admin/bulk-import', {
+        method: 'POST',
+        headers: { 'Authorization': localStorage.getItem('token') },
+        body: formData
+      });
+
+      const data = await response.json();
+      document.getElementById('importMessage').innerText = data.message;
+
+      if (response.ok) {
+        // Reload users list
+        location.reload();
+      }
+    });
+
+    // Create admin form handler
+    document.getElementById('createAdminForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('adminName').value;
+      const email = document.getElementById('adminEmail').value;
+      const password = document.getElementById('adminPassword').value;
+
+      const response = await fetch('/admin/create-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token')
+        },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await response.json();
+      document.getElementById('adminMessage').innerText = data.message || data.error;
+
+      if (response.ok) {
+        // Clear form
+        document.getElementById('createAdminForm').reset();
+        // Reload users list
+        location.reload();
+      }
+    });
+
+    // Download CSV function
+    async function downloadCSV() {
+      try {
+        const response = await fetch('/admin/export-users', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(error.error || 'CSV download failed');
+          return;
+        }
+
+        const blob = await response.blob();
+
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'Current_users.csv';
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename="([^"]+)"/);
+          if (matches) filename = matches[1];
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('CSV download error:', error);
+        alert('CSV download failed');
+      }
+    }
+  </script>
+</body>
+</html>

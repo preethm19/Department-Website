@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>MIT AI SMS - Student Dashboard</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/logo.png">
+  <link rel="icon" type="image/x-icon" href="../images/logo.png">
+  <link rel="shortcut icon" type="image/x-icon" href="../images/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/logo.png">
+  <link rel="icon" sizes="192x192" href="../images/logo.png">
+  <meta name="msapplication-TileImage" content="../images/logo.png">
+  <meta name="msapplication-TileColor" content="#4f46e5">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Student Dashboard</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="classes.html">Classes</a></li>
+        <li><a href="attendance.html">Attendance</a></li>
+        <li><a href="marks.html">Marks</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Welcome to your dashboard</h3>
+      <p>Select an option from the menu to view details.</p>
+
+      <!-- Quick Access Cards -->
+      <div class="dashboard-cards">
+        <div class="dashboard-card" onclick="window.location.href='notifications.html'">
+          <h4>📢 Notifications</h4>
+          <p>View admin announcements and system messages</p>
+          <div id="notificationCount" class="notification-badge">0</div>
+        </div>
+
+        <div class="dashboard-card" onclick="window.location.href='assignments.html'">
+          <h4>📝 Assignments</h4>
+          <p>Check your pending assignments</p>
+        </div>
+
+        <div class="dashboard-card" onclick="window.location.href='marks.html'">
+          <h4>📊 Marks</h4>
+          <p>View your academic performance</p>
+        </div>
+
+        <div class="dashboard-card" onclick="window.location.href='attendance.html'">
+          <h4>📅 Attendance</h4>
+          <p>Check your attendance record</p>
+        </div>
+
+        <div class="dashboard-card" onclick="window.location.href='documents.html'">
+          <h4>📄 Documents</h4>
+          <p>View admin documents and your uploads</p>
+          <div id="documentCount" class="notification-badge">0</div>
+        </div>
+      </div>
+
+      <!-- Recent Notifications Preview -->
+      <div class="recent-notifications">
+        <h4>Recent Notifications</h4>
+        <div id="recentNotificationsPreview">-</div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/student.js"></script>
+  <script>
+    // Register service worker for security
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../sw.js')
+        .then(registration => {
+          console.log('Service Worker registered for student dashboard');
+        })
+        .catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+    }
+  </script>
+  <script>
+    // Immediate authentication check before anything loads
+    (function() {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+
+      if (!token || !role || role !== 'student') {
+        // Clear any cached data immediately
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('sms_token');
+        localStorage.removeItem('sms_role');
+        localStorage.removeItem('user_usn');
+
+        // Redirect immediately without loading the page
+        window.location.replace('http://localhost:8080/');
+        return;
+      }
+    })();
+
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Force fresh authentication check - no delay
+      checkAuthentication();
+
+      // Prevent browser back button access
+      window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+          // Page was loaded from cache, force refresh
+          window.location.reload(true);
+        }
+      });
+
+      // Replace current history entry to prevent back navigation
+      if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+      }
+
+      // Clear cache on page unload
+      window.addEventListener('beforeunload', function() {
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            names.forEach(name => {
+              caches.delete(name);
+            });
+          });
+        }
+      });
+
+      // Additional protection: Clear localStorage on visibility change
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+          // Page is hidden, clear cache
+          if ('caches' in window) {
+            caches.keys().then(names => {
+              names.forEach(name => {
+                caches.delete(name);
+              });
+            });
+          }
+        }
+      });
+
+      // Additional check for cached pages
+      if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
+        // This was a back/forward navigation, force authentication check
+        setTimeout(checkAuthentication, 50);
+      }
+    });
+
+    // Check if user is authenticated
+    function checkAuthentication() {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+
+      console.log('Auth check - Token:', !!token, 'Role:', role);
+
+      if (!token || !role || role !== 'student') {
+        console.log('Auth failed - missing token or wrong role');
+        // No token or wrong role found, redirect to login
+        clearAllAuthData();
+        window.location.replace('http://localhost:8080/');
+        return;
+      }
+
+      // Verify token is still valid with server
+      fetch('/profile', {
+        headers: { 'Authorization': token },
+        cache: 'no-cache'
+      })
+      .then(response => {
+        console.log('Profile response status:', response.status);
+        if (!response.ok) {
+          console.log('Token invalid, redirecting to main site');
+          // Token is invalid, clear it and redirect
+          clearAllAuthData();
+          window.location.replace('http://localhost:8080/');
+          return;
+        }
+        console.log('Token valid, loading dashboard');
+        // Token is valid, load dashboard data
+        loadNotificationCount();
+        loadRecentNotifications();
+        loadDocumentCount();
+        loadRecentDocuments();
+      })
+      .catch(error => {
+        console.error('Auth check failed:', error);
+        // On error, clear tokens and redirect
+        clearAllAuthData();
+        window.location.replace('http://localhost:8080/');
+      });
+    }
+
+    // Clear all authentication data
+    function clearAllAuthData() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('sms_token');
+      localStorage.removeItem('sms_role');
+      localStorage.removeItem('user_usn');
+
+      // Clear browser cache
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            caches.delete(name);
+          });
+        });
+      }
+    }
+
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Load notification count
+    async function loadNotificationCount() {
+      try {
+        const response = await fetch('/notifications', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          const notifications = await response.json();
+          const count = notifications.length;
+          document.getElementById('notificationCount').textContent = count;
+
+          // Add visual indicator for new notifications
+          if (count > 0) {
+            document.getElementById('notificationCount').classList.add('has-notifications');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading notification count:', error);
+      }
+    }
+
+    // Load recent notifications preview
+    async function loadRecentNotifications() {
+      try {
+        const response = await fetch('/notifications', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          const notifications = await response.json();
+          const recentNotifications = notifications.slice(0, 3); // Show last 3
+
+          if (recentNotifications.length === 0) {
+            document.getElementById('recentNotificationsPreview').innerHTML = '<p>No recent notifications</p>';
+          } else {
+            let html = '';
+            recentNotifications.forEach(notification => {
+              const date = new Date(notification.created_at).toLocaleDateString();
+              const isAdmin = notification.source === 'admin';
+
+              html += `
+                <div class="notification-preview ${isAdmin ? 'admin-preview' : 'student-preview'}">
+                  <div class="preview-header">
+                    <strong>${notification.title || 'System Notification'}</strong>
+                    <small>${date}</small>
+                  </div>
+                  <p>${notification.message.substring(0, 100)}${notification.message.length > 100 ? '...' : ''}</p>
+                </div>
+              `;
+            });
+            html += '<p><a href="notifications.html" class="view-all-link">View all notifications →</a></p>';
+            document.getElementById('recentNotificationsPreview').innerHTML = html;
+          }
+        } else {
+          document.getElementById('recentNotificationsPreview').innerHTML = '<p>Error loading notifications</p>';
+        }
+      } catch (error) {
+        console.error('Error loading recent notifications:', error);
+        document.getElementById('recentNotificationsPreview').innerHTML = '<p>Error loading notifications</p>';
+      }
+    }
+
+    // Load document count
+    async function loadDocumentCount() {
+      try {
+        const response = await fetch('/documents', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          const documents = await response.json();
+          const count = documents.length;
+          document.getElementById('documentCount').textContent = count;
+
+          // Add visual indicator for documents
+          if (count > 0) {
+            document.getElementById('documentCount').classList.add('has-notifications');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading document count:', error);
+      }
+    }
+
+    // Load recent documents preview
+    async function loadRecentDocuments() {
+      try {
+        const response = await fetch('/documents', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          const documents = await response.json();
+          const recentDocuments = documents.slice(0, 3); // Show last 3
+
+          if (recentDocuments.length === 0) {
+            // If no documents, don't show the section
+            return;
+          }
+
+          // Add recent documents section after notifications
+          const notificationsSection = document.querySelector('.recent-notifications');
+          const documentsSection = document.createElement('div');
+          documentsSection.className = 'recent-notifications';
+          documentsSection.innerHTML = `
+            <h4>Recent Documents</h4>
+            <div id="recentDocumentsPreview"></div>
+          `;
+
+          notificationsSection.parentNode.insertBefore(documentsSection, notificationsSection.nextSibling);
+
+          let html = '';
+          recentDocuments.forEach(doc => {
+            const date = new Date(doc.uploaded_at || doc.created_at).toLocaleDateString();
+            const isAdmin = doc.source === 'admin';
+
+            html += `
+              <div class="document-preview ${isAdmin ? 'admin-preview' : 'student-preview'}">
+                <div class="preview-header">
+                  <strong>${doc.title}</strong>
+                  <small>${date}</small>
+                </div>
+                <p><em>${doc.original_filename}</em></p>
+                ${isAdmin ? '<small style="color: #28a745;">📄 Admin Document</small>' : '<small style="color: #007bff;">📝 Your Document</small>'}
+              </div>
+            `;
+          });
+          html += '<p><a href="documents.html" class="view-all-link">View all documents →</a></p>';
+          document.getElementById('recentDocumentsPreview').innerHTML = html;
+        }
+      } catch (error) {
+        console.error('Error loading recent documents:', error);
+      }
+    }
+  </script>
+</body>
+</html>

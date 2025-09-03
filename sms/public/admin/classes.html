@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AI SMS - Admin Subjects</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Maharaja Institute Of Technology</h1>
+      <h2>AI Department - Manage Subjects</h2>
+      <button id="logout" class="btn">Logout</button>
+    </header>
+    <nav>
+      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
+      <ul class="nav-list" id="navList">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="users.html">Manage Users</a></li>
+        <li><a href="classes.html">Manage Subjects</a></li>
+        <li><a href="assignments.html">Manage Assignments</a></li>
+        <li><a href="materials.html">Manage Materials</a></li>
+        <li><a href="attendance.html">Mark Attendance</a></li>
+        <li><a href="grades.html">Upload Results</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="notifications.html">Send Notifications</a></li>
+        <li><a href="documents.html">Documents</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h3>Create New Subject</h3>
+      <form id="createSubjectForm">
+        <div class="form-group">
+          <label for="subjectCode">Subject Code:</label>
+          <input type="text" id="subjectCode" placeholder="e.g., CS101, MATH201" required>
+        </div>
+        <div class="form-group">
+          <label for="subjectName">Subject Name:</label>
+          <input type="text" id="subjectName" placeholder="e.g., Introduction to Programming" required>
+        </div>
+        <div class="form-group">
+          <label for="subjectDescription">Description:</label>
+          <textarea id="subjectDescription" placeholder="Brief description of the subject" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="subjectSemester">Semester:</label>
+          <select id="subjectSemester" required>
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+          </select>
+        </div>
+        <button type="submit" class="btn">Create Subject</button>
+      </form>
+      <div id="createMessage"></div>
+
+      <h3>All Subjects</h3>
+      <div id="subjects">
+        <!-- Subjects will be loaded here -->
+      </div>
+    </main>
+  </div>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Mobile navigation toggle
+    function toggleNav() {
+      const navList = document.getElementById('navList');
+      navList.classList.toggle('show');
+    }
+
+    // Semester selector
+    const semesterSelector = document.createElement('div');
+    semesterSelector.className = 'semester-selector';
+    semesterSelector.innerHTML = `
+      <label for="filterSemester">Filter by Semester:</label>
+      <select id="filterSemester">
+        <option value="all">All Semesters</option>
+        <option value="1">Semester 1</option>
+        <option value="2">Semester 2</option>
+        <option value="3">Semester 3</option>
+        <option value="4">Semester 4</option>
+        <option value="5">Semester 5</option>
+        <option value="6">Semester 6</option>
+        <option value="7">Semester 7</option>
+        <option value="8">Semester 8</option>
+      </select>
+    `;
+
+    // Insert semester selector before the subjects section
+    const subjectsHeading = document.querySelector('h3:last-of-type');
+    subjectsHeading.parentNode.insertBefore(semesterSelector, subjectsHeading);
+
+    // Load subjects function
+    function loadSubjects(semester = 'all') {
+      fetch(`/admin/classes?semester=${semester}`, {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.length === 0) {
+          document.getElementById('subjects').innerHTML = '<p>No subjects found for selected semester.</p>';
+        } else {
+          let html = '<div class="subjects-grid">';
+          data.forEach(subject => {
+            html += `
+              <div class="subject-card">
+                <div class="subject-header">
+                  <h4>${subject.subject_code || 'N/A'} - ${subject.name}</h4>
+                  <span class="semester-badge">Semester ${subject.semester}</span>
+                </div>
+                <div class="subject-info">
+                  <p><strong>Description:</strong> ${subject.description}</p>
+                  <p><strong>Department:</strong> ${subject.department || 'AI'}</p>
+                </div>
+                <div class="subject-actions">
+                  <button onclick="editSubject(${subject.id}, '${subject.subject_code || ''}', '${subject.name.replace(/'/g, "\\'")}', '${subject.description.replace(/'/g, "\\'")}', ${subject.semester})" class="btn edit-btn">
+                    ✏️ Edit
+                  </button>
+                  <button onclick="deleteSubject(${subject.id}, '${subject.name.replace(/'/g, "\\'")}')" class="btn delete-btn">
+                    🗑️ Delete
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          html += '</div>';
+          document.getElementById('subjects').innerHTML = html;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading subjects:', error);
+        document.getElementById('subjects').innerHTML = '<p>Error loading subjects.</p>';
+      });
+    }
+
+    // Initial load
+    loadSubjects();
+
+    // Semester filter change handler
+    document.getElementById('filterSemester').addEventListener('change', function() {
+      const selectedSemester = this.value;
+      loadSubjects(selectedSemester);
+    });
+
+    // Create subject form handler
+    document.getElementById('createSubjectForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const subjectCode = document.getElementById('subjectCode').value;
+      const name = document.getElementById('subjectName').value;
+      const description = document.getElementById('subjectDescription').value;
+      const semester = document.getElementById('subjectSemester').value;
+
+      const response = await fetch('/admin/classes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token')
+        },
+        body: JSON.stringify({ name, description, subjectCode, semester })
+      });
+
+      const data = await response.json();
+      document.getElementById('createMessage').innerText = data.message || data.error;
+
+      if (response.ok) {
+        // Clear form
+        document.getElementById('createSubjectForm').reset();
+        // Reload subjects
+        loadSubjects(document.getElementById('filterSemester').value);
+      }
+    });
+
+    // Edit subject function
+    async function editSubject(id, subjectCode, name, description, semester) {
+      // Create edit modal
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Edit Subject</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form id="editSubjectForm">
+              <div class="form-group">
+                <label for="editSubjectCode">Subject Code:</label>
+                <input type="text" id="editSubjectCode" value="${subjectCode}" placeholder="e.g., CS101, MATH201" required>
+              </div>
+              <div class="form-group">
+                <label for="editSubjectName">Subject Name:</label>
+                <input type="text" id="editSubjectName" value="${name}" placeholder="e.g., Introduction to Programming" required>
+              </div>
+              <div class="form-group">
+                <label for="editSubjectDescription">Description:</label>
+                <textarea id="editSubjectDescription" placeholder="Brief description of the subject" required>${description}</textarea>
+              </div>
+              <div class="form-group">
+                <label for="editSubjectSemester">Semester:</label>
+                <select id="editSubjectSemester" required>
+                  <option value="">Select Semester</option>
+                  <option value="1" ${semester === 1 ? 'selected' : ''}>Semester 1</option>
+                  <option value="2" ${semester === 2 ? 'selected' : ''}>Semester 2</option>
+                  <option value="3" ${semester === 3 ? 'selected' : ''}>Semester 3</option>
+                  <option value="4" ${semester === 4 ? 'selected' : ''}>Semester 4</option>
+                  <option value="5" ${semester === 5 ? 'selected' : ''}>Semester 5</option>
+                  <option value="6" ${semester === 6 ? 'selected' : ''}>Semester 6</option>
+                  <option value="7" ${semester === 7 ? 'selected' : ''}>Semester 7</option>
+                  <option value="8" ${semester === 8 ? 'selected' : ''}>Semester 8</option>
+                </select>
+              </div>
+              <div class="modal-actions">
+                <button type="submit" class="btn">Update Subject</button>
+                <button type="button" class="btn cancel-btn" onclick="closeModal()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      // Handle edit form submission
+      document.getElementById('editSubjectForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const updatedSubjectCode = document.getElementById('editSubjectCode').value;
+        const updatedName = document.getElementById('editSubjectName').value;
+        const updatedDescription = document.getElementById('editSubjectDescription').value;
+        const updatedSemester = document.getElementById('editSubjectSemester').value;
+
+        try {
+          const response = await fetch(`/admin/classes/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+              name: updatedName,
+              description: updatedDescription,
+              subjectCode: updatedSubjectCode,
+              semester: updatedSemester
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            alert('Subject updated successfully!');
+            closeModal();
+            loadSubjects(document.getElementById('filterSemester').value);
+          } else {
+            alert(data.error || 'Failed to update subject');
+          }
+        } catch (error) {
+          console.error('Error updating subject:', error);
+          alert('Error updating subject');
+        }
+      });
+    }
+
+    // Delete subject function
+    async function deleteSubject(id, name) {
+      const confirmDelete = confirm(
+        `Are you sure you want to delete "${name}"?\n\nThis will also delete:\n• All assignments for this subject\n• All submissions and grades\n• All materials and files\n• All enrollments\n• All attendance records\n\nThis action cannot be undone!`
+      );
+
+      if (!confirmDelete) return;
+
+      try {
+        const response = await fetch(`/admin/classes/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(`Subject "${name}" and all related data deleted successfully!`);
+          loadSubjects(document.getElementById('filterSemester').value);
+        } else {
+          alert(data.error || 'Failed to delete subject');
+        }
+      } catch (error) {
+        console.error('Error deleting subject:', error);
+        alert('Error deleting subject');
+      }
+    }
+
+    // Close modal function
+    function closeModal() {
+      const modal = document.querySelector('.modal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal')) {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
