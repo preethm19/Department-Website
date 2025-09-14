@@ -43,7 +43,17 @@ document.getElementById('logout').addEventListener('click', async () => {
     });
   }
 
-  // Force redirect with cache-busting and replace current history entry
-  const logoutUrl = `http://localhost:3000/?logout=success&t=${Date.now()}`;
-  window.location.replace(logoutUrl);
+  // Fetch the main website URL and redirect with cache-busting
+  fetch('/config')
+    .then(response => response.json())
+    .then(config => {
+      const logoutUrl = `${config.mainWebsiteUrl}/?logout=success&t=${Date.now()}`;
+      window.location.replace(logoutUrl);
+    })
+    .catch(error => {
+      console.error('Failed to fetch config:', error);
+      // Fallback to localhost for development
+      const logoutUrl = `http://localhost:3000/?logout=success&t=${Date.now()}`;
+      window.location.replace(logoutUrl);
+    });
 });

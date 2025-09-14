@@ -129,6 +129,13 @@ app.get('/', (req, res) => {
   res.send('Student Management System API');
 });
 
+// Configuration endpoint for client-side
+app.get('/config', (req, res) => {
+  res.json({
+    mainWebsiteUrl: process.env.MAIN_WEBSITE_URL || 'http://localhost:3000'
+  });
+});
+
 // Authentication middleware
 const authenticate = (req, res, next) => {
   const token = req.header('Authorization');
