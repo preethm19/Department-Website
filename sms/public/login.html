@@ -132,25 +132,6 @@
       font-weight: 500;
     }
 
-    .remember-me {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .remember-me input[type="checkbox"] {
-      width: auto;
-      margin: 0 8px 0 0;
-      accent-color: #4f46e5;
-    }
-
-    .remember-me label {
-      margin: 0;
-      font-size: 14px;
-      color: #6b7280;
-      cursor: pointer;
-    }
-
     .login-btn {
       width: 100%;
       padding: 12px;
@@ -279,28 +260,6 @@
       } else {
         capsLockWarning.style.display = 'none';
       }
-    });
-
-    // Remember Me functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const rememberMeCheckbox = document.getElementById('rememberMe');
-      const usernameInput = document.getElementById('username');
-
-      // Load saved username if Remember Me was checked
-      const savedUsername = localStorage.getItem('rememberedUsername');
-      if (savedUsername) {
-        usernameInput.value = savedUsername;
-        rememberMeCheckbox.checked = true;
-      }
-
-      // Save username when form is submitted
-      document.getElementById('loginForm').addEventListener('submit', function() {
-        if (rememberMeCheckbox.checked) {
-          localStorage.setItem('rememberedUsername', usernameInput.value);
-        } else {
-          localStorage.removeItem('rememberedUsername');
-        }
-      });
     });
 
     // Error message handling
