@@ -60,13 +60,13 @@ const requireAuth = (req, res, next) => {
   // If no token in header, redirect to main website
   if (!token) {
     console.log('No token in Authorization header, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL);
   }
 
   // Check if token is blacklisted
   if (tokenBlacklist.has(token)) {
     console.log('Token blacklisted, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL);
   }
 
   // Verify token validity
@@ -76,7 +76,7 @@ const requireAuth = (req, res, next) => {
     next();
   } catch (err) {
     console.log('Invalid token, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/');
+    return res.redirect(process.env.MAIN_WEBSITE_URL);
   }
 };
 
@@ -174,7 +174,7 @@ app.post('/logout', (req, res) => {
   res.json({
     message: 'Logged out successfully',
     timestamp: new Date().toISOString(),
-    redirect: process.env.MAIN_WEBSITE_URL || 'http://localhost:3000/'
+    redirect: process.env.MAIN_WEBSITE_URL
   });
 });
 
