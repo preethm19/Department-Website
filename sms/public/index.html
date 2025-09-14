@@ -18,10 +18,145 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             scroll-behavior: smooth;
+        }
+
+        /* Loading Animation Styles - Non-Intrusive */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+
+        /* Floating Particles Background Animation */
+        .particle-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.4);
+            animation: floatParticle linear infinite;
+            box-shadow: 0 0 6px rgba(99, 102, 241, 0.2);
+        }
+
+        .particle:nth-child(2n) {
+            background: rgba(139, 92, 246, 0.3);
+            animation-duration: 12s;
+            animation-delay: -2s;
+        }
+
+        .particle:nth-child(3n) {
+            background: rgba(59, 130, 246, 0.35);
+            animation-duration: 10s;
+            animation-delay: -4s;
+        }
+
+        .particle:nth-child(4n) {
+            background: rgba(168, 85, 247, 0.25);
+            animation-duration: 14s;
+            animation-delay: -6s;
+        }
+
+        .particle:nth-child(5n) {
+            background: rgba(79, 70, 229, 0.45);
+            animation-duration: 9s;
+            animation-delay: -3s;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(0px) translateX(0px) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translateY(-100px) translateX(50px) scale(1.1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-50px) translateX(100px) scale(0.9);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateY(-150px) translateX(-50px) scale(1.05);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-200px) translateX(0px) scale(1);
+                opacity: 0.3;
+            }
+        }
+
+        #loading-overlay.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-logo {
+            width: 140px;
+            height: 140px;
+            animation: logoPopup 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            opacity: 0;
+            transform: scale(0.3) translateY(50px);
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            box-shadow:
+                0 0 0 4px rgba(255, 255, 255, 0.1),
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 0 0 2px rgba(255, 255, 255, 0.05);
+        }
+
+        .loading-logo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes logoPopup {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1) rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .loading-logo {
+                width: 100px;
+                height: 100px;
+            }
         }
         
         .gradient-bg {
@@ -169,7 +304,31 @@
 }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50" style="opacity: 0; animation: pageLoad 0.6s ease-out forwards;">
+    <style>
+@keyframes pageLoad {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.main-content {
+  opacity: 0;
+  animation: fadeInSections 1s ease-out 0.6s forwards;
+}
+
+@keyframes fadeInSections {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+    <!-- Loading Animation Overlay - Non-Intrusive -->
+    <div id="loading-overlay">
+        <div class="particle-bg" id="particle-bg"></div>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="MIT AI SMS Logo" class="loading-logo">
+        </div>
+    </div>
     <!-- Navigation -->
     <nav class="fixed w-full bg-white shadow-md z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -898,6 +1057,97 @@
                 }, Math.random() * 300); // Stagger the animations
             });
         });
+
+        // Loading Animation Control - Non-Intrusive
+        (function() {
+            // Safely initialize loading animation without interfering with existing code
+            function initLoadingAnimation() {
+                const loadingOverlay = document.getElementById('loading-overlay');
+
+                // Ensure loading overlay exists before proceeding
+                if (!loadingOverlay) {
+                    console.warn('Loading overlay not found - animation disabled');
+                    return;
+                }
+
+                // Create floating particles
+                createLoadingParticles();
+
+                // Wait for window load to ensure all resources are ready
+                window.addEventListener('load', function() {
+                    startLoadingSequence();
+                });
+
+                // Also start if DOM is ready but window isn't fully loaded (fallback)
+                if (document.readyState === 'complete') {
+                    startLoadingSequence();
+                }
+            }
+
+            // Create floating particles for loading animation
+            function createLoadingParticles() {
+                const particleBg = document.getElementById('particle-bg');
+                if (!particleBg) return;
+
+                const particleCount = 20;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+
+                    // Random size between 3px and 8px
+                    const size = Math.random() * 5 + 3;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+
+                    // Random position within the container
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+
+                    particleBg.appendChild(particle);
+                }
+            }
+
+            function startLoadingSequence() {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                const body = document.body;
+
+                // Ensure overlay is visible
+                loadingOverlay.classList.remove('hide');
+
+                // Small delay before starting reveal animation (let logo animation complete)
+                setTimeout(function() {
+                    // Remove loading overlay with smooth fade
+                    loadingOverlay.classList.add('hide');
+
+                    // Optional: Ensure main website content is visible
+                    setTimeout(function() {
+                        body.style.visibility = 'visible';
+                        body.style.opacity = '1';
+
+                        // Add any final polish touches for main content
+                        initMainContentAnimations();
+                    }, 800); // Match CSS transition duration
+                }, 1800); // Wait for logo animation to complete (1.5s) + small buffer
+            }
+
+            function initMainContentAnimations() {
+                // Safe initialization of any main content animations
+                // This function can be expanded for additional loading effects
+                const mainHero = document.getElementById('home');
+                if (mainHero) {
+                    // Ensure hero section is properly visible
+                    mainHero.style.opacity = '1';
+                }
+            }
+
+            // Initialize loading animation safely
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initLoadingAnimation);
+            } else {
+                initLoadingAnimation();
+            }
+        })();
 
 
     </script>

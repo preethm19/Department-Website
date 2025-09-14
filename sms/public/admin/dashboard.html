@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="admin-panel">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,29 +17,47 @@
   <meta name="msapplication-TileImage" content="../images/logo.png">
   <meta name="msapplication-TileColor" content="#4f46e5">
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Maharaja Institute Of Technology</h1>
-      <h2>AI Department - Admin Dashboard</h2>
-      <button id="logout" class="btn">Logout</button>
-    </header>
-    <nav>
-      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
-      <ul class="nav-list" id="navList">
-        <li><a href="users.html">Manage Users</a></li>
-        <li><a href="classes.html">Manage Subjects</a></li>
-        <li><a href="assignments.html">Manage Assignments</a></li>
-        <li><a href="materials.html">Manage Materials</a></li>
-        <li><a href="attendance.html">Mark Attendance</a></li>
-        <li><a href="grades.html">Upload Results</a></li>
-        <li><a href="reports.html">Reports</a></li>
-        <li><a href="notifications.html">Send Notifications</a></li>
-        <li><a href="documents.html">Documents</a></li>
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar Toggle Button for Mobile -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <!-- Sidebar Navigation -->
+  <div class="admin-sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>MIT Admin</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="dashboard.html" class="active"><span class="icon">📊</span>Dashboard</a></li>
+        <li><a href="users.html"><span class="icon">👥</span>Manage Users</a></li>
+        <li><a href="classes.html"><span class="icon">📚</span>Manage Subjects</a></li>
+        <li><a href="assignments.html"><span class="icon">📝</span>Manage Assignments</a></li>
+        <li><a href="materials.html"><span class="icon">📖</span>Manage Materials</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Mark Attendance</a></li>
+        <li><a href="grades.html"><span class="icon">📈</span>Upload Results</a></li>
+        <li><a href="reports.html"><span class="icon">📋</span>Reports</a></li>
+        <li><a href="notifications.html"><span class="icon">🔔</span>Send Notifications</a></li>
+        <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
     </nav>
-    <main>
+    <div class="sidebar-footer">
+      <button id="logout" class="btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div class="page-transition" id="pageContent">
+      <header class="fade-in-up">
+        <h1>Maharaja Institute Of Technology</h1>
+        <h2>AI Department - Admin Dashboard</h2>
+      </header>
+      <main class="fade-in-up">
       <h3>Welcome to Admin Dashboard</h3>
       <p>Monitor and manage your academic system</p>
 
@@ -87,18 +105,114 @@
     // Initialize dashboard after authentication
     document.addEventListener('DOMContentLoaded', function() {
       initializeDashboard();
+      initializePageTransitions();
     });
 
     // Initialize dashboard after authentication check
     function initializeDashboard() {
       // Initialize other dashboard functions here
+      // Add slight delay for smooth page transition
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
     }
 
-    // Mobile navigation toggle
-    function toggleNav() {
-      const navList = document.getElementById('navList');
-      navList.classList.toggle('show');
+    // Initialize page transitions
+    function initializePageTransitions() {
+      // Add smooth transitions to navigation links
+      const navLinks = document.querySelectorAll('.nav-list a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          // Don't prevent default as we want the navigation to happen
+          // Just add a visual transition effect
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = '';
+          }, 150);
+        });
+      });
+
+      // Add transition effects for interactive elements
+      const buttons = document.querySelectorAll('.btn, .delete-btn');
+      buttons.forEach(button => {
+        if (!button.classList.contains('hover-lift')) {
+          button.classList.add('hover-lift');
+        }
+      });
+
+      // Add browser back/forward navigation support
+      window.addEventListener('popstate', function(event) {
+        handleBrowserNavigation();
+      });
     }
+
+    // Handle browser back/forward navigation
+    function handleBrowserNavigation() {
+      const pageContent = document.getElementById('pageContent');
+
+      // Add fade-out transition before navigation
+      pageContent.classList.remove('show');
+      pageContent.style.opacity = '0';
+
+      // Brief delay before page unloads
+      setTimeout(() => {
+        // Browser will handle the actual navigation
+        // This creates smooth visual transition during navigation
+      }, 200);
+    }
+
+    // Sidebar toggle functionality
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    // Close sidebar when clicking overlay
+    document.getElementById('sidebarOverlay').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+    });
+
+    // Close sidebar on window resize if desktop
+    window.addEventListener('resize', function() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+        sidebar.classList.add('collapsed');
+      } else {
+        sidebar.classList.remove('collapsed');
+      }
+    });
+
+    // Highlight active navigation link
+    function highlightActiveNav() {
+      const currentPath = window.location.pathname.split('/').pop();
+      const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === currentPath) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // Initialize sidebar functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      highlightActiveNav();
+    });
 
     let allUsersData = []; // Store all users data for search functionality
 

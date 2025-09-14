@@ -1,0 +1,1237 @@
+/* ======================================================== */
+/*                   ADMIN PANEL HEADER                     */
+/* ======================================================== */
+
+/* Admin Header - Matches Sidebar Theme */
+.admin-header,
+.admin-panel header[class*="fade-in"] {
+  background: linear-gradient(145deg,
+    #0c1425 0%,     /* Deep navy to match sidebar */
+    #1a2332 25%,    /* Charcoal */
+    #2d3748 50%,    /* Professional gray */
+    #4a5568 75%,    /* Slate gray */
+    #2d3748 100%    /* Dark charcoal */
+  ) !important;
+
+  border-bottom: 3px solid #4299e1 !important;
+  box-shadow:
+    0 8px 20px rgba(66, 153, 225, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.05),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1) !important;
+
+  padding: 25px 40px !important;
+  margin-bottom: 30px !important;
+  position: relative;
+  z-index: 900;
+}
+
+.admin-header::before,
+.admin-panel header[class*="fade-in"]::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(66, 153, 225, 0.5) 20%,
+    rgba(66, 153, 225, 0.8) 50%,
+    rgba(66, 153, 225, 0.5) 80%,
+    transparent 100%
+  ) !important;
+}
+
+/* Admin Header Content */
+.admin-header h1,
+.admin-panel header[class*="fade-in"] h1 {
+  color: #ffffff !important;
+  font-size: 2.2em !important;
+  margin: 0 0 5px 0 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 3px 6px rgba(0,0,0,0.4) !important;
+  letter-spacing: 1px !important;
+  background: linear-gradient(45deg,
+    #ffffff 0%,
+    #f7fafc 20%,
+    #e2e8f0 60%,
+    rgba(66, 153, 225, 0.8) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.admin-header h2,
+.admin-panel header[class*="fade-in"] h2 {
+  color: rgba(66, 153, 225, 0.9) !important;
+  font-size: 1.3em !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Admin Header Actions */
+.admin-header .header-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.admin-header .header-action {
+  background: linear-gradient(135deg,
+    rgba(66, 153, 225, 0.2) 0%,
+    rgba(56, 132, 233, 0.3) 100%
+  ) !important;
+
+  border: 2px solid rgba(66, 153, 225, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3) !important;
+}
+
+.admin-header .header-action:hover {
+  background: linear-gradient(135deg,
+    rgba(66, 153, 225, 0.4) 0%,
+    rgba(56, 132, 233, 0.5) 100%
+  ) !important;
+
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(66, 153, 225, 0.5) !important;
+  border-color: rgba(66, 153, 225, 0.6) !important;
+}
+
+/* Admin Content Area Adjustment */
+.admin-panel .main-content {
+  margin-left: 300px !important;
+  min-height: 100vh;
+  background: linear-gradient(145deg,
+    rgba(248, 250, 252, 0.3) 0%,
+    rgba(241, 245, 249, 0.5) 50%,
+    rgba(235, 242, 250, 0.7) 100%
+  ) !important;
+
+  padding: 30px !important;
+}
+
+.admin-panel .page-transition {
+  background: #ffffff !important;
+  border-radius: 15px !important;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(66, 153, 225, 0.08) !important;
+
+  padding: 30px !important;
+  min-height: calc(100vh - 120px) !important;
+  position: relative;
+  overflow: hidden;
+  opacity: 0 !important;
+  transform: translateY(20px) scale(0.98) !important;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Admin Panel Page Transition Show State - Perfectly Matching Sidebar Theme */
+.admin-panel .page-transition.show {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+
+  /* Perfectly matching admin sidebar theme with blue undertones */
+  background: linear-gradient(145deg,
+    #fefefe 0%,      /* Pure white for readability */
+    #f8fafc 25%,     /* Crisp gray-white */
+    #f1f5f9 50%,     /* Light slate */
+    #f0f8ff 75%,     /* Powder blue */
+    #e8f4fd 100%     /* Sky blue undertone */
+  ) !important;
+
+  /* Enhanced admin blue accent border */
+  border: 2px solid rgba(66, 153, 225, 0.25) !important;
+  border-radius: 15px !important;
+
+  /* Professional shadow matching sidebar theme */
+  box-shadow:
+    0 20px 40px rgba(66, 153, 225, 0.12),
+    0 10px 25px rgba(66, 153, 225, 0.08),
+    inset 0 2px 6px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 6px rgba(66, 153, 225, 0.06) !important;
+}
+
+/* ======================================================== */
+/*                ADMIN PANEL SIDEBAR STYLES                 */
+/* ======================================================== */
+
+/* Admin Sidebar Container - Dark Professional Theme */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: linear-gradient(145deg,
+    #0c1425 0%,     /* Deep navy */
+    #1a2332 25%,    /* Charcoal */
+    #2d3748 50%,    /* Professional gray */
+    #4a5568 75%,    /* Slate gray */
+    #2d3748 100%    /* Dark charcoal */
+  ) !important;
+
+  border-right: 3px solid #4299e1 !important;
+  box-shadow:
+    5px 0 25px rgba(66, 153, 225, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.05),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1) !important;
+
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Admin Sidebar Header - Elegant Professional Design */
+.admin-sidebar .sidebar-header {
+  padding: 25px 20px 20px;
+  background: linear-gradient(135deg,
+    rgba(66, 153, 225, 0.8) 0%,
+    rgba(112, 128, 144, 0.6) 100%
+  ) !important;
+
+  border-bottom: 2px solid rgba(66, 153, 225, 0.3) !important;
+  position: relative;
+  min-height: 90px;
+}
+
+.admin-sidebar .sidebar-header::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(66, 153, 225, 0.5) 20%,
+    rgba(66, 153, 225, 0.8) 50%,
+    rgba(66, 153, 225, 0.5) 80%,
+    transparent 100%
+  ) !important;
+}
+
+/* Admin Welcome Section */
+.admin-sidebar .welcome-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-sidebar .welcome-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9em;
+  margin: 0;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.9;
+}
+
+.admin-sidebar .user-name {
+  color: #ffffff;
+  font-size: 1.2em;
+  margin: 0;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  line-height: 1.2;
+  word-break: break-word;
+  hyphens: auto;
+  background: linear-gradient(45deg,
+    #ffffff 0%,
+    #f7fafc 50%,
+    #e2e8f0 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.admin-sidebar .user-role {
+  color: rgba(66, 153, 225, 0.9);
+  font-size: 0.85em;
+  margin: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 1;
+}
+
+/* Admin Sidebar Header h2 override */
+.admin-sidebar .sidebar-header h2 {
+  color: #ffffff;
+  font-size: 1.3em;
+  margin: 0;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  letter-spacing: 0.5px;
+  background: linear-gradient(45deg,
+    #ffffff 0%,
+    #bee3f8 50%,
+    rgba(66, 153, 225, 0.8) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Admin Navigation Area */
+.admin-sidebar .sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+  background: linear-gradient(180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0.08) 100%
+  ) !important;
+}
+
+.admin-sidebar .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-sidebar .sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.admin-sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(66, 153, 225, 0.4);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.admin-sidebar .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(66, 153, 225, 0.6);
+}
+
+/* Admin Navigation Links */
+.admin-sidebar .sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding: 0 15px;
+}
+
+.admin-sidebar .sidebar-nav li {
+  margin: 8px 0;
+  position: relative;
+}
+
+.admin-sidebar .sidebar-nav li::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(66, 153, 225, 0.4) 0%,
+    rgba(66, 153, 225, 0.6) 50%,
+    rgba(66, 153, 225, 0.4) 100%
+  );
+  border-radius: 2px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar .sidebar-nav li:hover::before {
+  opacity: 1;
+  left: -12px;
+  width: 6px;
+}
+
+/* Admin Navigation Link Base Styles */
+.admin-sidebar .sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px;
+  margin: 4px 8px;
+  color: #e2e8f0;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(66, 153, 225, 0.03) 100%
+  ) !important;
+}
+
+/* Admin Navigation Link Hover State */
+.admin-sidebar .sidebar-nav a:hover {
+  background: linear-gradient(135deg,
+    rgba(66, 153, 225, 0.25) 0%,
+    rgba(56, 132, 233, 0.35) 100%
+  ) !important;
+
+  color: #ffffff !important;
+  transform: translateX(12px) scale(1.02) !important;
+  box-shadow:
+    0 8px 25px rgba(66, 153, 225, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2) !important;
+
+  border: 1px solid rgba(66, 153, 225, 0.5) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-sidebar .sidebar-nav a:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg,
+    rgba(66, 153, 225, 0.8) 0%,
+    rgba(56, 132, 233, 0.9) 50%,
+    rgba(66, 153, 225, 0.8) 100%
+  );
+  opacity: 0.6;
+}
+
+/* Admin Navigation Link Active State */
+.admin-sidebar .sidebar-nav a.active {
+  background: linear-gradient(135deg,
+    #4299e1 0%,
+    #3182ce 50%,
+    #2c5282 100%
+  ) !important;
+
+  color: #ffffff !important;
+  transform: translateX(16px) scale(1.04) !important;
+  box-shadow:
+    0 12px 30px rgba(66, 153, 225, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1) !important;
+
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.admin-sidebar .sidebar-nav a.active::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 60%;
+  background: #ffffff !important;
+  border-radius: 3px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Admin Sidebar Icons */
+.admin-sidebar .sidebar-nav .icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  opacity: 0.85;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+
+  background: linear-gradient(135deg,
+    rgba(66, 153, 225, 0.3) 0%,
+    rgba(56, 132, 233, 0.4) 100%
+  ) !important;
+
+  border-radius: 8px !important;
+  padding: 6px !important;
+  min-width: 35px !important;
+  min-height: 35px !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(66, 153, 225, 0.2) !important;
+}
+
+.admin-sidebar .sidebar-nav a:hover .icon {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  ) !important;
+
+  color: #ffffff !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4) !important;
+}
+
+.admin-sidebar .sidebar-nav a.active .icon {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.9) 100%
+  ) !important;
+
+  color: #2c5282 !important;
+  transform: scale(1.15) !important;
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Admin Sidebar Footer */
+.admin-sidebar .sidebar-footer {
+  padding: 25px;
+  margin-top: auto;
+  background: linear-gradient(5deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(45, 55, 72, 0.8) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  ) !important;
+
+  border-top: 2px solid rgba(66, 153, 225, 0.3) !important;
+}
+
+.admin-sidebar .sidebar-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(66, 153, 225, 0.6) 20%,
+    rgba(66, 153, 225, 0.8) 50%,
+    rgba(66, 153, 225, 0.6) 80%,
+    transparent 100%
+  );
+}
+
+/* Admin Logout Button */
+.admin-sidebar .sidebar-footer .btn {
+  width: 100%;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 10px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(135deg,
+    #dc3545 0%,
+    #e53e3e 50%,
+    #c53030 100%
+  ) !important;
+
+  color: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    0 6px 20px rgba(220, 53, 69, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-sidebar .sidebar-footer .btn:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow:
+    0 12px 30px rgba(220, 53, 69, 0.6),
+    0 0 25px rgba(220, 53, 69, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2) !important;
+
+  background: linear-gradient(135deg,
+    #c53030 0%,
+    #b91c1c 50%,
+    #9b2c2c 100%
+  ) !important;
+}
+
+.admin-sidebar .sidebar-footer .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  transition: left 0.6s;
+}
+
+.admin-sidebar .sidebar-footer .btn:hover::before {
+  left: 100%;
+}
+
+/* ======================================================== */
+/*                  MOBILE RESPONSIVE DESIGN               */
+/* ======================================================== */
+
+@media (max-width: 768px) {
+  /* Admin Header Mobile Optimization */
+  .admin-header,
+  .admin-panel header[class*="fade-in"] {
+    padding: 20px 15px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .admin-header h1,
+  .admin-panel header[class*="fade-in"] h1 {
+    font-size: 1.6em !important;
+    margin-bottom: 8px !important;
+  }
+
+  .admin-header h2,
+  .admin-panel header[class*="fade-in"] h2 {
+    font-size: 1.1em !important;
+  }
+
+  /* Admin Sidebar Mobile Behavior */
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 280px !important;
+    height: 100vh !important;
+    transform: translateX(-100%) !important;
+    z-index: 1200 !important;
+    box-shadow: 4px 0 20px rgba(66, 153, 225, 0.3) !important;
+  }
+
+  .admin-sidebar.show {
+    transform: translateX(0) !important;
+  }
+
+  /* Main Content Mobile Adjustments */
+  .admin-panel .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    padding: 20px 15px !important;
+  }
+
+  /* Page Transition Mobile Optimization */
+  .admin-panel .page-transition {
+    padding: 20px 15px !important;
+    min-height: auto !important;
+    border-radius: 10px !important;
+  }
+
+  .admin-panel .page-transition.show {
+    transform: translateY(0) scale(1) !important;
+  }
+
+  /* Form Elements Mobile Optimization */
+  .admin-panel input[type="text"],
+  .admin-panel input[type="email"],
+  .admin-panel input[type="password"],
+  .admin-panel input[type="date"],
+  .admin-panel input[type="file"],
+  .admin-panel select,
+  .admin-panel textarea {
+    padding: 14px 16px !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    border-radius: 10px !important;
+  }
+
+  .admin-panel input:focus,
+  .admin-panel select:focus,
+  .admin-panel textarea:focus {
+    transform: translateY(-1px) !important;
+  }
+
+  .admin-panel select {
+    background-position: right 14px center !important;
+  }
+
+  /* Mobile Search Optimization */
+  .admin-panel #studentSearch {
+    padding: 14px 20px !important;
+    font-size: 16px !important;
+    border-radius: 30px !important;
+  }
+
+  /* Buttons Mobile Optimization */
+  .admin-panel .btn {
+    padding: 14px 28px !important;
+    font-size: 15px !important;
+    width: 100% !important;
+    max-width: 200px !important;
+    margin: 8px auto !important;
+    display: block !important;
+  }
+
+  /* Table Mobile Responsiveness */
+  .admin-panel .grades-table,
+  .admin-panel .attendance-table {
+    font-size: 14px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .admin-panel table th {
+    padding: 12px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  .admin-panel table td {
+    padding: 14px 10px !important;
+    font-size: 14px !important;
+  }
+
+  /* Cards Mobile Optimization */
+  .admin-panel .subject-card,
+  .admin-panel .notification-card,
+  .admin-panel .document-card,
+  .admin-panel .stat-card {
+    margin: 10px 0 !important;
+    padding: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  .admin-panel .subject-card:hover,
+  .admin-panel .notification-card:hover,
+  .admin-panel .document-card:hover,
+  .admin-panel .stat-card:hover {
+    transform: translateY(-2px) !important;
+  }
+
+  /* Headings Mobile Adjustment */
+  .admin-panel h3 {
+    font-size: 1.3em !important;
+    margin: 0 0 16px 0 !important;
+  }
+
+  .admin-panel h4 {
+    font-size: 1.15em !important;
+    margin: 20px 0 12px 0 !important;
+  }
+
+  /* Stats Card Mobile Layout */
+  .admin-panel .stat-card h5 {
+    font-size: 0.8em !important;
+  }
+
+  .admin-panel .stat-card div:last-child {
+    font-size: 1.8em !important;
+  }
+
+  /* Form Groups Mobile Spacing */
+  .admin-panel .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  .admin-panel .form-group label {
+    font-size: 15px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Remove Desktop-Specific Hover Effects on Mobile */
+  .admin-sidebar .sidebar-nav li::before,
+  .admin-sidebar .sidebar-nav a:hover::after,
+  .admin-sidebar .sidebar-nav a.active::before {
+    display: none !important;
+  }
+
+  .admin-sidebar .sidebar-nav a:hover,
+  .admin-sidebar .sidebar-nav a.active {
+    transform: none !important;
+  }
+
+  .admin-panel .edit-btn,
+  .admin-panel .delete-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+  }
+
+  /* Message Areas Mobile */
+  .admin-panel .success-message,
+  .admin-panel .error-message {
+    font-size: 14px !important;
+    padding: 14px 18px !important;
+  }
+
+  /* Mobile-Specific Sidebar Toggle Button */
+  .admin-sidebar-toggle {
+    display: block !important;
+    position: fixed !important;
+    top: 20px !important;
+    left: 20px !important;
+    z-index: 999 !important;
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    color: white !important;
+    font-size: 18px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    cursor: pointer !important;
+  }
+
+  /* Overlay for Mobile Sidebar */
+  .admin-sidebar-overlay {
+    display: none !important;
+  }
+
+  .admin-sidebar.show + .admin-sidebar-overlay {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1150 !important;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .admin-panel .main-content {
+    padding: 15px 10px !important;
+  }
+
+  .admin-panel .page-transition {
+    padding: 15px 10px !important;
+  }
+
+  .admin-panel h3 {
+    font-size: 1.2em !important;
+  }
+
+  .admin-panel table {
+    font-size: 12px !important;
+  }
+
+  .admin-panel .stat-card div:last-child {
+    font-size: 1.6em !important;
+  }
+}
+
+/* ======================================================== */
+/*                  ADMIN PANEL COMPONENTS                 */
+/* ======================================================== */
+
+/* Admin Panel Form Elements */
+.admin-panel input[type="text"],
+.admin-panel input[type="email"],
+.admin-panel input[type="password"],
+.admin-panel input[type="date"],
+.admin-panel input[type="file"],
+.admin-panel select,
+.admin-panel textarea {
+  width: 100% !important;
+  padding: 12px 16px !important;
+  border: 2px solid rgba(66, 153, 225, 0.2) !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  background: #ffffff !important;
+  color: #2d3748 !important;
+  transition: all 0.3s ease !important;
+
+  box-shadow:
+    0 2px 6px rgba(66, 153, 225, 0.08),
+    inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.admin-panel input:focus,
+.admin-panel select:focus,
+.admin-panel textarea:focus {
+  border-color: #4299e1 !important;
+  box-shadow:
+    0 0 0 3px rgba(66, 153, 225, 0.1),
+    0 4px 12px rgba(66, 153, 225, 0.2) !important;
+
+  outline: none !important;
+  transform: translateY(-1px) !important;
+}
+
+.admin-panel input::placeholder,
+.admin-panel textarea::placeholder {
+  color: rgba(45, 55, 72, 0.6) !important;
+}
+
+/* Admin Panel Form Groups */
+.admin-panel .form-group {
+  margin-bottom: 20px !important;
+}
+
+.admin-panel .form-group label {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #2d3748 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* Admin Panel Buttons */
+.admin-panel .btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 24px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+
+  background: linear-gradient(135deg,
+    #4299e1 0%,
+    #3182ce 100%
+  ) !important;
+
+  color: #ffffff !important;
+  box-shadow:
+    0 4px 14px rgba(66, 153, 225, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-panel .btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 8px 20px rgba(66, 153, 225, 0.4),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2) !important;
+
+  background: linear-gradient(135deg,
+    #3182ce 0%,
+    #2c5282 100%
+  ) !important;
+}
+
+.admin-panel .btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Admin Secondary Buttons */
+.admin-panel .edit-btn {
+  background: linear-gradient(135deg,
+    #48bb78 0%,
+    #38a169 100%
+  ) !important;
+
+  box-shadow:
+    0 4px 14px rgba(72, 187, 120, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-panel .edit-btn:hover {
+  background: linear-gradient(135deg,
+    #38a169 0%,
+    #2f855a 100%
+  ) !important;
+
+  box-shadow:
+    0 8px 20px rgba(72, 187, 120, 0.4),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2) !important;
+}
+
+.admin-panel .delete-btn {
+  background: linear-gradient(135deg,
+    #e53e3e 0%,
+    #c53030 100%
+  ) !important;
+
+  box-shadow:
+    0 4px 14px rgba(229, 62, 62, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-panel .delete-btn:hover {
+  background: linear-gradient(135deg,
+    #c53030 0%,
+    #9b2c2c 100%
+  ) !important;
+
+  box-shadow:
+    0 8px 20px rgba(229, 62, 62, 0.4),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Admin Panel Tables */
+.admin-panel table,
+.admin-panel table th,
+.admin-panel table td {
+  border: 1px solid rgba(66, 153, 225, 0.2) !important;
+  border-radius: 6px !important;
+}
+
+.admin-panel .grades-table,
+.admin-panel .attendance-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 20px 0 !important;
+
+  background: linear-gradient(145deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  ) !important;
+
+  border-radius: 12px !important;
+  overflow: hidden !important;
+
+  box-shadow:
+    0 8px 25px rgba(66, 153, 225, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.admin-panel table th {
+  background: linear-gradient(135deg,
+    #4299e1 0%,
+    #3182ce 50%,
+    #2c5282 100%
+  ) !important;
+
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  padding: 14px 16px !important;
+  text-align: left !important;
+  text-transform: uppercase !important;
+  font-size: 13px !important;
+  letter-spacing: 0.5px !important;
+}
+
+.admin-panel table td {
+  padding: 12px 16px !important;
+  background: #ffffff !important;
+  color: #4a5568 !important;
+  transition: background 0.2s ease !important;
+}
+
+.admin-panel table tr:nth-child(even) td {
+  background: rgba(66, 153, 225, 0.02) !important;
+}
+
+.admin-panel table tr:hover td {
+  background: rgba(66, 153, 225, 0.04) !important;
+}
+
+/* Admin Panel Cards */
+.admin-panel .subject-card,
+.admin-panel .notification-card,
+.admin-panel .document-card {
+  background: linear-gradient(145deg,
+    #ffffff 0%,
+    rgba(66, 153, 225, 0.02) 100%
+  ) !important;
+
+  border: 1px solid rgba(66, 153, 225, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin: 15px 0 !important;
+  transition: all 0.3s ease !important;
+
+  box-shadow:
+    0 4px 16px rgba(66, 153, 225, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+}
+
+.admin-panel .subject-card:hover,
+.admin-panel .notification-card:hover,
+.admin-panel .document-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow:
+    0 8px 25px rgba(66, 153, 225, 0.12),
+    inset 0 2px 4px rgba(255, 255, 255, 0.9) !important;
+
+  border-color: rgba(66, 153, 225, 0.2) !important;
+}
+
+/* Admin Panel Headings */
+.admin-panel h3 {
+  color: #2d3748 !important;
+  font-weight: 800 !important;
+  font-size: 1.5em !important;
+  margin: 0 0 20px 0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 3px solid #4299e1 !important;
+}
+
+.admin-panel h4 {
+  color: #3182ce !important;
+  font-weight: 700 !important;
+  font-size: 1.25em !important;
+  margin: 25px 0 15px 0 !important;
+}
+
+/* Admin Panel Links - General */
+.admin-panel a:not(.admin-sidebar .sidebar-nav a),
+.admin-panel a:link:not(.admin-sidebar .sidebar-nav a),
+.admin-panel a:visited:not(.admin-sidebar .sidebar-nav a) {
+  color: #4299e1 !important;
+  text-decoration: none !important;
+  transition: color 0.3s ease !important;
+  font-weight: 500 !important;
+}
+
+.admin-panel a:hover:not(.admin-sidebar .sidebar-nav a),
+.admin-panel a:focus:not(.admin-sidebar .sidebar-nav a) {
+  color: #2c5282 !important;
+  text-decoration: underline !important;
+}
+
+/* Admin Sidebar Links - NO UNDERLINING */
+.admin-sidebar .sidebar-nav a,
+.admin-sidebar .sidebar-nav a:link,
+.admin-sidebar .sidebar-nav a:visited {
+  color: #e2e8f0 !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.admin-sidebar .sidebar-nav a:hover,
+.admin-sidebar .sidebar-nav a:focus {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+}
+
+.admin-sidebar .sidebar-nav a:active {
+  text-decoration: none !important;
+}
+
+/* Admin Panel Message Areas */
+.admin-panel #uploadMessage,
+.admin-panel #deleteMessage,
+.admin-panel .admin-message,
+.admin-panel .success-message,
+.admin-panel .error-message {
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  margin: 15px 0 !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+}
+
+.admin-panel .success-message {
+  background: linear-gradient(135deg,
+    rgba(72, 187, 120, 0.1) 0%,
+    rgba(56, 178, 172, 0.05) 100%
+  ) !important;
+
+  color: #2f855a !important;
+  border: 1px solid rgba(72, 187, 120, 0.2) !important;
+}
+
+.admin-panel .error-message {
+  background: linear-gradient(135deg,
+    rgba(229, 62, 62, 0.1) 0%,
+    rgba(245, 101, 101, 0.05) 100%
+  ) !important;
+
+  color: #c53030 !important;
+  border: 1px solid rgba(229, 62, 62, 0.2) !important;
+}
+
+/* Admin Panel Stats Cards */
+.admin-panel .stat-card {
+  background: linear-gradient(145deg,
+    #ffffff 0%,
+    rgba(66, 153, 225, 0.03) 100%
+  ) !important;
+
+  border: 1px solid rgba(66, 153, 225, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  text-align: center !important;
+  transition: all 0.3s ease !important;
+
+  box-shadow:
+    0 4px 16px rgba(66, 153, 225, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+.admin-panel .stat-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 8px 25px rgba(66, 153, 225, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+}
+
+.admin-panel .stat-card h5 {
+  color: #4299e1 !important;
+  font-size: 0.85em !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  margin: 0 0 8px 0 !important;
+  letter-spacing: 0.5px !important;
+}
+
+.admin-panel .stat-card div:last-child {
+  font-size: 2em !important;
+  font-weight: 800 !important;
+  color: #2d3748 !important;
+  margin: 0 !important;
+}
+
+/* Admin Panel Search and Filters */
+.admin-panel #studentSearch {
+  width: 100% !important;
+  max-width: none !important;
+  margin-bottom: 20px !important;
+  border-radius: 25px !important;
+  border: 2px solid rgba(66, 153, 225, 0.2) !important;
+  padding: 12px 20px !important;
+}
+
+/* Admin Panel Dropdowns */
+.admin-panel select {
+  appearance: none !important;
+  background-image: url('data:image/svg+xml,%0A%3Csvg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"%3E%3Cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"%3E%3C/path%3E%3C/svg%3E') !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 16px !important;
+  color: #4299e1 !important;
+}
+
+/* ======================================================== */
+/*                  ADMIN SPECIFIC THEMING                  */
+/* ======================================================== */
+
+.admin-panel {
+  /* Admin-specific theme colors for consistency */
+  --admin-primary: #4299e1;
+  --admin-secondary: #3182ce;
+  --admin-accent: #63b3ed;
+  --admin-dark: #2c5282;
+  --admin-darker: #1a365d;
+  --admin-text: #ffffff;
+  --admin-text-secondary: #e2e8f0;
+
+  /* Admin panel body text */
+  --admin-text-primary: #2d3748;
+  --admin-text-muted: #718096;
+  --admin-border: rgba(66, 153, 225, 0.2);
+  --admin-border-hover: rgba(66, 153, 225, 0.4);
+  --admin-shadow: rgba(66, 153, 225, 0.1);
+  --admin-shadow-hover: rgba(66, 153, 225, 0.2);
+}

@@ -10,7 +10,7 @@
 -- ===========================================
 -- 1. DATABASE CREATION
 -- ===========================================
-CREATE DATABASE IF NOT EXISTS sms_db;
+CREATE DATABASE sms_db;
 USE sms_db;
 
 -- ===========================================
@@ -18,7 +18,7 @@ USE sms_db;
 -- ===========================================
 
 -- Users table (students and admins)
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255),
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Subjects table
-CREATE TABLE IF NOT EXISTS subjects (
+CREATE TABLE subjects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   lecturer_id INT,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS subjects (
 );
 
 -- Enrollments table (student-subject relationships)
-CREATE TABLE IF NOT EXISTS enrollments (
+CREATE TABLE enrollments (
   student_id INT,
   subject_id INT,
   PRIMARY KEY (student_id, subject_id),
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS enrollments (
 );
 
 -- Materials table (course materials)
-CREATE TABLE IF NOT EXISTS materials (
+CREATE TABLE materials (
   id INT AUTO_INCREMENT PRIMARY KEY,
   subject_id INT,
   title VARCHAR(255) NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS materials (
 );
 
 -- Assignments table
-CREATE TABLE IF NOT EXISTS assignments (
+CREATE TABLE assignments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   subject_id INT,
   title VARCHAR(255) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS assignments (
 );
 
 -- Submissions table (assignment submissions)
-CREATE TABLE IF NOT EXISTS submissions (
+CREATE TABLE submissions (
   assignment_id INT,
   student_id INT,
   file_path VARCHAR(255),
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 
 -- Attendance table
-CREATE TABLE IF NOT EXISTS attendance (
+CREATE TABLE attendance (
   subject_id INT,
   student_id INT,
   date DATE,
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS attendance (
 );
 
 -- Notifications table (basic notifications)
-CREATE TABLE IF NOT EXISTS notifications (
+CREATE TABLE notifications (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   message TEXT,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 -- Documents table (student documents)
-CREATE TABLE IF NOT EXISTS documents (
+CREATE TABLE documents (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
   title VARCHAR(255) NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS documents (
 -- ===========================================
 
 -- Admin documents table
-CREATE TABLE IF NOT EXISTS admin_documents (
+CREATE TABLE admin_documents (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   type VARCHAR(50) NOT NULL,
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS admin_documents (
 );
 
 -- Enhanced notifications table for admin
-CREATE TABLE IF NOT EXISTS notifications_enhanced (
+CREATE TABLE notifications_enhanced (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   message TEXT NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS notifications_enhanced (
 );
 
 -- Notification recipients table
-CREATE TABLE IF NOT EXISTS notification_recipients (
+CREATE TABLE notification_recipients (
   id INT AUTO_INCREMENT PRIMARY KEY,
   notification_id INT NOT NULL,
   user_id INT NOT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS notification_recipients (
 );
 
 -- Document recipients table
-CREATE TABLE IF NOT EXISTS document_recipients (
+CREATE TABLE document_recipients (
   id INT AUTO_INCREMENT PRIMARY KEY,
   document_id INT NOT NULL,
   user_id INT NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS document_recipients (
 -- ===========================================
 
 -- Results table for IA marks and grades
-CREATE TABLE IF NOT EXISTS results (
+CREATE TABLE results (
   id INT AUTO_INCREMENT PRIMARY KEY,
   student_usn VARCHAR(20) NOT NULL,
   subject_code VARCHAR(20) NOT NULL,

@@ -6,26 +6,47 @@
   <title>MIT AI SMS - Student Attendance</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Maharaja Institute Of Technology</h1>
-      <h2>AI Department - My Attendance</h2>
-      <button id="logout" class="btn">Logout</button>
-    </header>
-    <nav>
-      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
-      <ul class="nav-list" id="navList">
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="classes.html">Classes</a></li>
-        <li><a href="assignments.html">Assignments</a></li>
-        <li><a href="marks.html">Marks</a></li>
-        <li><a href="notifications.html">Notifications</a></li>
-        <li><a href="documents.html">Documents</a></li>
+<body class="student-panel">
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar Toggle Button for Mobile -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <!-- Sidebar Navigation -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="welcome-section">
+        <h3 class="welcome-text">Welcome,</h3>
+        <h2 class="user-name" id="userName">Student</h2>
+        <p class="user-role" id="userRole">Student</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="dashboard.html"><span class="icon">🏠</span>Dashboard</a></li>
+        <li><a href="profile.html"><span class="icon">🙎🏻‍♂️</span>Profile</a></li>
+        <li><a href="classes.html"><span class="icon">📚</span>My Classes</a></li>
+        <li><a href="assignments.html"><span class="icon">📝</span>Assignments</a></li>
+        <li><a href="attendance.html" class="active"><span class="icon">📊</span>Attendance</a></li>
+        <li><a href="marks.html"><span class="icon">🏆</span>My Marks</a></li>
+        <li><a href="notifications.html"><span class="icon">🔔</span>Notifications</a></li>
+        <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
     </nav>
-    <main>
+    <div class="sidebar-footer">
+      <button id="logout" class="btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div class="page-transition" id="pageContent">
+      <header class="fade-in-up">
+        <h1>Maharaja Institute Of Technology</h1>
+        <h2>AI Department - My Attendance</h2>
+      </header>
+      <main class="fade-in-up">
       <h3>My Attendance Records</h3>
 
       <!-- Date Selection -->
@@ -125,8 +146,118 @@
 
     // Load attendance data after authentication
     document.addEventListener('DOMContentLoaded', function() {
+      initializeTransitions();
+      highlightActiveNav();
+      loadUserInfo();
       loadAllAttendance();
     });
+
+    // Load user information for welcome header
+    async function loadUserInfo() {
+      try {
+        // Try to get profile information first
+        const response = await fetch('/profile', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData && userData.name) {
+            // Display user's full name
+            document.getElementById('userName').textContent = userData.name;
+          }
+        } else {
+          // Fallback: Try to decode JWT token for basic info
+          const token = localStorage.getItem('token');
+          if (token) {
+            try {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              if (payload && payload.name) {
+                document.getElementById('userName').textContent = payload.name;
+              } else if (payload && payload.username) {
+                document.getElementById('userName').textContent = payload.username;
+              }
+            } catch (parseError) {
+              console.log('Could not parse token:', parseError);
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Error loading user info:', error);
+        // Keep default "Student" if loading fails
+        document.getElementById('userName').textContent = 'Student';
+      }
+    }
+
+    // Sidebar toggle functionality
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    // Close sidebar when clicking overlay
+    document.getElementById('sidebarOverlay').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+    });
+
+    // Close sidebar on window resize if desktop
+    window.addEventListener('resize', function() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+        sidebar.classList.add('collapsed');
+      } else {
+        sidebar.classList.remove('collapsed');
+      }
+    });
+
+    // Highlight active navigation link
+    function highlightActiveNav() {
+      const currentPath = window.location.pathname.split('/').pop();
+      const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === currentPath) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    // Initialize page transitions
+    function initializeTransitions() {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
+
+      const navLinks = document.querySelectorAll('.nav-list a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => this.style.transform = '', 150);
+        });
+      });
+
+      const buttons = document.querySelectorAll('.btn, .upload-proof-btn');
+      buttons.forEach(button => {
+        if (!button.classList.contains('hover-lift')) {
+          button.classList.add('hover-lift');
+        }
+      });
+    }
 
     // Load all attendance data
     async function loadAllAttendance() {

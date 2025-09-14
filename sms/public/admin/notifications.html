@@ -1,34 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="admin-panel">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Notifications</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Maharaja Institute Of Technology</h1>
-      <h2>AI Department - Send Notifications</h2>
-      <button id="logout" class="btn">Logout</button>
-    </header>
-    <nav>
-      <button class="nav-toggle" onclick="toggleNav()">☰ Menu</button>
-      <ul class="nav-list" id="navList">
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="users.html">Manage Users</a></li>
-        <li><a href="classes.html">Manage Subjects</a></li>
-        <li><a href="assignments.html">Manage Assignments</a></li>
-        <li><a href="materials.html">Manage Materials</a></li>
-        <li><a href="attendance.html">Mark Attendance</a></li>
-        <li><a href="grades.html">Upload Results</a></li>
-        <li><a href="reports.html">Reports</a></li>
-        <li><a href="notifications.html">Send Notifications</a></li>
-        <li><a href="documents.html">Documents</a></li>
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar Toggle Button for Mobile -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <!-- Sidebar Navigation -->
+  <div class="admin-sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>MIT Admin</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="dashboard.html"><span class="icon">📊</span>Dashboard</a></li>
+        <li><a href="users.html"><span class="icon">👥</span>Manage Users</a></li>
+        <li><a href="classes.html"><span class="icon">📚</span>Manage Subjects</a></li>
+        <li><a href="assignments.html"><span class="icon">📝</span>Manage Assignments</a></li>
+        <li><a href="materials.html"><span class="icon">📖</span>Manage Materials</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Mark Attendance</a></li>
+        <li><a href="grades.html"><span class="icon">📈</span>Upload Results</a></li>
+        <li><a href="reports.html"><span class="icon">📋</span>Reports</a></li>
+        <li><a href="notifications.html" class="active"><span class="icon">🔔</span>Send Notifications</a></li>
+        <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
     </nav>
-    <main>
+    <div class="sidebar-footer">
+      <button id="logout" class="btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div class="page-transition" id="pageContent">
+      <header class="fade-in-up">
+        <h1>Maharaja Institute Of Technology</h1>
+        <h2>AI Department - Send Notifications</h2>
+      </header>
+      <main class="fade-in-up">
       <h3>Send Notifications to Users</h3>
 
       <div class="notification-form">
@@ -90,10 +107,52 @@
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Mobile navigation toggle
-    function toggleNav() {
-      const navList = document.getElementById('navList');
-      navList.classList.toggle('show');
+    // Sidebar toggle functionality
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    // Close sidebar when clicking overlay
+    document.getElementById('sidebarOverlay').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+    });
+
+    // Close sidebar on window resize if desktop
+    window.addEventListener('resize', function() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      if (window.innerWidth > 768) {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+        sidebar.classList.add('collapsed');
+      } else {
+        sidebar.classList.remove('collapsed');
+      }
+    });
+
+    // Highlight active navigation link
+    function highlightActiveNav() {
+      const currentPath = window.location.pathname.split('/').pop();
+      const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === currentPath) {
+          link.classList.add('active');
+        }
+      });
     }
 
     // Handle recipient type change
@@ -192,10 +251,34 @@
       }
     });
 
-    // Load notification history on page load
+    // Load content after authentication
     document.addEventListener('DOMContentLoaded', function() {
+      initializeTransitions();
+      highlightActiveNav();
       loadNotificationHistory();
     });
+
+    // Initialize page transitions
+    function initializeTransitions() {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
+
+      const navLinks = document.querySelectorAll('.nav-list a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => this.style.transform = '', 150);
+        });
+      });
+
+      const buttons = document.querySelectorAll('.btn, .edit-btn, .delete-btn');
+      buttons.forEach(button => {
+        if (!button.classList.contains('hover-lift')) {
+          button.classList.add('hover-lift');
+        }
+      });
+    }
 
     // Load notification history
     async function loadNotificationHistory() {
