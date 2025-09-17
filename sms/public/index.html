@@ -868,12 +868,30 @@
 
 
     <script>
-        // Mobile menu toggle
+        // Enhanced Mobile menu toggle with outside click closure
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
+
+        // Toggle menu on button click
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event bubbling
             mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside (on document)
+        document.addEventListener('click', (e) => {
+            // Check if click is outside both menu button and mobile menu
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Handle touch events for mobile devices (iOS Safari compatibility)
+        document.addEventListener('touchstart', (e) => {
+            // Same logic for touch events to ensure compatibility
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
         });
         
 
