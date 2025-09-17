@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 async function testAPI() {
-  const baseURL = 'http://localhost:3000';
+  const baseURL = process.env.MAIN_WEBSITE_URL || 'http://localhost:3000';
   const token = 'your_admin_token_here'; // You'll need to get this from browser
 
   console.log('Testing API endpoints...\n');

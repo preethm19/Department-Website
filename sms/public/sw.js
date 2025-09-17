@@ -52,9 +52,19 @@ self.addEventListener('fetch', event => {
             <!DOCTYPE html>
             <html>
             <head>
-              <meta http-equiv="refresh" content="0;url=http://localhost:3000/">
               <script>
-                window.location.href = 'http://localhost:3000/';
+                // Get main website URL from config endpoint
+                fetch('/config')
+                  .then(response => response.json())
+                  .then(config => {
+                    const mainUrl = config.mainWebsiteUrl || 'http://localhost:3000';
+                    window.location.href = mainUrl;
+                    document.write('<meta http-equiv=\"refresh\" content=\"0;url=' + mainUrl + '\">');
+                  })
+                  .catch(error => {
+                    window.location.href = 'http://localhost:3000/';
+                    document.write('<meta http-equiv=\"refresh\" content=\"0;url=http://localhost:3000/\">');
+                  });
               </script>
             </head>
             <body>Redirecting...</body>

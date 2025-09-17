@@ -13,7 +13,16 @@
     if (!token || !role) {
       console.log('No authentication data found, redirecting to main website');
       clearAllAuthData();
-      window.location.replace('http://localhost:3000/');
+      // Fetch main website URL and redirect
+      fetch('/config')
+        .then(response => response.json())
+        .then(config => {
+          window.location.replace(config.mainWebsiteUrl);
+        })
+        .catch(error => {
+          console.error('Failed to fetch config:', error);
+          window.location.replace('http://localhost:3000/');
+        });
       return false;
     }
 
@@ -21,14 +30,32 @@
     if (isStudentPage && role !== 'student') {
       console.log('Wrong role for student page, redirecting');
       clearAllAuthData();
-      window.location.replace('http://localhost:3000/');
+      // Fetch main website URL and redirect
+      fetch('/config')
+        .then(response => response.json())
+        .then(config => {
+          window.location.replace(config.mainWebsiteUrl);
+        })
+        .catch(error => {
+          console.error('Failed to fetch config:', error);
+          window.location.replace('http://localhost:3000/');
+        });
       return false;
     }
 
     if (isAdminPage && role !== 'admin') {
       console.log('Wrong role for admin page, redirecting');
       clearAllAuthData();
-      window.location.replace('http://localhost:3000/');
+      // Fetch main website URL and redirect
+      fetch('/config')
+        .then(response => response.json())
+        .then(config => {
+          window.location.replace(config.mainWebsiteUrl);
+        })
+        .catch(error => {
+          console.error('Failed to fetch config:', error);
+          window.location.replace('http://localhost:3000/');
+        });
       return false;
     }
 

@@ -18,7 +18,7 @@ const app = express();
 const corsOptions = {
     origin: function (origin, callback) {
         // Get allowed origins from environment variable
-        const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:8080,http://localhost:3000,http://127.0.0.1:8080,http://127.0.0.1:3000';
+        const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:8080,http://127.0.0.1:8080,http://127.0.0.1:3000';
         const allowedOrigins = corsOrigins.split(',').map(url => url.trim());
 
         // Allow requests with no origin (mobile apps, etc.)
