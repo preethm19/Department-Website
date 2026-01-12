@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Notifications</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,118 +50,195 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Send Notifications</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>Send Notifications to Users</h3>
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <button class="tab-button active" onclick="switchTab('send-notification')">
+            <span class="tab-icon">📤</span>
+            Send Notification
+          </button>
+          <button class="tab-button" onclick="switchTab('notification-history')">
+            <span class="tab-icon">📜</span>
+            History
+          </button>
+        </div>
 
-      <div class="notification-form">
-        <form id="sendNotificationForm">
-          <div class="form-group">
-            <label for="notificationTitle">Notification Title:</label>
-            <input type="text" id="notificationTitle" required placeholder="e.g., Assignment Deadline">
+        <!-- Tab 1: Send Notification -->
+        <div id="send-notification" class="tab-content active">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">🔔</div>
+              <div>
+                <h3 class="card-title">Send Notification</h3>
+                <p class="card-description">Send notifications to users</p>
+              </div>
+            </div>
+
+            <form id="sendNotificationForm" class="modern-form">
+              <div class="form-group-modern">
+                <label for="notificationTitle">
+                  <span class="label-icon">📝</span>
+                  Notification Title
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📝</span>
+                  <input type="text" id="notificationTitle" placeholder="e.g., Assignment Deadline" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="notificationMessage">
+                  <span class="label-icon">💬</span>
+                  Message
+                </label>
+                <textarea id="notificationMessage" placeholder="Enter your notification message here..." required
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; min-height: 120px; box-sizing: border-box;"></textarea>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="recipientType">
+                  <span class="label-icon">👥</span>
+                  Send To
+                </label>
+                <select id="recipientType" required
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="">Select Recipients</option>
+                  <option value="all">All Users</option>
+                  <option value="students">All Students</option>
+                  <option value="admins">All Admins</option>
+                  <option value="specific">Specific User</option>
+                </select>
+              </div>
+
+              <div id="specificUserGroup" class="form-group-modern" style="display: none;">
+                <label for="specificUser">
+                  <span class="label-icon">👤</span>
+                  Select User
+                </label>
+                <select id="specificUser"
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="">Select User</option>
+                </select>
+              </div>
+
+              <div id="semesterGroup" class="form-group-modern" style="display: none;">
+                <label for="semesterSelect">
+                  <span class="label-icon">📅</span>
+                  Filter by Semester
+                </label>
+                <select id="semesterSelect"
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="all">All Semesters</option>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                  <option value="8">Semester 8</option>
+                </select>
+              </div>
+
+              <div class="button-group">
+                <button type="reset" class="btn-modern btn-secondary">
+                  <span class="btn-icon">↺</span>
+                  Reset Form
+                </button>
+                <button type="submit" class="btn-modern">
+                  <span class="btn-icon">📤</span>
+                  Send Notification
+                </button>
+              </div>
+            </form>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="notificationMessage">Message:</label>
-            <textarea id="notificationMessage" required rows="4" placeholder="Enter your notification message here..."></textarea>
+        <!-- Tab 2: Notification History -->
+        <div id="notification-history" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📜</div>
+              <div>
+                <h3 class="card-title">Notification History</h3>
+                <p class="card-description">Recent notifications sent</p>
+              </div>
+            </div>
+
+            <div id="notificationHistoryContent">
+              <!-- History will be loaded here -->
+            </div>
           </div>
-
-          <div class="form-group">
-            <label for="recipientType">Send to:</label>
-            <select id="recipientType" required>
-              <option value="">Select Recipients</option>
-              <option value="all">All Users</option>
-              <option value="students">All Students</option>
-              <option value="admins">All Admins</option>
-              <option value="specific">Specific User</option>
-            </select>
-          </div>
-
-          <div class="form-group" id="specificUserGroup" style="display: none;">
-            <label for="specificUser">Select User:</label>
-            <select id="specificUser">
-              <option value="">Select User</option>
-            </select>
-          </div>
-
-          <div class="form-group" id="semesterGroup" style="display: none;">
-            <label for="semesterSelect">Filter by Semester (Students only):</label>
-            <select id="semesterSelect">
-              <option value="all">All Semesters</option>
-              <option value="1">Semester 1</option>
-              <option value="2">Semester 2</option>
-              <option value="3">Semester 3</option>
-              <option value="4">Semester 4</option>
-              <option value="5">Semester 5</option>
-              <option value="6">Semester 6</option>
-              <option value="7">Semester 7</option>
-              <option value="8">Semester 8</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn">Send Notification</button>
-        </form>
-        <div id="notificationMessage"></div>
-      </div>
-
-      <div class="notification-history">
-        <h4>Recent Notifications</h4>
-        <div id="notificationHistory">-</div>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Sidebar toggle functionality
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.tab-button').classList.add('active');
+
+      if (tabId === 'notification-history') {
+        loadNotificationHistory();
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
+    });
+
+    // Sidebar functions
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-
       if (window.innerWidth <= 768) {
         sidebar.classList.toggle('show');
         overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
 
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Handle recipient type change
-    document.getElementById('recipientType').addEventListener('change', function() {
+    // Recipient type change handler
+    document.getElementById('recipientType').addEventListener('change', function () {
       const recipientType = this.value;
       const specificUserGroup = document.getElementById('specificUserGroup');
       const semesterGroup = document.getElementById('semesterGroup');
@@ -174,7 +256,7 @@
       }
     });
 
-    // Load users for specific user selection
+    // Load users for specific selection
     async function loadUsers() {
       try {
         const response = await fetch('/admin/users?userType=all', {
@@ -209,12 +291,12 @@
       const semester = document.getElementById('semesterSelect').value;
 
       if (!title || !message || !recipientType) {
-        document.getElementById('notificationMessage').innerText = 'Please fill in all required fields';
+        showToast('error', 'Missing Fields', 'Please fill in all required fields');
         return;
       }
 
       if (recipientType === 'specific' && !specificUser) {
-        document.getElementById('notificationMessage').innerText = 'Please select a specific user';
+        showToast('error', 'User Required', 'Please select a specific user');
         return;
       }
 
@@ -239,46 +321,18 @@
         const data = await response.json();
 
         if (response.ok) {
-          document.getElementById('notificationMessage').innerText = 'Notification sent successfully!';
+          showToast('success', 'Notification Sent', 'Notification sent successfully!');
           document.getElementById('sendNotificationForm').reset();
-          loadNotificationHistory();
+          document.getElementById('specificUserGroup').style.display = 'none';
+          document.getElementById('semesterGroup').style.display = 'none';
         } else {
-          document.getElementById('notificationMessage').innerText = data.error || 'Failed to send notification';
+          showToast('error', 'Send Failed', data.error || 'Failed to send notification');
         }
       } catch (error) {
         console.error('Error sending notification:', error);
-        document.getElementById('notificationMessage').innerText = 'Error sending notification';
+        showToast('error', 'Send Failed', 'Network error occurred');
       }
     });
-
-    // Load content after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
-      loadNotificationHistory();
-    });
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn, .edit-btn, .delete-btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-    }
 
     // Load notification history
     async function loadNotificationHistory() {
@@ -291,105 +345,38 @@
           const notifications = await response.json();
 
           if (notifications.length === 0) {
-            document.getElementById('notificationHistory').innerHTML = '<p>No notifications sent yet.</p>';
+            document.getElementById('notificationHistoryContent').innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No notifications sent yet.</p>';
           } else {
-            let html = '<div class="notifications-grid">';
+            let html = '<div style="display: grid; gap: 16px; margin-top: 20px;">';
             notifications.slice(0, 10).forEach(notification => {
               const date = new Date(notification.created_at).toLocaleDateString();
               html += `
-                <div class="notification-card">
-                  <div class="notification-header">
-                    <h5>${notification.title || 'Notification'}</h5>
-                    <div class="notification-actions">
-                      <button onclick="editNotification(${notification.id}, '${notification.title}', '${notification.message.replace(/'/g, "\\'")}')" class="btn edit-btn">Edit</button>
-                      <button onclick="deleteNotification(${notification.id}, '${notification.title}')" class="btn delete-btn">Delete</button>
+                <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 12px; padding: 20px;">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <h4 style="color: #1e293b; font-size: 16px; font-weight: 700; margin: 0;">${notification.title || 'Notification'}</h4>
+                    <div style="display: flex; gap: 8px;">
+                      <button onclick="deleteNotification(${notification.id}, '${notification.title}')" style="padding: 6px 12px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 6px; color: white; font-weight: 600; font-size: 12px; cursor: pointer;">
+                        🗑️ Delete
+                      </button>
                     </div>
                   </div>
-                  <div class="notification-content">
-                    <p>${notification.message}</p>
-                  </div>
-                  <div class="notification-footer">
-                    <small>Sent: ${date} | Recipients: ${notification.recipient_type || 'All Users'}</small>
+                  <p style="color: #334155; margin: 0 0 12px 0; line-height: 1.5;">${notification.message}</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid rgba(96, 165, 250, 0.15);">
+                    <span style="color: #64748b; font-size: 12px;">📅 ${date}</span>
+                    <span style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">${notification.recipient_type || 'All Users'}</span>
                   </div>
                 </div>
               `;
             });
             html += '</div>';
-            document.getElementById('notificationHistory').innerHTML = html;
+            document.getElementById('notificationHistoryContent').innerHTML = html;
           }
         } else {
-          document.getElementById('notificationHistory').innerHTML = '<p>Error loading notification history.</p>';
+          document.getElementById('notificationHistoryContent').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading notification history.</p>';
         }
       } catch (error) {
         console.error('Error loading notification history:', error);
-        document.getElementById('notificationHistory').innerHTML = '<p>Error loading notification history.</p>';
-      }
-    }
-
-    // Edit notification
-    async function editNotification(notificationId, currentTitle, currentMessage) {
-      // Create edit modal
-      const modal = document.createElement('div');
-      modal.className = 'modal';
-      modal.innerHTML = `
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>Edit Notification</h3>
-            <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
-          </div>
-          <div class="modal-body">
-            <form id="editNotificationForm">
-              <div class="form-group">
-                <label for="editTitle">Notification Title:</label>
-                <input type="text" id="editTitle" value="${currentTitle}" required>
-              </div>
-              <div class="form-group">
-                <label for="editMessage">Message:</label>
-                <textarea id="editMessage" rows="4" required>${currentMessage}</textarea>
-              </div>
-            </form>
-          </div>
-          <div class="modal-actions">
-            <button onclick="this.closest('.modal').remove()" class="btn">Cancel</button>
-            <button onclick="saveNotificationEdit(${notificationId})" class="btn">Save Changes</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-
-    // Save notification edit
-    async function saveNotificationEdit(notificationId) {
-      const title = document.getElementById('editTitle').value;
-      const message = document.getElementById('editMessage').value;
-
-      if (!title || !message) {
-        alert('Please fill in all fields');
-        return;
-      }
-
-      try {
-        const response = await fetch(`/admin/notifications/${notificationId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.getItem('token')
-          },
-          body: JSON.stringify({ title, message })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          alert('Notification updated successfully!');
-          document.querySelector('.modal').remove();
-          loadNotificationHistory();
-        } else {
-          alert(data.error || 'Failed to update notification');
-        }
-      } catch (error) {
-        console.error('Error updating notification:', error);
-        alert('Error updating notification');
+        document.getElementById('notificationHistoryContent').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading notification history.</p>';
       }
     }
 
@@ -405,17 +392,18 @@
           const data = await response.json();
 
           if (response.ok) {
-            alert('Notification deleted successfully!');
+            showToast('success', 'Deleted', 'Notification deleted successfully!');
             loadNotificationHistory();
           } else {
-            alert(data.error || 'Failed to delete notification');
+            showToast('error', 'Delete Failed', data.error || 'Failed to delete notification');
           }
         } catch (error) {
           console.error('Error deleting notification:', error);
-          alert('Error deleting notification');
+          showToast('error', 'Delete Failed', 'Network error occurred');
         }
       }
     }
   </script>
 </body>
+
 </html>

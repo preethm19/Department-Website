@@ -13,6 +13,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     return;
   }
 
+  // Clear any existing authentication data before login
+  localStorage.clear();
+  sessionStorage.clear();
+
   try {
     const response = await fetch('/login', {
       method: 'POST',
@@ -34,6 +38,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       localStorage.setItem('sms_role', data.role);
 
       console.log('Stored in localStorage - Token:', !!localStorage.getItem('token'), 'Role:', localStorage.getItem('role'));
+
+      // Redirect to appropriate dashboard based on role
 
       if (data.role === 'student') {
         console.log('Redirecting to student dashboard');

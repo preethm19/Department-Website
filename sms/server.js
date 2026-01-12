@@ -16,21 +16,21 @@ const app = express();
 
 // CORS configuration for cross-origin requests from main website
 const corsOptions = {
-    origin: function (origin, callback) {
-        // Get allowed origins from environment variable
-        const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:8080,http://127.0.0.1:8080,http://127.0.0.1:3000';
-        const allowedOrigins = corsOrigins.split(',').map(url => url.trim());
+  origin: function (origin, callback) {
+    // Get allowed origins from environment variable
+    const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:8080,http://127.0.0.1:8080,http://127.0.0.1:3000';
+    const allowedOrigins = corsOrigins.split(',').map(url => url.trim());
 
-        // Allow requests with no origin (mobile apps, etc.)
-        if (!origin || allowedOrigins.some(url => origin.startsWith(url.split(':')[1]))) {
-            callback(null, true);
-        } else {
-            callback(null, true); // Allow all for development - restrict in production
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin || allowedOrigins.some(url => origin.startsWith(url.split(':')[1]))) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all for development - restrict in production
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 app.use(cors(corsOptions));
@@ -38,7 +38,7 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static('uploads'));
 
 // Authentication middleware for protected routes
-const requireAuth = (req, res, next) => {
+const requireAuth = async (req, res, next) => {
   // Allow access to login page and main SMS index
   if (req.path === '/login.html' || req.path === '/index.html' || req.path === '/') {
     return next();
@@ -63,14 +63,15 @@ const requireAuth = (req, res, next) => {
     return res.redirect(process.env.MAIN_WEBSITE_URL);
   }
 
-  // Check if token is blacklisted
-  if (tokenBlacklist.has(token)) {
-    console.log('Token blacklisted, redirecting to main website');
-    return res.redirect(process.env.MAIN_WEBSITE_URL);
-  }
-
-  // Verify token validity
   try {
+    // Check if token is blacklisted in database
+    const blacklisted = await isTokenBlacklisted(token);
+    if (blacklisted) {
+      console.log('Token blacklisted, redirecting to main website');
+      return res.redirect(process.env.MAIN_WEBSITE_URL);
+    }
+
+    // Verify token validity
     const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
     req.user = verified;
     next();
@@ -121,8 +122,69 @@ app.use('/admin/', (req, res, next) => {
 app.use(express.static('public'));
 app.use('/images', express.static('public/images'));
 
-// Token blacklist for logout
-const tokenBlacklist = new Set();
+// Helper function to check if token is blacklisted in database
+const isTokenBlacklisted = (token) => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      'SELECT id FROM token_blacklist WHERE token = ? AND expires_at > NOW()',
+      [token],
+      (err, results) => {
+        if (err) {
+          // If table doesn't exist yet, treat as empty blacklist
+          if (err.code === 'ER_NO_SUCH_TABLE') {
+            console.warn('token_blacklist table does not exist yet. Run migration: mysql -u root -p sms_db < scripts/database/migration_add_token_blacklist.sql');
+            resolve(false); // No blacklist = token is valid
+          } else {
+            console.error('Database error checking token blacklist:', err);
+            resolve(false); // On error, allow access (fail open for availability)
+          }
+        } else {
+          resolve(results.length > 0);
+        }
+      }
+    );
+  });
+};
+
+// Helper function to add token to blacklist
+const blacklistToken = (token, userId, reason = 'logout') => {
+  return new Promise((resolve, reject) => {
+    try {
+      // Decode token to get expiration
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+      const expiresAt = new Date(decoded.exp * 1000);
+
+      db.query(
+        'INSERT INTO token_blacklist (token, user_id, expires_at, reason) VALUES (?, ?, ?, ?)',
+        [token, userId, expiresAt, reason],
+        (err, result) => {
+          if (err) {
+            // If table doesn't exist, log warning but don't fail
+            if (err.code === 'ER_NO_SUCH_TABLE') {
+              console.warn('token_blacklist table does not exist. Token not blacklisted. Run migration to enable persistent blacklist.');
+              resolve({ warning: 'Table does not exist' });
+            } else {
+              console.error('Error blacklisting token:', err);
+              reject(err);
+            }
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+// Cleanup expired tokens periodically (every hour)
+setInterval(() => {
+  db.query('DELETE FROM token_blacklist WHERE expires_at < NOW()', (err) => {
+    if (err) console.error('Error cleaning up expired tokens:', err);
+    else console.log('Expired tokens cleaned up');
+  });
+}, 3600000); // 1 hour
 
 // Basic route
 app.get('/', (req, res) => {
@@ -137,38 +199,78 @@ app.get('/config', (req, res) => {
 });
 
 // Authentication middleware
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const token = req.header('Authorization');
   if (!token) return res.status(401).json({ error: 'Access denied' });
 
-  // Check if token is blacklisted
-  if (tokenBlacklist.has(token)) {
-    return res.status(401).json({ error: 'Token has been invalidated' });
-  }
-
   try {
+    // Check if token is blacklisted in database
+    const blacklisted = await isTokenBlacklisted(token);
+    if (blacklisted) {
+      return res.status(401).json({ error: 'Token has been invalidated' });
+    }
+
+    // Verify token validity
     const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
     req.user = verified;
     next();
   } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired' });
+    }
     res.status(400).json({ error: 'Invalid token' });
   }
 };
 
+// Token validation endpoint for client-side checks
+app.post('/validate-token', async (req, res) => {
+  const token = req.header('Authorization');
+
+  if (!token) {
+    return res.status(401).json({ valid: false, error: 'No token provided' });
+  }
+
+  try {
+    // Check if token is blacklisted
+    const blacklisted = await isTokenBlacklisted(token);
+    if (blacklisted) {
+      return res.status(401).json({ valid: false, error: 'Token has been invalidated' });
+    }
+
+    // Verify token
+    const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+
+    res.json({
+      valid: true,
+      user: {
+        id: verified.id,
+        role: verified.role
+      }
+    });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ valid: false, error: 'Token expired' });
+    }
+    res.status(401).json({ valid: false, error: 'Invalid token' });
+  }
+});
+
 // Enhanced logout endpoint - completely destroy session
-app.post('/logout', (req, res) => {
+app.post('/logout', async (req, res) => {
   const token = req.header('Authorization');
 
   if (token) {
-    // Add token to blacklist to prevent reuse
-    tokenBlacklist.add(token);
-    console.log('Token added to blacklist for logout');
+    try {
+      // Decode token to get user ID
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key', { ignoreExpiration: true });
 
-    // Clear any server-side session data if it exists
-    // In a production environment, you might also:
-    // - Clear session cookies
-    // - Invalidate refresh tokens
-    // - Log the logout event for security auditing
+      // Add token to database blacklist
+      await blacklistToken(token, decoded.id, 'logout');
+      console.log(`Token blacklisted for user ${decoded.id}`);
+    } catch (err) {
+      console.error('Error blacklisting token:', err);
+      // Continue with logout even if blacklisting fails
+    }
   }
 
   // Send comprehensive logout response
@@ -336,12 +438,12 @@ app.post('/admin/classes', authenticate, (req, res) => {
 
   db.query('INSERT INTO subjects (name, description, subject_code, department, semester) VALUES (?, ?, ?, ?, ?)',
     [name, description, subjectCode, process.env.DEPARTMENT || 'AI', semester], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    res.json({ message: 'Subject created successfully', id: result.insertId });
-  });
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      res.json({ message: 'Subject created successfully', id: result.insertId });
+    });
 });
 
 // Update subject
@@ -357,17 +459,17 @@ app.put('/admin/classes/:id', authenticate, (req, res) => {
 
   db.query('UPDATE subjects SET name = ?, description = ?, subject_code = ?, semester = ? WHERE id = ?',
     [name, description, subjectCode, semester, id], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Subject not found' });
-    }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Subject not found' });
+      }
 
-    res.json({ message: 'Subject updated successfully' });
-  });
+      res.json({ message: 'Subject updated successfully' });
+    });
 });
 
 // Delete subject with cascade
@@ -386,66 +488,67 @@ app.delete('/admin/classes/:id', authenticate, (req, res) => {
     // Step 1: Delete submissions (child of assignments)
     db.query('DELETE s FROM submissions s INNER JOIN assignments a ON s.assignment_id = a.id WHERE a.subject_id = ?',
       [id], (err) => {
-      if (err) {
-        console.error('Error deleting submissions:', err);
-        return db.rollback(() => res.status(500).json({ error: 'Failed to delete submissions' }));
-      }
-
-      // Step 2: Delete assignments
-      db.query('DELETE FROM assignments WHERE subject_id = ?', [id], (err) => {
         if (err) {
-          console.error('Error deleting assignments:', err);
-          return db.rollback(() => res.status(500).json({ error: 'Failed to delete assignments' }));
+          console.error('Error deleting submissions:', err);
+          return db.rollback(() => res.status(500).json({ error: 'Failed to delete submissions' }));
         }
 
-        // Step 3: Delete materials
-        db.query('DELETE FROM materials WHERE subject_id = ?', [id], (err) => {
+        // Step 2: Delete assignments
+        db.query('DELETE FROM assignments WHERE subject_id = ?', [id], (err) => {
           if (err) {
-            console.error('Error deleting materials:', err);
-            return db.rollback(() => res.status(500).json({ error: 'Failed to delete materials' }));
+            console.error('Error deleting assignments:', err);
+            return db.rollback(() => res.status(500).json({ error: 'Failed to delete assignments' }));
           }
 
-          // Step 4: Delete enrollments
-          db.query('DELETE FROM enrollments WHERE subject_id = ?', [id], (err) => {
+          // Step 3: Delete materials
+          db.query('DELETE FROM materials WHERE subject_id = ?', [id], (err) => {
             if (err) {
-              console.error('Error deleting enrollments:', err);
-              return db.rollback(() => res.status(500).json({ error: 'Failed to delete enrollments' }));
+              console.error('Error deleting materials:', err);
+              return db.rollback(() => res.status(500).json({ error: 'Failed to delete materials' }));
             }
 
-            // Step 5: Delete attendance records
-            db.query('DELETE FROM attendance WHERE subject_id = ?', [id], (err) => {
+            // Step 4: Delete enrollments
+            db.query('DELETE FROM enrollments WHERE subject_id = ?', [id], (err) => {
               if (err) {
-                console.error('Error deleting attendance:', err);
-                return db.rollback(() => res.status(500).json({ error: 'Failed to delete attendance records' }));
+                console.error('Error deleting enrollments:', err);
+                return db.rollback(() => res.status(500).json({ error: 'Failed to delete enrollments' }));
               }
 
-              // Step 6: Finally delete the subject
-              db.query('DELETE FROM subjects WHERE id = ?', [id], (err, result) => {
+              // Step 5: Delete attendance records
+              db.query('DELETE FROM attendance WHERE subject_id = ?', [id], (err) => {
                 if (err) {
-                  console.error('Error deleting subject:', err);
-                  return db.rollback(() => res.status(500).json({ error: 'Failed to delete subject' }));
+                  console.error('Error deleting attendance:', err);
+                  return db.rollback(() => res.status(500).json({ error: 'Failed to delete attendance records' }));
                 }
 
-                if (result.affectedRows === 0) {
-                  return db.rollback(() => res.status(404).json({ error: 'Subject not found' }));
-                }
-
-                // Commit the transaction
-                db.commit((err) => {
+                // Step 6: Finally delete the subject
+                db.query('DELETE FROM subjects WHERE id = ?', [id], (err, result) => {
                   if (err) {
-                    console.error('Commit error:', err);
-                    return db.rollback(() => res.status(500).json({ error: 'Failed to commit changes' }));
+                    console.error('Error deleting subject:', err);
+                    return db.rollback(() => res.status(500).json({ error: 'Failed to delete subject' }));
                   }
 
-                  res.json({
-                    message: 'Subject and all related data deleted successfully',
-                    deleted: {
-                      subject: 1,
-                      assignments: 'and related submissions',
-                      materials: 'files',
-                      enrollments: 'student enrollments',
-                      attendance: 'records'
+                  if (result.affectedRows === 0) {
+                    return db.rollback(() => res.status(404).json({ error: 'Subject not found' }));
+                  }
+
+                  // Commit the transaction
+                  db.commit((err) => {
+                    if (err) {
+                      console.error('Commit error:', err);
+                      return db.rollback(() => res.status(500).json({ error: 'Failed to commit changes' }));
                     }
+
+                    res.json({
+                      message: 'Subject and all related data deleted successfully',
+                      deleted: {
+                        subject: 1,
+                        assignments: 'and related submissions',
+                        materials: 'files',
+                        enrollments: 'student enrollments',
+                        attendance: 'records'
+                      }
+                    });
                   });
                 });
               });
@@ -453,7 +556,6 @@ app.delete('/admin/classes/:id', authenticate, (req, res) => {
           });
         });
       });
-    });
   });
 });
 
@@ -584,9 +686,9 @@ app.post('/admin/materials', authenticate, upload.single('file'), (req, res) => 
   const original_filename = req.file.originalname;
   db.query('INSERT INTO materials (subject_id, title, file_path, original_filename, uploaded_by) VALUES (?, ?, ?, ?, ?)',
     [subjectId, title, file_path, original_filename, req.user.id], (err, result) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
-    res.json({ message: 'Material uploaded successfully', id: result.insertId });
-  });
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json({ message: 'Material uploaded successfully', id: result.insertId });
+    });
 });
 
 // Get students for attendance (automatic based on subject semester)
@@ -615,9 +717,9 @@ app.get('/admin/attendance/existing', authenticate, (req, res) => {
 
   db.query('SELECT student_id, status FROM attendance WHERE subject_id = ? AND date = ?',
     [subjectId, date], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
-    res.json(results);
-  });
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json(results);
+    });
 });
 
 // Save attendance
@@ -635,26 +737,26 @@ app.post('/admin/attendance', authenticate, (req, res) => {
     attendance.forEach(record => {
       db.query('INSERT INTO attendance (subject_id, student_id, date, status) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?',
         [subjectId, record.studentId, date, record.status, record.status], (err) => {
-        if (err) {
-          db.rollback(() => {
-            res.status(500).json({ error: 'Failed to save attendance' });
-          });
-          return;
-        }
+          if (err) {
+            db.rollback(() => {
+              res.status(500).json({ error: 'Failed to save attendance' });
+            });
+            return;
+          }
 
-        completed++;
-        if (completed === total) {
-          db.commit((err) => {
-            if (err) {
-              db.rollback(() => {
-                res.status(500).json({ error: 'Failed to save attendance' });
-              });
-            } else {
-              res.json({ message: 'Attendance saved successfully' });
-            }
-          });
-        }
-      });
+          completed++;
+          if (completed === total) {
+            db.commit((err) => {
+              if (err) {
+                db.rollback(() => {
+                  res.status(500).json({ error: 'Failed to save attendance' });
+                });
+              } else {
+                res.json({ message: 'Attendance saved successfully' });
+              }
+            });
+          }
+        });
     });
   });
 });
@@ -694,26 +796,26 @@ app.post('/admin/results', authenticate, (req, res) => {
     results.forEach(result => {
       db.query('UPDATE submissions SET result = ? WHERE id = ?',
         [result.result, result.submissionId], (err) => {
-        if (err) {
-          db.rollback(() => {
-            res.status(500).json({ error: 'Failed to save results' });
-          });
-          return;
-        }
+          if (err) {
+            db.rollback(() => {
+              res.status(500).json({ error: 'Failed to save results' });
+            });
+            return;
+          }
 
-        completed++;
-        if (completed === total) {
-          db.commit((err) => {
-            if (err) {
-              db.rollback(() => {
-                res.status(500).json({ error: 'Failed to save results' });
-              });
-            } else {
-              res.json({ message: 'Results saved successfully' });
-            }
-          });
-        }
-      });
+          completed++;
+          if (completed === total) {
+            db.commit((err) => {
+              if (err) {
+                db.rollback(() => {
+                  res.status(500).json({ error: 'Failed to save results' });
+                });
+              } else {
+                res.json({ message: 'Results saved successfully' });
+              }
+            });
+          }
+        });
     });
   });
 });
@@ -851,9 +953,9 @@ app.post('/upload-document', authenticate, upload.single('file'), (req, res) => 
   const original_filename = req.file.originalname;
   db.query('INSERT INTO documents (user_id, title, file_path, original_filename, type) VALUES (?, ?, ?, ?, ?)',
     [req.user.id, title, file_path, original_filename, req.user.role === 'student' ? 'student' : 'lecturer'], (err) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
-    res.json({ message: 'Document uploaded successfully' });
-  });
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json({ message: 'Document uploaded successfully' });
+    });
 });
 
 // Create new admin
@@ -902,21 +1004,21 @@ app.get('/download/:type/:id', authenticate, (req, res) => {
       // Special case for admin documents - need to check access
       db.query('SELECT d.file_path, d.original_filename FROM admin_documents d JOIN document_recipients dr ON d.id = dr.document_id WHERE d.id = ? AND dr.user_id = ?',
         [id, req.user.id], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        if (results.length === 0) return res.status(403).json({ error: 'Access denied' });
+          if (err) return res.status(500).json({ error: 'Database error' });
+          if (results.length === 0) return res.status(403).json({ error: 'Access denied' });
 
-        const { file_path, original_filename } = results[0];
-        const actualPath = file_path.replace('/uploads/', '');
-        const fullPath = require('path').join(__dirname, 'uploads', actualPath);
+          const { file_path, original_filename } = results[0];
+          const actualPath = file_path.replace('/uploads/', '');
+          const fullPath = require('path').join(__dirname, 'uploads', actualPath);
 
-        res.setHeader('Content-Disposition', `attachment; filename="${original_filename}"`);
-        res.sendFile(fullPath, (err) => {
-          if (err) {
-            console.error('File download error:', err);
-            res.status(500).json({ error: 'File download failed' });
-          }
+          res.setHeader('Content-Disposition', `attachment; filename="${original_filename}"`);
+          res.sendFile(fullPath, (err) => {
+            if (err) {
+              console.error('File download error:', err);
+              res.status(500).json({ error: 'File download failed' });
+            }
+          });
         });
-      });
       return; // Exit early for admin documents
     case 'material':
       table = 'materials';
@@ -1135,25 +1237,25 @@ app.post('/admin/send-document', authenticate, upload.single('file'), (req, res)
     // Insert document record
     db.query('INSERT INTO admin_documents (title, recipient_type, file_path, original_filename, uploaded_by) VALUES (?, ?, ?, ?, ?)',
       [title, recipientTypeLabel, file_path, original_filename, req.user.id], (err, result) => {
-      if (err) return res.status(500).json({ error: 'Database error' });
-
-      const documentId = result.insertId;
-
-      // Insert document recipients
-      const recipientValues = recipients.map(recipient => [documentId, recipient.id]);
-      const placeholders = recipientValues.map(() => '(?, ?)').join(', ');
-      const flattenedValues = recipientValues.flat();
-
-      db.query(`INSERT INTO document_recipients (document_id, user_id) VALUES ${placeholders}`,
-        flattenedValues, (err) => {
         if (err) return res.status(500).json({ error: 'Database error' });
 
-        res.json({
-          message: `Document sent to ${recipients.length} recipient(s)`,
-          recipients: recipients.length
-        });
+        const documentId = result.insertId;
+
+        // Insert document recipients
+        const recipientValues = recipients.map(recipient => [documentId, recipient.id]);
+        const placeholders = recipientValues.map(() => '(?, ?)').join(', ');
+        const flattenedValues = recipientValues.flat();
+
+        db.query(`INSERT INTO document_recipients (document_id, user_id) VALUES ${placeholders}`,
+          flattenedValues, (err) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+
+            res.json({
+              message: `Document sent to ${recipients.length} recipient(s)`,
+              recipients: recipients.length
+            });
+          });
       });
-    });
   });
 });
 
@@ -1222,38 +1324,38 @@ app.get('/download/admin-document/:id', authenticate, (req, res) => {
   // Check if user has access to this document
   db.query('SELECT d.file_path, d.original_filename FROM admin_documents d JOIN document_recipients dr ON d.id = dr.document_id WHERE d.id = ? AND dr.user_id = ?',
     [id, req.user.id], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-
-    if (results.length === 0) {
-      console.log('Access denied - no matching document found for user', req.user.id);
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
-    const { file_path, original_filename } = results[0];
-    console.log('File path from DB:', file_path);
-    console.log('Original filename:', original_filename);
-
-    // Remove the /uploads prefix to get the actual file path
-    const actualPath = file_path.replace('/uploads/', '');
-    const fullPath = require('path').join(__dirname, 'uploads', actualPath);
-
-    console.log('Full file path:', fullPath);
-    console.log('File exists:', require('fs').existsSync(fullPath));
-
-    // Set headers for proper download
-    res.setHeader('Content-Disposition', `attachment; filename="${original_filename}"`);
-
-    // Send the file
-    res.sendFile(fullPath, (err) => {
       if (err) {
-        console.error('File download error:', err);
-        res.status(500).json({ error: 'File download failed' });
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Database error' });
       }
+
+      if (results.length === 0) {
+        console.log('Access denied - no matching document found for user', req.user.id);
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      const { file_path, original_filename } = results[0];
+      console.log('File path from DB:', file_path);
+      console.log('Original filename:', original_filename);
+
+      // Remove the /uploads prefix to get the actual file path
+      const actualPath = file_path.replace('/uploads/', '');
+      const fullPath = require('path').join(__dirname, 'uploads', actualPath);
+
+      console.log('Full file path:', fullPath);
+      console.log('File exists:', require('fs').existsSync(fullPath));
+
+      // Set headers for proper download
+      res.setHeader('Content-Disposition', `attachment; filename="${original_filename}"`);
+
+      // Send the file
+      res.sendFile(fullPath, (err) => {
+        if (err) {
+          console.error('File download error:', err);
+          res.status(500).json({ error: 'File download failed' });
+        }
+      });
     });
-  });
 });
 
 // Upload attendance proof
@@ -1281,17 +1383,17 @@ app.post('/upload-attendance-proof', authenticate, upload.single('file'), (req, 
   // Insert attendance proof record
   db.query('INSERT INTO documents (user_id, title, file_path, original_filename, type) VALUES (?, ?, ?, ?, ?)',
     [req.user.id, title, file_path, original_filename, 'attendance_proof'], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
 
-    res.json({
-      message: 'Attendance proof uploaded successfully',
-      documentId: result.insertId,
-      fileName: original_filename
+      res.json({
+        message: 'Attendance proof uploaded successfully',
+        documentId: result.insertId,
+        fileName: original_filename
+      });
     });
-  });
 });
 
 // Send notification endpoint
@@ -1352,25 +1454,25 @@ app.post('/admin/send-notification', authenticate, (req, res) => {
     // Insert notification record
     db.query('INSERT INTO admin_notifications (title, message, sender_id, recipient_type, created_at) VALUES (?, ?, ?, ?, NOW())',
       [title, message, req.user.id, recipientTypeLabel], (err, result) => {
-      if (err) return res.status(500).json({ error: 'Database error' });
-
-      const notificationId = result.insertId;
-
-      // Insert notification recipients
-      const recipientValues = recipients.map(recipient => [notificationId, recipient.id]);
-      const placeholders = recipientValues.map(() => '(?, ?)').join(', ');
-      const flattenedValues = recipientValues.flat();
-
-      db.query(`INSERT INTO admin_notification_recipients (notification_id, user_id) VALUES ${placeholders}`,
-        flattenedValues, (err) => {
         if (err) return res.status(500).json({ error: 'Database error' });
 
-        res.json({
-          message: `Notification sent to ${recipients.length} recipient(s)`,
-          recipients: recipients.length
-        });
+        const notificationId = result.insertId;
+
+        // Insert notification recipients
+        const recipientValues = recipients.map(recipient => [notificationId, recipient.id]);
+        const placeholders = recipientValues.map(() => '(?, ?)').join(', ');
+        const flattenedValues = recipientValues.flat();
+
+        db.query(`INSERT INTO admin_notification_recipients (notification_id, user_id) VALUES ${placeholders}`,
+          flattenedValues, (err) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+
+            res.json({
+              message: `Notification sent to ${recipients.length} recipient(s)`,
+              recipients: recipients.length
+            });
+          });
       });
-    });
   });
 });
 
@@ -1403,17 +1505,17 @@ app.put('/admin/notifications/:id', authenticate, (req, res) => {
 
   db.query('UPDATE admin_notifications SET title = ?, message = ? WHERE id = ? AND sender_id = ?',
     [title, message, id, req.user.id], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Notification not found or access denied' });
-    }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Notification not found or access denied' });
+      }
 
-    res.json({ message: 'Notification updated successfully' });
-  });
+      res.json({ message: 'Notification updated successfully' });
+    });
 });
 
 // Delete notification
@@ -1432,34 +1534,34 @@ app.delete('/admin/notifications/:id', authenticate, (req, res) => {
     // First delete notification recipients
     db.query('DELETE FROM admin_notification_recipients WHERE notification_id = ?',
       [id], (err) => {
-      if (err) {
-        console.error('Error deleting notification recipients:', err);
-        return db.rollback(() => res.status(500).json({ error: 'Failed to delete notification recipients' }));
-      }
-
-      // Then delete the notification itself
-      db.query('DELETE FROM admin_notifications WHERE id = ? AND sender_id = ?',
-        [id, req.user.id], (err, result) => {
         if (err) {
-          console.error('Error deleting notification:', err);
-          return db.rollback(() => res.status(500).json({ error: 'Failed to delete notification' }));
+          console.error('Error deleting notification recipients:', err);
+          return db.rollback(() => res.status(500).json({ error: 'Failed to delete notification recipients' }));
         }
 
-        if (result.affectedRows === 0) {
-          return db.rollback(() => res.status(404).json({ error: 'Notification not found or access denied' }));
-        }
+        // Then delete the notification itself
+        db.query('DELETE FROM admin_notifications WHERE id = ? AND sender_id = ?',
+          [id, req.user.id], (err, result) => {
+            if (err) {
+              console.error('Error deleting notification:', err);
+              return db.rollback(() => res.status(500).json({ error: 'Failed to delete notification' }));
+            }
 
-        // Commit the transaction
-        db.commit((err) => {
-          if (err) {
-            console.error('Commit error:', err);
-            return db.rollback(() => res.status(500).json({ error: 'Failed to commit changes' }));
-          }
+            if (result.affectedRows === 0) {
+              return db.rollback(() => res.status(404).json({ error: 'Notification not found or access denied' }));
+            }
 
-          res.json({ message: 'Notification deleted successfully' });
-        });
+            // Commit the transaction
+            db.commit((err) => {
+              if (err) {
+                console.error('Commit error:', err);
+                return db.rollback(() => res.status(500).json({ error: 'Failed to commit changes' }));
+              }
+
+              res.json({ message: 'Notification deleted successfully' });
+            });
+          });
       });
-    });
   });
 });
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,153 +25,28 @@
             scroll-behavior: smooth;
         }
 
-        /* Loading Animation Styles - Non-Intrusive */
-        #loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.25);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            backdrop-filter: blur(2px);
-            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
-        }
 
-        /* Floating Particles Background Animation */
-        .particle-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(99, 102, 241, 0.4);
-            animation: floatParticle linear infinite;
-            box-shadow: 0 0 6px rgba(99, 102, 241, 0.2);
-        }
-
-        .particle:nth-child(2n) {
-            background: rgba(139, 92, 246, 0.3);
-            animation-duration: 12s;
-            animation-delay: -2s;
-        }
-
-        .particle:nth-child(3n) {
-            background: rgba(59, 130, 246, 0.35);
-            animation-duration: 10s;
-            animation-delay: -4s;
-        }
-
-        .particle:nth-child(4n) {
-            background: rgba(168, 85, 247, 0.25);
-            animation-duration: 14s;
-            animation-delay: -6s;
-        }
-
-        .particle:nth-child(5n) {
-            background: rgba(79, 70, 229, 0.45);
-            animation-duration: 9s;
-            animation-delay: -3s;
-        }
-
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(0px) translateX(0px) scale(1);
-                opacity: 0.3;
-            }
-            25% {
-                transform: translateY(-100px) translateX(50px) scale(1.1);
-                opacity: 0.6;
-            }
-            50% {
-                transform: translateY(-50px) translateX(100px) scale(0.9);
-                opacity: 0.4;
-            }
-            75% {
-                transform: translateY(-150px) translateX(-50px) scale(1.05);
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-200px) translateX(0px) scale(1);
-                opacity: 0.3;
-            }
-        }
-
-        #loading-overlay.hide {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loading-logo {
-            width: 140px;
-            height: 140px;
-            animation: logoPopup 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-            opacity: 0;
-            transform: scale(0.3) translateY(50px);
-            border-radius: 50%;
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            padding: 8px;
-            box-shadow:
-                0 0 0 4px rgba(255, 255, 255, 0.1),
-                0 10px 30px rgba(0, 0, 0, 0.3),
-                inset 0 0 0 2px rgba(255, 255, 255, 0.05);
-        }
-
-        .loading-logo-inner {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        @keyframes logoPopup {
-            0% {
-                opacity: 0;
-                transform: scale(0.3) rotate(0deg);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.1) rotate(180deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(360deg);
-            }
-        }
-
-        @media (max-width: 640px) {
-            .loading-logo {
-                width: 100px;
-                height: 100px;
-            }
-        }
-        
         .gradient-bg {
             background: linear-gradient(-45deg, #3b82f6, #6366f1, #8b5cf6, #ec4899);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
         }
-        
+
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
-        
+
         .particles {
             position: absolute;
             top: 0;
@@ -180,45 +56,52 @@
             z-index: 0;
             overflow: hidden;
         }
-        
+
         .particle {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
             animation: float linear infinite;
         }
-        
+
         @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
         }
-        
+
         .card-hover:hover {
             transform: translateY(-10px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
+
         .fade-in {
             opacity: 0;
             transition: opacity 0.6s ease-in, transform 0.6s ease-in;
         }
-        
+
         .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         .slide-up {
             transform: translateY(50px);
             opacity: 0;
             transition: transform 0.6s ease-out, opacity 0.6s ease-out;
         }
-        
+
         .slide-up.visible {
             transform: translateY(0);
             opacity: 1;
         }
-        
+
         .timeline-item::before {
             content: '';
             position: absolute;
@@ -230,7 +113,7 @@
             background: #4f46e5;
             border: 4px solid #e0e7ff;
         }
-        
+
         .login-modal {
             display: none;
             position: fixed;
@@ -243,92 +126,201 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .login-modal.active {
             display: flex;
         }
 
         .graph-bg {
-  background-color: #fff;
-  background-image:
-    linear-gradient(to right, #00000011 1px, transparent 1px),
-    linear-gradient(to bottom, #00000011 1px, transparent 1px);
-  background-size: 20px 20px;
-}
+            background-color: #fff;
+            background-image:
+                linear-gradient(to right, #00000011 1px, transparent 1px),
+                linear-gradient(to bottom, #00000011 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
 
-.logo-spin-group {
-    perspective: 1000px;
-    display: inline-block;
-    position: relative;
-}
-.logo-spin-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(.4,2,.6,1), opacity 0.5s;
-    opacity: 1;
-    will-change: transform;
-}
-.logo-spin-group:hover .logo-spin-inner {
-    animation: coinSpin 1.8s linear infinite;
-}
-@keyframes coinSpin {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(360deg); }
-}
-.logo-spin-face {
-    backface-visibility: hidden;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0; left: 0;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 6px rgba(255,255,255,0.5), inset 0 0 30px rgba(0,0,0,0.25);
-}
-.logo-spin-front {
-    z-index: 2;
-}
-.logo-spin-back {
-    transform: rotateY(180deg);
-}
-/* Subtle rim to enhance coin-like look */
-.logo-spin-inner::after {
-    content: '';
-    position: absolute;
-    inset: -2%;
-    border-radius: 50%;
-    pointer-events: none;
-    box-shadow: inset 0 0 0 12px rgba(0,0,0,0.12), 0 10px 25px rgba(0,0,0,0.15);
-    mix-blend-mode: multiply;
-}
+        .logo-spin-group {
+            perspective: 1000px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .logo-spin-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(.4, 2, .6, 1), opacity 0.5s;
+            opacity: 1;
+            will-change: transform;
+        }
+
+        .logo-spin-group:hover .logo-spin-inner {
+            animation: coinSpin 1.8s linear infinite;
+        }
+
+        @keyframes coinSpin {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        .logo-spin-face {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            box-shadow: inset 0 0 0 6px rgba(255, 255, 255, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo-spin-front {
+            z-index: 2;
+        }
+
+        .logo-spin-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Subtle rim to enhance coin-like look */
+        .logo-spin-inner::after {
+            content: '';
+            position: absolute;
+            inset: -2%;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 12px rgba(0, 0, 0, 0.12), 0 10px 25px rgba(0, 0, 0, 0.15);
+            mix-blend-mode: multiply;
+        }
+
+        /* Modern Faculty Card Styles */
+        .faculty-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faculty-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .faculty-image-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .faculty-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.3s ease;
+        }
+
+        .faculty-card:hover .faculty-image {
+            transform: scale(1.05);
+        }
+
+        .faculty-info {
+            padding: 24px;
+        }
+
+        .faculty-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .faculty-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .faculty-credentials {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+        }
+
+        .faculty-social {
+            display: flex;
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .faculty-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .faculty-social a:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .faculty-image-container {
+                height: 240px;
+            }
+        }
     </style>
 </head>
+
 <body class="bg-gray-50" style="opacity: 0; animation: pageLoad 0.6s ease-out forwards;">
     <style>
-@keyframes pageLoad {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+        @keyframes pageLoad {
+            from {
+                opacity: 0;
+            }
 
-.main-content {
-  opacity: 0;
-  animation: fadeInSections 1s ease-out 0.6s forwards;
-}
+            to {
+                opacity: 1;
+            }
+        }
 
-@keyframes fadeInSections {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-</style>
+        .main-content {
+            opacity: 0;
+            animation: fadeInSections 1s ease-out 0.6s forwards;
+        }
 
-    <!-- Loading Animation Overlay - Non-Intrusive -->
-    <div id="loading-overlay">
-        <div class="particle-bg" id="particle-bg"></div>
-        <div class="logo-container">
-            <img src="images/logo.png" alt="MIT AI SMS Logo" class="loading-logo">
-        </div>
-    </div>
+        @keyframes fadeInSections {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+
     <!-- Navigation -->
     <nav class="fixed w-full bg-white shadow-md z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -342,31 +334,42 @@
                 <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
                     <a href="#home" class="text-gray-900 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Home</a>
                     <a href="#about" class="text-gray-900 hover:text-indigo-600 px-3 py-2 text-sm font-medium">About</a>
-                    <a href="#faculty" class="text-gray-900 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Faculty</a>
-                    <a href="#achievements" class="text-gray-900 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Achievements</a>
-                    <a href="/login.html" id="login-btn" class="ml-8 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="#faculty"
+                        class="text-gray-900 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Faculty</a>
+                    <a href="#achievements"
+                        class="text-gray-900 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Achievements</a>
+                    <a href="/login.html" id="login-btn"
+                        class="ml-8 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Login
                     </a>
                 </div>
                 <div class="-mr-2 flex items-center md:hidden">
-                    <button type="button" id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                    <button type="button" id="mobile-menu-btn"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                         <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
-        
+
         <!-- Mobile menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#home" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="#about" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">About</a>
-                <a href="#faculty" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Faculty</a>
-                <a href="#achievements" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Achievements</a>
-                <a href="/login.html" id="mobile-login-btn" class="w-full mt-2 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <a href="#home"
+                    class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#about"
+                    class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="#faculty"
+                    class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Faculty</a>
+                <a href="#achievements"
+                    class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Achievements</a>
+                <a href="/login.html" id="mobile-login-btn"
+                    class="w-full mt-2 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Login
                 </a>
             </div>
@@ -374,39 +377,46 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="relative gradient-bg text-white pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden min-h-[100svh] lg:min-h-screen flex items-center">
+    <section id="home"
+        class="relative gradient-bg text-white pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden min-h-[100svh] lg:min-h-screen flex items-center">
         <div class="particles" id="particles"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                 <!-- Image first for mobile, beside text on desktop -->
                 <div class="flex justify-center mb-8 lg:mb-0 lg:col-span-6 items-center order-1 lg:order-2">
                     <div class="logo-spin-group w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-[26rem] lg:h-[26rem]">
-        <div class="logo-spin-inner w-full h-full">
-            <!-- Front face -->
-            <div class="logo-spin-face logo-spin-front w-full h-full rounded-full shadow-lg overflow-hidden absolute top-0 left-0">
-                <img src="images/logo.png" alt="AI Illustration" class="w-full h-full object-cover" />
-            </div>
-            <!-- Back face (same image) -->
-            <div class="logo-spin-face logo-spin-back w-full h-full rounded-full shadow-lg overflow-hidden absolute top-0 left-0">
-                <img src="images/logo.png" alt="AI Illustration" class="w-full h-full object-cover" />
-            </div>
-        </div>
-    </div>
+                        <div class="logo-spin-inner w-full h-full">
+                            <!-- Front face -->
+                            <div
+                                class="logo-spin-face logo-spin-front w-full h-full rounded-full shadow-lg overflow-hidden absolute top-0 left-0">
+                                <img src="images/logo.png" alt="AI Illustration" class="w-full h-full object-cover" />
+                            </div>
+                            <!-- Back face (same image) -->
+                            <div
+                                class="logo-spin-face logo-spin-back w-full h-full rounded-full shadow-lg overflow-hidden absolute top-0 left-0">
+                                <img src="images/logo.png" alt="AI Illustration" class="w-full h-full object-cover" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left order-2 lg:order-1">
                     <h1 class="text-6xl tracking-tight font-extrabold sm:text-3xl md:text-8xl">
                         <span class="block mb-2">Department</span>
                         <span class="block text-indigo-200">Of Artificial Intelligence</span>
                     </h1>
-                    <p class="mt-3 text-base text-gray-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                        Pioneering AI education and research to shape the future of intelligent systems and technologies.
+                    <p
+                        class="mt-3 text-base text-gray-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                        Pioneering AI education and research to shape the future of intelligent systems and
+                        technologies.
                     </p>
                     <div class="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                         <div class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex lg:justify-start">
-                            <a href="#about" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-black bg-white bg-opacity-120 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10 whitespace-nowrap">
+                            <a href="#about"
+                                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-black bg-white bg-opacity-120 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10 whitespace-nowrap">
                                 Explore Department
                             </a>
-                            <a href="#faculty" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-black bg-[#c7d2fe] bg-opacity-120 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10 whitespace-nowrap">
+                            <a href="#faculty"
+                                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-black bg-[#c7d2fe] bg-opacity-120 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10 whitespace-nowrap">
                                 Meet Our Faculty
                             </a>
                         </div>
@@ -418,105 +428,131 @@
 
     <!-- About Section -->
     <section id="about" class="py-16 bg-white graph-bg">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Toggle Buttons -->
-        <div class="flex justify-start mb-6">
-            <button id="about-mitm-btn" class="about-toggle-btn px-4 py-2 rounded-t-lg font-semibold text-indigo-700 bg-indigo-100 border border-b-0 border-indigo-200 focus:outline-none">
-                Our Institute
-            </button>
-            <button id="about-dept-btn" class="about-toggle-btn px-4 py-2 rounded-t-lg font-semibold text-gray-700 bg-gray-100 border border-b-0 border-gray-200 ml-2 focus:outline-none">
-                Our Department
-            </button>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Toggle Buttons -->
+            <div class="flex justify-start mb-6">
+                <button id="about-mitm-btn"
+                    class="about-toggle-btn px-4 py-2 rounded-t-lg font-semibold text-indigo-700 bg-indigo-100 border border-b-0 border-indigo-200 focus:outline-none">
+                    Our Institute
+                </button>
+                <button id="about-dept-btn"
+                    class="about-toggle-btn px-4 py-2 rounded-t-lg font-semibold text-gray-700 bg-gray-100 border border-b-0 border-gray-200 ml-2 focus:outline-none">
+                    Our Department
+                </button>
+            </div>
+            <!-- MITM College Content -->
+            <div id="about-mitm-content" class="about-content bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <h3 class="text-2xl font-bold mb-2">Maharaja Institute of Technology Mysore (MITM)</h3>
+                <p class="mb-4 text-gray-700">
+                    Established in 2007 by MET® in a peaceful, sprawling location away from urban disruption. Founded by
+                    a group of esteemed individuals in Science and Technology, the institute began with 300 seats across
+                    five engineering disciplines. Over the years, it has grown to accommodate over 900 students across
+                    undergraduate, postgraduate, and research programs.
+                </p>
+                <p class="mb-4 text-gray-700">
+                    MITM is known for its quality education, "Teaching Centric" approach, and dedicated faculty. The
+                    institute focuses on innovation, transparency, and high standards of education, with modern
+                    infrastructure and over 50 buses providing transportation within a 60 km radius.
+                </p>
+                <div class="grid md:grid-cols-2 gap-4 mt-6">
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <span
+                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
+                            <i class="fa fa-eye text-lg"></i>
+                        </span>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Our Vision</h4>
+                            <p class="text-gray-700 text-sm">
+                                To be recognized as a premier technical and management institution promoting extensive
+                                education fostering research, innovation and entrepreneurial attitude.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <span
+                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
+                            <i class="fa fa-bullseye text-lg"></i>
+                        </span>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Our Mission</h4>
+                            <ul class="list-disc ml-5 text-gray-700 text-sm">
+                                <li>To empower students with indispensable knowledge through dedicated teaching and
+                                    collaborative learning.</li>
+                                <li>To advance extensive research in science, engineering and management disciplines.
+                                </li>
+                                <li>To facilitate entrepreneurial skills through effective institute-industry
+                                    collaboration.</li>
+                                <li>To instill the need to uphold ethics in every aspect.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100 flex items-center">
+                    <i class="fa fa-external-link-alt text-indigo-500 mr-2"></i>
+                    <span class="font-semibold text-gray-900">University Affiliation</span>
+                    <span class="ml-2 text-gray-700 text-sm">
+                        Affiliated to Visvesvaraya Technological University (VTU), Belagavi and approved by AICTE, New
+                        Delhi
+                    </span>
+                </div>
+            </div>
+            <!-- Department Content -->
+            <div id="about-dept-content"
+                class="about-content bg-white rounded-lg shadow-md p-6 border border-gray-200 hidden">
+                <h3 class="text-2xl font-bold mb-2">About the Department</h3>
+                <p class="mb-4 text-gray-700">
+                    The Department strives for academic excellence, cutting-edge research, and meaningful societal
+                    contributions. With a mission to equip students with strong AI fundamentals, the department
+                    emphasizes practical applications and real-world projects.
+                </p>
+                <p class="mb-4 text-gray-700">
+                    It fosters a collaborative learning environment that encourages innovation, critical thinking, and
+                    ethical practices. By promoting inclusivity and lifelong learning, the department prepares students
+                    for successful careers in AI-driven industries.
+                </p>
+                <div class="grid md:grid-cols-2 gap-4 mt-6">
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <span
+                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
+                            <i class="fa fa-eye text-lg"></i>
+                        </span>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Department Vision</h4>
+                            <p class="text-gray-700 text-sm">
+                                To be recognized as the best center for technical education and research in the field of
+                                information science and engineering.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <span
+                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
+                            <i class="fa fa-bullseye text-lg"></i>
+                        </span>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Department Mission</h4>
+                            <ul class="list-disc ml-5 text-gray-700 text-sm">
+                                <li>To facilitate adequate transformation in students through a proficient teaching
+                                    learning process.</li>
+                                <li>To infuse students with professional, ethical and leadership attributes through
+                                    industry collaboration.</li>
+                                <li>To enhance research and entrepreneurship in associated domains and to facilitate
+                                    real time problem solving.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100 flex items-center">
+                    <i class="fa fa-external-link-alt text-indigo-500 mr-2"></i>
+                    <span class="font-semibold text-gray-900">University Affiliation</span>
+                    <span class="ml-2 text-gray-700 text-sm">
+                        Affiliated to Visvesvaraya Technological University (VTU), Belagavi and approved by AICTE, New
+                        Delhi
+                    </span>
+                </div>
+            </div>
         </div>
-        <!-- MITM College Content -->
-        <div id="about-mitm-content" class="about-content bg-white rounded-lg shadow-md p-6 border border-gray-200">
-            <h3 class="text-2xl font-bold mb-2">Maharaja Institute of Technology Mysore (MITM)</h3>
-            <p class="mb-4 text-gray-700">
-                Established in 2007 by MET® in a peaceful, sprawling location away from urban disruption. Founded by a group of esteemed individuals in Science and Technology, the institute began with 300 seats across five engineering disciplines. Over the years, it has grown to accommodate over 900 students across undergraduate, postgraduate, and research programs.
-            </p>
-            <p class="mb-4 text-gray-700">
-                MITM is known for its quality education, "Teaching Centric" approach, and dedicated faculty. The institute focuses on innovation, transparency, and high standards of education, with modern infrastructure and over 50 buses providing transportation within a 60 km radius.
-            </p>
-            <div class="grid md:grid-cols-2 gap-4 mt-6">
-                <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
-                        <i class="fa fa-eye text-lg"></i>
-                    </span>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-1">Our Vision</h4>
-                        <p class="text-gray-700 text-sm">
-                            To be recognized as a premier technical and management institution promoting extensive education fostering research, innovation and entrepreneurial attitude.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
-                        <i class="fa fa-bullseye text-lg"></i>
-                    </span>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-1">Our Mission</h4>
-                        <ul class="list-disc ml-5 text-gray-700 text-sm">
-                            <li>To empower students with indispensable knowledge through dedicated teaching and collaborative learning.</li>
-                            <li>To advance extensive research in science, engineering and management disciplines.</li>
-                            <li>To facilitate entrepreneurial skills through effective institute-industry collaboration.</li>
-                            <li>To instill the need to uphold ethics in every aspect.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100 flex items-center">
-                <i class="fa fa-external-link-alt text-indigo-500 mr-2"></i>
-                <span class="font-semibold text-gray-900">University Affiliation</span>
-                <span class="ml-2 text-gray-700 text-sm">
-                    Affiliated to Visvesvaraya Technological University (VTU), Belagavi and approved by AICTE, New Delhi
-                </span>
-            </div>
-        </div>
-        <!-- Department Content -->
-        <div id="about-dept-content" class="about-content bg-white rounded-lg shadow-md p-6 border border-gray-200 hidden">
-            <h3 class="text-2xl font-bold mb-2">About the Department</h3>
-            <p class="mb-4 text-gray-700">
-                The Department strives for academic excellence, cutting-edge research, and meaningful societal contributions. With a mission to equip students with strong AI fundamentals, the department emphasizes practical applications and real-world projects.
-            </p>
-            <p class="mb-4 text-gray-700">
-                It fosters a collaborative learning environment that encourages innovation, critical thinking, and ethical practices. By promoting inclusivity and lifelong learning, the department prepares students for successful careers in AI-driven industries.
-            </p>
-            <div class="grid md:grid-cols-2 gap-4 mt-6">
-                <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
-                        <i class="fa fa-eye text-lg"></i>
-                    </span>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-1">Department Vision</h4>
-                        <p class="text-gray-700 text-sm">
-                            To be recognized as the best center for technical education and research in the field of information science and engineering.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 mr-3">
-                        <i class="fa fa-bullseye text-lg"></i>
-                    </span>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-1">Department Mission</h4>
-                        <ul class="list-disc ml-5 text-gray-700 text-sm">
-                            <li>To facilitate adequate transformation in students through a proficient teaching learning process.</li>
-                            <li>To infuse students with professional, ethical and leadership attributes through industry collaboration.</li>
-                            <li>To enhance research and entrepreneurship in associated domains and to facilitate real time problem solving.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100 flex items-center">
-                <i class="fa fa-external-link-alt text-indigo-500 mr-2"></i>
-                <span class="font-semibold text-gray-900">University Affiliation</span>
-                <span class="ml-2 text-gray-700 text-sm">
-                    Affiliated to Visvesvaraya Technological University (VTU), Belagavi and approved by AICTE, New Delhi
-                </span>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
     <!-- Faculty Section -->
     <section id="faculty" class="py-16 bg-gray-50 graph-bg">
@@ -534,19 +570,22 @@
             <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <!-- Faculty Cards will be inserted here -->
                 <!--Faculty Card 1 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover object-[center_20%]" src="http://mitmysore.in/wp-content/uploads/2024/09/Dr-Hemanth-S-R-1.jpg" alt="Dr. Hemanth S R">
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS01-scaled.jpg"
+                            alt="Dr. Hemanth S R">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Dr. Hemanth S R</h3>
-                        <p class="text-indigo-600">Associate Professor & Head</p>
-                        <p class="mt-2 text-sm text-gray-500">BE., M.Tech, PhD</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:hod.ai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Hemanth S R</h3>
+                        <p class="faculty-title">Head and Associate Professor</p>
+                        <p class="faculty-credentials">BE., M.Tech, PhD</p>
+                        <div class="faculty-social">
+                            <a href="mailto:hod.ai@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="https://in.linkedin.com/in/hemanth-s-r-450190107?original_referer=https%3A%2F%2Fwww.google.com%2F" class="text-gray-400 hover:text-indigo-600">
+                            <a href="https://in.linkedin.com/in/hemanth-s-r-450190107?original_referer=https%3A%2F%2Fwww.google.com%2F"
+                                title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -554,19 +593,21 @@
                 </div>
 
                 <!--Faculty Card 2 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover object-[center_20%]" src="http://mitmysore.in/wp-content/uploads/2024/05/Agughasi-Victor-Ikechukwu.jpg" alt="Dr. Agughasi Victor Ikechukwu">
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS03-scaled.jpg"
+                            alt="Dr. Agughasi Victor Ikechukwu">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Dr. Agughasi Victor Ikechukwu</h3>
-                        <p class="text-indigo-600">Assistant Professor</p>
-                        <p class="mt-2 text-sm text-gray-500">PhD</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:sunil.csai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Agughasi Victor Ikechukwu</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">PhD</p>
+                        <div class="faculty-social">
+                            <a href="mailto:sunil.csai@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="https://in.linkedin.com/in/victor-ikechukwu-agughasi" class="text-gray-400 hover:text-indigo-600">
+                            <a href="https://in.linkedin.com/in/victor-ikechukwu-agughasi" title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -574,19 +615,22 @@
                 </div>
 
                 <!--Faculty Card 3 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover object-[center_75%] object-contain" src="images/1752768879511.jpg" alt="Dr. Mahesha Y">
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS08-scaled.jpg"
+                            alt="Dr. Mahesha Y">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Dr. Mahesha Y</h3>
-                        <p class="text-indigo-600">Assistant Professor</p>
-                        <p class="mt-2 text-sm text-gray-500">BE., M.Tech, PhD</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:rajesh.csai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Mahesha Y</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">BE., M.Tech, PhD</p>
+                        <div class="faculty-social">
+                            <a href="mailto:rajesh.csai@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="https://in.linkedin.com/in/dr-mahesha-y-9107191a7?trk=org-employees" class="text-gray-400 hover:text-indigo-600">
+                            <a href="https://in.linkedin.com/in/dr-mahesha-y-9107191a7?trk=org-employees"
+                                title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -594,19 +638,20 @@
                 </div>
 
                 <!--Faculty Card 4 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover object-[center_20%] object-contain" src="http://mitmysore.in/wp-content/uploads/2024/05/Shashanka.H.P.jpg" alt="Prof. Shashanka H P">
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image" src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS11.jpeg"
+                            alt="Dr. Raghavendra K">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Prof. Shashanka H P</h3>
-                        <p class="text-indigo-600">Assistant Professor</p>
-                        <p class="mt-2 text-sm text-gray-500">B.E, M.Tech, (Ph.D)</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:priya.csai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Raghavendra K</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">B.E, M.Tech, (Ph.D)</p>
+                        <div class="faculty-social">
+                            <a href="mailto:priya.csai@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="https://in.linkedin.com/in/shashanka-h-p-a0ab29333" class="text-gray-400 hover:text-indigo-600">
+                            <a href="https://in.linkedin.com/in/shashanka-h-p-a0ab29333" title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -614,19 +659,21 @@
                 </div>
 
                 <!--Faculty Card 5 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover object-[center_20%] object-contain" src="http://mitmysore.in/wp-content/uploads/2024/09/Navya-S.jpg" alt="Prof. Navya S">
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS10-scaled.jpg"
+                            alt="Prof. Yogesh M J">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Prof. Navya S</h3>
-                        <p class="text-indigo-600">Assistant Professor</p>
-                        <p class="mt-2 text-sm text-gray-500">B.E, M.Tech</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:arun.csai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Prof. Yogesh M J</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">B.E, M.Tech</p>
+                        <div class="faculty-social">
+                            <a href="mailto:yogesh.mj@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="#" class="text-gray-400 hover:text-indigo-600">
+                            <a href="https://in.linkedin.com/in/shashanka-h-p-a0ab29333" title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -634,44 +681,94 @@
                 </div>
 
                 <!--Faculty Card 6 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover object-[center_20%] object-contain" src="http://mitmysore.in/wp-content/uploads/2024/09/Vinayashree-A-S.jpg" alt="Prof. Vinayashree A S">
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS06-scaled.jpg"
+                            alt="Prof. Navya S">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Prof. Vinayashree A S</h3>
-                        <p class="text-indigo-600">Assistant Professor</p>
-                        <p class="mt-2 text-sm text-gray-500">B.E, M.Tech</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:ananya.csai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Prof. Navya S</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">B.E, M.Tech</p>
+                        <div class="faculty-social">
+                            <a href="mailto:arun.csai@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="https://in.linkedin.com/in/vinayashree-a-s-2a2b1a333?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F" class="text-gray-400 hover:text-indigo-600">
+                            <a href="#" title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Faculty Card 7
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 card-hover slide-up">
-                    <div class="h-48 bg-indigo-100 flex items-center justify-center">
-                        <img class="h-full w-full object-cover" src="https://mitmysore.in/wp-content/uploads/2023/01/Dr.-Pradeep-D-S.jpg" alt="Mr. Arun Kumar B">
+
+                <!--Faculty Card 7 -->
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS04-scaled.jpg"
+                            alt="Prof. Vinayashree A S">
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900">Mr. Arun Kumar B</h3>
-                        <p class="text-indigo-600">Assistant Professor</p>
-                        <p class="mt-2 text-sm text-gray-500">MTech in Computer Science, AI Algorithms, Robotics</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="mailto:arun.csai@mitmysore.in" class="text-gray-400 hover:text-indigo-600">
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Prof. Vinayashree A S</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">B.E, M.Tech</p>
+                        <div class="faculty-social">
+                            <a href="mailto:ananya.csai@mitmysore.in" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a href="#" class="text-gray-400 hover:text-indigo-600">
+                            <a href="https://in.linkedin.com/in/vinayashree-a-s-2a2b1a333?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2F"
+                                title="LinkedIn">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
                     </div>
-                </div> -->
+                </div>
+
+                <!--Faculty Card 8-->
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS07-scaled.jpg"
+                            alt="Prof. Sahana H C">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Prof. Sahana H C</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">BE, M.Tech</p>
+                        <div class="faculty-social">
+                            <a href="mailto:sahanahc@mitmysore.in" title="Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <a href="#" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Faculty Card 9-->
+                <div class="faculty-card slide-up">
+                    <div class="faculty-image-container">
+                        <img class="faculty-image"
+                            src="https://mitmysore.in/wp-content/uploads/2025/10/CAITS09-scaled.jpg"
+                            alt="Prof. Chaithra N C">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Prof. Chaithra N C</h3>
+                        <p class="faculty-title">Assistant Professor</p>
+                        <p class="faculty-credentials">BE, M.Tech</p>
+                        <div class="faculty-social">
+                            <a href="mailto:chaithra.nc@mitmysore.in" title="Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            <a href="#" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -692,64 +789,68 @@
             <div class="mt-12">
                 <div class="relative wrap overflow-hidden p-10 h-full">
                     <div class="border-2-2 absolute border-opacity-20 border-gray-700 h-full border left-1/2"></div>
-                    
+
                     <!-- Timeline Item 1 -->
                     <div class="mb-8 flex justify-between items-center w-full right-timeline fade-in">
                         <div class="order-1 w-5/12"></div>
                         <div class="z-20 flex items-center order-1 bg-indigo-500 shadow-xl w-8 h-8 rounded-full">
                             <h1 class="mx-auto font-semibold text-lg text-white">1</h1>
                         </div>
-                        <div class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
+                        <div
+                            class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
                             <h3 class="mb-3 font-bold text-indigo-800 text-xl break-words">Best Paper Award</h3>
                             <p class="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100">
-                                Faculty members received the Best Paper Award at the International Conference on 
-                                Artificial Intelligence and Machine Learning (ICAIML-2023) for their research on 
+                                Faculty members received the Best Paper Award at the International Conference on
+                                Artificial Intelligence and Machine Learning (ICAIML-2023) for their research on
                                 "Explainable AI for Healthcare Applications".
                             </p>
                         </div>
                     </div>
-                    
+
                     <!-- Timeline Item 2 -->
                     <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline fade-in">
                         <div class="order-1 w-5/12"></div>
                         <div class="z-20 flex items-center order-1 bg-indigo-500 shadow-xl w-8 h-8 rounded-full">
                             <h1 class="mx-auto font-semibold text-lg text-white">2</h1>
                         </div>
-                        <div class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
+                        <div
+                            class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
                             <h3 class="mb-3 font-bold text-indigo-800 text-xl break-words">Hackathon Winners</h3>
                             <p class="text-sm leading-snug tracking-wide text-gray-900">
-                                Our student team won first prize in the National Level AI Hackathon 2023 
-                                for developing an innovative solution for traffic management using 
+                                Our student team won first prize in the National Level AI Hackathon 2023
+                                for developing an innovative solution for traffic management using
                                 computer vision and deep learning techniques.
                             </p>
                         </div>
                     </div>
-                    
+
                     <!-- Timeline Item 3 -->
                     <div class="mb-8 flex justify-between items-center w-full right-timeline fade-in">
                         <div class="order-1 w-5/12"></div>
                         <div class="z-20 flex items-center order-1 bg-indigo-500 shadow-xl w-8 h-8 rounded-full">
                             <h1 class="mx-auto font-semibold text-lg text-white">3</h1>
                         </div>
-                        <div class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
+                        <div
+                            class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
                             <h3 class="mb-3 font-bold text-indigo-800 text-xl break-words">Research Grant</h3>
                             <p class="text-sm leading-snug tracking-wide text-gray-900">
-                                Department secured a research grant of ₹25 lakhs from DST for the project 
+                                Department secured a research grant of ₹25 lakhs from DST for the project
                                 "Development of AI-based Solutions for Agricultural Applications in Karnataka".
                             </p>
                         </div>
                     </div>
-                    
+
                     <!-- Timeline Item 4 -->
                     <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline fade-in">
                         <div class="order-1 w-5/12"></div>
                         <div class="z-20 flex items-center order-1 bg-indigo-500 shadow-xl w-8 h-8 rounded-full">
                             <h1 class="mx-auto font-semibold text-lg text-white">4</h1>
                         </div>
-                        <div class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
+                        <div
+                            class="order-1 bg-indigo-100 rounded-lg shadow-xl w-full md:w-5/12 px-6 py-4 timeline-item">
                             <h3 class="mb-3 font-bold text-indigo-800 text-xl break-words">Industry Collaboration</h3>
                             <p class="text-sm leading-snug tracking-wide text-gray-900 break-words">
-                                Signed MoU with leading AI companies for student internships, 
+                                Signed MoU with leading AI companies for student internships,
                                 faculty development programs, and joint research initiatives.
                             </p>
                         </div>
@@ -768,7 +869,7 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- Card 2 -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 fade-in">
                     <div class="p-8">
@@ -778,7 +879,7 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- Card 3 -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 fade-in">
                     <div class="p-8">
@@ -814,23 +915,27 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- Quick Links -->
                 <div class="fade-in">
                     <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
                     <div class="space-y-2">
-                        <a href="https://mitmysore.in/" class="block hover:text-indigo-300 transition duration-150">College Website</a>
-                        <a href="https://mitmysore.in/computer-science-and-engineeringartificial-intelligence/" class="block hover:text-indigo-300 transition duration-150">Department Page</a>
-                        <a href="https://mitmysore.in/csai-teaching/" class="block hover:text-indigo-300 transition duration-150">Faculty Directory</a>
+                        <a href="https://mitmysore.in/"
+                            class="block hover:text-indigo-300 transition duration-150">College Website</a>
+                        <a href="https://mitmysore.in/computer-science-and-engineering-artificial-intelligence/"
+                            class="block hover:text-indigo-300 transition duration-150">Department Page</a>
+                        <a href="https://mitmysore.in/computer-science-and-engineering-artificial-intelligence/"
+                            class="block hover:text-indigo-300 transition duration-150">Faculty Directory</a>
                         <a href="#home" class="block hover:text-indigo-300 transition duration-150">Back to Top</a>
                     </div>
                 </div>
-                
+
                 <!-- Social Media -->
                 <div class="fade-in">
                     <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
                     <div class="flex space-x-6">
-                        <a href="https://www.facebook.com/p/Department-of-CSE-Artificial-Intelligence-MIT-Mysore-61572298154637/" class="text-gray-400 hover:text-white">
+                        <a href="https://www.facebook.com/p/Department-of-CSE-Artificial-Intelligence-MIT-Mysore-61572298154637/"
+                            class="text-gray-400 hover:text-white">
                             <i class="fab fa-facebook-f text-xl"></i>
                         </a>
                         <a href="chrome://dino/" class="text-gray-400 hover:text-white">
@@ -839,18 +944,20 @@
                         <a href="https://www.instagram.com/cse_ai_mitm/" class="text-gray-400 hover:text-white">
                             <i class="fab fa-instagram text-xl"></i>
                         </a>
-                        <a href="https://www.linkedin.com/company/cse-ai-mitm/posts/?feedView=all" class="text-gray-400 hover:text-white">
+                        <a href="https://www.linkedin.com/company/cse-ai-mitm/posts/?feedView=all"
+                            class="text-gray-400 hover:text-white">
                             <i class="fab fa-linkedin-in text-xl"></i>
                         </a>
                         <a href="chrome://dino/" class="text-gray-400 hover:text-white">
                             <i class="fab fa-youtube text-xl"></i>
                         </a>
                     </div>
-                    
+
                     <div class="mt-6">
                         <h4 class="text-sm font-semibold mb-2">NEWSLETTER</h4>
                         <div class="flex">
-                            <input type="email" placeholder="Your email" class="px-4 py-2 w-full rounded-l-md text-gray-800 focus:outline-none">
+                            <input type="email" placeholder="Your email"
+                                class="px-4 py-2 w-full rounded-l-md text-gray-800 focus:outline-none">
                             <button class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-r-md">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
@@ -858,7 +965,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-12 pt-8 border-t border-gray-700 text-center fade-in">
                 <p>&copy; 2025 MIT Mysore - Department of Artificial Intelligence. All rights reserved.</p>
             </div>
@@ -893,18 +1000,18 @@
                 mobileMenu.classList.add('hidden');
             }
         });
-        
 
-        
+
+
         // Scroll animations
         const fadeElements = document.querySelectorAll('.fade-in');
         const slideElements = document.querySelectorAll('.slide-up');
-        
+
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
-        
+
         const fadeObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -924,50 +1031,50 @@
                 }
             });
         }, observerOptions);
-        
+
         fadeElements.forEach(el => fadeObserver.observe(el));
         slideElements.forEach(el => slideObserver.observe(el));
-        
+
         // Particle effect for hero section
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 30;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
+
                 // Random size between 2px and 5px
                 const size = Math.random() * 3 + 2;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-                
+
                 // Random position
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.top = `${Math.random() * 100}%`;
-                
+
                 // Random animation duration between 10s and 20s
                 const duration = Math.random() * 10 + 10;
                 particle.style.animationDuration = `${duration}s`;
-                
+
                 // Random delay
                 particle.style.animationDelay = `${Math.random() * 5}s`;
-                
+
                 particlesContainer.appendChild(particle);
             }
         }
-        
+
         // Initialize particles when DOM is loaded
         document.addEventListener('DOMContentLoaded', createParticles);
-        
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                
+
                 const targetId = this.getAttribute('href');
                 if (targetId === '#') return;
-                
+
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     targetElement.scrollIntoView({
@@ -976,45 +1083,45 @@
                 }
             });
         });
-        
+
         // Close mobile menu when any mobile nav link is clicked
         document.querySelectorAll('#mobile-menu a[href^="#"]').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.add('hidden');
             });
         });
-        
-        document.getElementById('logo-link').addEventListener('click', function(e) {
-    e.preventDefault();
-    const targetElement = document.querySelector('#home');
-    if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth' });
-    }
-});
+
+        document.getElementById('logo-link').addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetElement = document.querySelector('#home');
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
 
         // About Us toggle logic
-    const mitmBtn = document.getElementById('about-mitm-btn');
-    const deptBtn = document.getElementById('about-dept-btn');
-    const mitmContent = document.getElementById('about-mitm-content');
-    const deptContent = document.getElementById('about-dept-content');
+        const mitmBtn = document.getElementById('about-mitm-btn');
+        const deptBtn = document.getElementById('about-dept-btn');
+        const mitmContent = document.getElementById('about-mitm-content');
+        const deptContent = document.getElementById('about-dept-content');
 
-    mitmBtn.addEventListener('click', () => {
-        mitmBtn.classList.add('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
-        mitmBtn.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-200');
-        deptBtn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200');
-        deptBtn.classList.remove('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
-        mitmContent.classList.remove('hidden');
-        deptContent.classList.add('hidden');
-    });
+        mitmBtn.addEventListener('click', () => {
+            mitmBtn.classList.add('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
+            mitmBtn.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-200');
+            deptBtn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200');
+            deptBtn.classList.remove('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
+            mitmContent.classList.remove('hidden');
+            deptContent.classList.add('hidden');
+        });
 
-    deptBtn.addEventListener('click', () => {
-        deptBtn.classList.add('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
-        deptBtn.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-200');
-        mitmBtn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200');
-        mitmBtn.classList.remove('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
-        deptContent.classList.remove('hidden');
-        mitmContent.classList.add('hidden');
-    });
+        deptBtn.addEventListener('click', () => {
+            deptBtn.classList.add('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
+            deptBtn.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-200');
+            mitmBtn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200');
+            mitmBtn.classList.remove('bg-indigo-100', 'text-indigo-700', 'border-indigo-200');
+            deptContent.classList.remove('hidden');
+            mitmContent.classList.add('hidden');
+        });
 
         // Ensure hover animation restarts cleanly by removing inline styles on leave
         const logoGroup = document.querySelector('.logo-spin-group');
@@ -1041,15 +1148,15 @@
         }
 
         // Add error handlers to all faculty images
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const facultyImages = document.querySelectorAll('.card-hover img');
             facultyImages.forEach(img => {
-                img.addEventListener('error', function() {
+                img.addEventListener('error', function () {
                     handleImageError(this);
                 });
 
                 // Add loading state
-                img.addEventListener('load', function() {
+                img.addEventListener('load', function () {
                     this.style.opacity = '1';
                 });
 
@@ -1062,7 +1169,7 @@
         });
 
         // Add loading animation for faculty cards
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const facultyCards = document.querySelectorAll('.card-hover');
             facultyCards.forEach(card => {
                 card.style.opacity = '0';
@@ -1076,98 +1183,10 @@
             });
         });
 
-        // Loading Animation Control - Non-Intrusive
-        (function() {
-            // Safely initialize loading animation without interfering with existing code
-            function initLoadingAnimation() {
-                const loadingOverlay = document.getElementById('loading-overlay');
 
-                // Ensure loading overlay exists before proceeding
-                if (!loadingOverlay) {
-                    console.warn('Loading overlay not found - animation disabled');
-                    return;
-                }
-
-                // Create floating particles
-                createLoadingParticles();
-
-                // Wait for window load to ensure all resources are ready
-                window.addEventListener('load', function() {
-                    startLoadingSequence();
-                });
-
-                // Also start if DOM is ready but window isn't fully loaded (fallback)
-                if (document.readyState === 'complete') {
-                    startLoadingSequence();
-                }
-            }
-
-            // Create floating particles for loading animation
-            function createLoadingParticles() {
-                const particleBg = document.getElementById('particle-bg');
-                if (!particleBg) return;
-
-                const particleCount = 20;
-
-                for (let i = 0; i < particleCount; i++) {
-                    const particle = document.createElement('div');
-                    particle.classList.add('particle');
-
-                    // Random size between 3px and 8px
-                    const size = Math.random() * 5 + 3;
-                    particle.style.width = `${size}px`;
-                    particle.style.height = `${size}px`;
-
-                    // Random position within the container
-                    particle.style.left = `${Math.random() * 100}%`;
-                    particle.style.top = `${Math.random() * 100}%`;
-
-                    particleBg.appendChild(particle);
-                }
-            }
-
-            function startLoadingSequence() {
-                const loadingOverlay = document.getElementById('loading-overlay');
-                const body = document.body;
-
-                // Ensure overlay is visible
-                loadingOverlay.classList.remove('hide');
-
-                // Small delay before starting reveal animation (let logo animation complete)
-                setTimeout(function() {
-                    // Remove loading overlay with smooth fade
-                    loadingOverlay.classList.add('hide');
-
-                    // Optional: Ensure main website content is visible
-                    setTimeout(function() {
-                        body.style.visibility = 'visible';
-                        body.style.opacity = '1';
-
-                        // Add any final polish touches for main content
-                        initMainContentAnimations();
-                    }, 800); // Match CSS transition duration
-                }, 1800); // Wait for logo animation to complete (1.5s) + small buffer
-            }
-
-            function initMainContentAnimations() {
-                // Safe initialization of any main content animations
-                // This function can be expanded for additional loading effects
-                const mainHero = document.getElementById('home');
-                if (mainHero) {
-                    // Ensure hero section is properly visible
-                    mainHero.style.opacity = '1';
-                }
-            }
-
-            // Initialize loading animation safely
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initLoadingAnimation);
-            } else {
-                initLoadingAnimation();
-            }
-        })();
 
 
     </script>
 </body>
+
 </html>

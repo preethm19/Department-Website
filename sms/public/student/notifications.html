@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Student Notifications</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/student-modern.css">
 </head>
+
 <body class="student-panel">
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -14,22 +20,19 @@
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <!-- Sidebar Navigation -->
-  <div class="sidebar" id="sidebar">
+  <div class="admin-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="welcome-section">
-        <h3 class="welcome-text">Welcome,</h3>
-        <h2 class="user-name" id="userName">Student</h2>
-        <p class="user-role" id="userRole">Student</p>
-      </div>
+      <h2>MIT Student</h2>
+      <p style="color: rgba(226, 232, 240, 0.7); font-size: 13px; margin: 8px 0 0 0;" id="userName">Welcome, Student</p>
     </div>
     <nav class="sidebar-nav">
       <ul>
         <li><a href="dashboard.html"><span class="icon">🏠</span>Dashboard</a></li>
-        <li><a href="profile.html"><span class="icon">🙎🏻‍♂️</span>Profile</a></li>
+        <li><a href="profile.html"><span class="icon">👤</span>Profile</a></li>
         <li><a href="classes.html"><span class="icon">📚</span>My Classes</a></li>
-        <li><a href="attendance.html"><span class="icon">📊</span>Attendance</a></li>
-        <li><a href="marks.html"><span class="icon">🏆</span>My Marks</a></li>
         <li><a href="assignments.html"><span class="icon">📝</span>Assignments</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Attendance</a></li>
+        <li><a href="marks.html"><span class="icon">📈</span>My Marks</a></li>
         <li><a href="notifications.html" class="active"><span class="icon">🔔</span>Notifications</a></li>
         <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
@@ -46,135 +49,65 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - My Notifications</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>My Notifications</h3>
-      <div id="notifications" class="content-update">
-        <!-- Notifications will be loaded here -->
-      </div>
-    </main>
+        <!-- Notifications Card -->
+        <div class="modern-card">
+          <div class="card-header">
+            <div class="card-icon">🔔</div>
+            <div>
+              <h3 class="card-title">My Notifications</h3>
+              <p class="card-description">View all your notifications and announcements</p>
+            </div>
+          </div>
+
+          <div id="notifications" style="margin-top: 24px;">
+            <p style="text-align: center; color: #64748b; padding: 40px 20px;">Loading notifications...</p>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/student.js"></script>
   <script>
-    // Mobile navigation toggle
-    function toggleNav() {
-      const navList = document.getElementById('navList');
-      navList.classList.toggle('show');
-    }
-
-    // Load notifications after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
       loadUserInfo();
       loadNotifications();
     });
 
-    // Load user information for welcome header
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Load user info
     async function loadUserInfo() {
       try {
-        // Try to get profile information first
         const response = await fetch('/profile', {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
-
         if (response.ok) {
           const userData = await response.json();
           if (userData && userData.name) {
-            // Display user's full name
-            document.getElementById('userName').textContent = userData.name;
-          }
-        } else {
-          // Fallback: Try to decode JWT token for basic info
-          const token = localStorage.getItem('token');
-          if (token) {
-            try {
-              const payload = JSON.parse(atob(token.split('.')[1]));
-              if (payload && payload.name) {
-                document.getElementById('userName').textContent = payload.name;
-              } else if (payload && payload.username) {
-                document.getElementById('userName').textContent = payload.username;
-              }
-            } catch (parseError) {
-              console.log('Could not parse token:', parseError);
-            }
+            document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
           }
         }
       } catch (error) {
         console.log('Error loading user info:', error);
-        // Keep default "Student" if loading fails
-        document.getElementById('userName').textContent = 'Student';
       }
-    }
-
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
-      }
-    }
-
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
     }
 
     // Load notifications
@@ -182,65 +115,56 @@
       fetch('/notifications', {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        const notificationsElement = document.getElementById('notifications');
-        if (data.length === 0) {
-          notificationsElement.innerHTML = '<p>No notifications.</p>';
-        } else {
-          let html = '<div class="notifications-list">';
-          data.forEach((notification, index) => {
-            const date = new Date(notification.created_at).toLocaleDateString();
-            const time = new Date(notification.created_at).toLocaleTimeString();
+        .then(response => response.json())
+        .then(data => {
+          const notificationsElement = document.getElementById('notifications');
+          if (data.length === 0) {
+            notificationsElement.innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No notifications</p>';
+          } else {
+            let html = '<div style="display: grid; gap: 16px;">';
+            data.forEach(notification => {
+              const date = new Date(notification.created_at).toLocaleDateString();
+              const time = new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const isAdmin = notification.source === 'admin';
+              const bgColor = isAdmin ? 'rgba(59, 130, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)';
+              const borderColor = isAdmin ? 'rgba(59, 130, 246, 0.2)' : 'rgba(139, 92, 246, 0.2)';
+              const badgeColor = isAdmin ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
+              const badgeText = isAdmin ? '📢 Admin' : '🔔 System';
 
-            if (notification.source === 'admin') {
-              // Admin notification format
               html += `
-                <div class="notification-card admin-notification" style="animation-delay: ${index * 0.1}s">
-                  <div class="notification-header">
-                    <h4>${notification.title || 'Admin Notification'}</h4>
-                    <span class="notification-source">From: ${notification.sender_name || 'Admin'}</span>
+              <div style="background: linear-gradient(135deg, ${bgColor} 0%, ${bgColor} 100%); backdrop-filter: blur(20px); border: 1px solid ${borderColor}; border-radius: 12px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+                  <div style="flex: 1;">
+                    <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">${notification.title || (isAdmin ? 'Admin Notification' : 'System Notification')}</h4>
+                    <p style="color: #334155; font-size: 14px; margin: 0; line-height: 1.6;">${notification.message}</p>
                   </div>
-                  <div class="notification-content">
-                    <p>${notification.message}</p>
-                  </div>
-                  <div class="notification-footer">
-                    <small>Sent: ${date} at ${time}</small>
-                  </div>
+                  <span style="background: ${badgeColor}; color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                    ${badgeText}
+                  </span>
                 </div>
-              `;
-            } else {
-              // Student notification format (original system)
-              html += `
-                <div class="notification-card student-notification" style="animation-delay: ${index * 0.1}s">
-                  <div class="notification-header">
-                    <h4>System Notification</h4>
-                    <span class="notification-type">${notification.type || 'General'}</span>
+                <div style="display: flex; gap: 16px; padding-top: 12px; border-top: 1px solid ${borderColor}; flex-wrap: wrap;">
+                  <div style="color: #64748b; font-size: 13px;">
+                    <span style="font-weight: 600;">📅</span> ${date} at ${time}
                   </div>
-                  <div class="notification-content">
-                    <p>${notification.message}</p>
-                  </div>
-                  <div class="notification-footer">
-                    <small>Sent: ${date} at ${time}</small>
-                  </div>
+                  ${notification.sender_name ?
+                  `<div style="color: #64748b; font-size: 13px;">
+                      <span style="font-weight: 600;">👤 From:</span> ${notification.sender_name}
+                    </div>` : ''
+                }
                 </div>
-              `;
-            }
-          });
-          html += '</div>';
-          notificationsElement.innerHTML = html;
-          // Add fade-in animation to notifications
-          notificationsElement.style.opacity = '0';
-          setTimeout(() => {
-            notificationsElement.style.opacity = '1';
-          }, 300);
-        }
-      })
-      .catch(error => {
-        console.error('Error loading notifications:', error);
-        document.getElementById('notifications').innerHTML = '<p>Error loading notifications.</p>';
-      });
+              </div>
+            `;
+            });
+            html += '</div>';
+            notificationsElement.innerHTML = html;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading notifications:', error);
+          document.getElementById('notifications').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading notifications</p>';
+        });
     }
   </script>
 </body>
+
 </html>

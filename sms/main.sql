@@ -125,6 +125,20 @@ CREATE TABLE documents (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- Token blacklist table (for logout session management)
+CREATE TABLE token_blacklist (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(500) NOT NULL,
+  user_id INT,
+  blacklisted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP NOT NULL,
+  reason VARCHAR(100) DEFAULT 'logout',
+  INDEX idx_token (token(255)),
+  INDEX idx_expires_at (expires_at),
+  INDEX idx_user_id (user_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- ===========================================
 -- 3. ADMIN TABLES
 -- ===========================================

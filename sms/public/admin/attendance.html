@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Attendance</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,174 +50,202 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Mark Attendance</h2>
       </header>
-      <main class="fade-in-up">
-      <h3>Mark Attendance</h3>
-      <div class="attendance-controls">
-        <div class="form-group">
-          <label for="attendanceSemester">Semester:</label>
-          <select id="attendanceSemester" required>
-            <option value="">Select Semester</option>
-            <option value="1">Semester 1</option>
-            <option value="2">Semester 2</option>
-            <option value="3">Semester 3</option>
-            <option value="4">Semester 4</option>
-            <option value="5">Semester 5</option>
-            <option value="6">Semester 6</option>
-            <option value="7">Semester 7</option>
-            <option value="8">Semester 8</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="attendanceSubject">Subject:</label>
-          <select id="attendanceSubject" required disabled>
-            <option value="">Select Subject</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="attendanceDate">Date:</label>
-          <input type="date" id="attendanceDate" required>
-        </div>
-      </div>
 
-      <div id="attendanceTable" style="display: none;">
-        <h4>Mark Attendance for <span id="subjectName"></span> on <span id="selectedDate"></span></h4>
-        <table class="attendance-table">
-          <thead>
-            <tr>
-              <th>USN</th>
-              <th>Name</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="studentsList">
-          </tbody>
-        </table>
-        <button id="saveAttendance" class="btn">Save Attendance</button>
-        <div id="attendanceMessage"></div>
-      </div>
-    </main>
+      <main class="fade-in-up">
+        <!-- Selection Card -->
+        <div class="modern-card">
+          <div class="card-header">
+            <div class="card-icon">✅</div>
+            <div>
+              <h3 class="card-title">Mark Attendance</h3>
+              <p class="card-description">Select semester, subject, and date to mark attendance</p>
+            </div>
+          </div>
+
+          <div class="modern-form">
+            <div class="form-group-modern">
+              <label for="attendanceSemester">
+                <span class="label-icon">📅</span>
+                Semester
+              </label>
+              <select id="attendanceSemester" required
+                style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                <option value="">Select Semester</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="attendanceSubject">
+                <span class="label-icon">📚</span>
+                Subject
+              </label>
+              <select id="attendanceSubject" required disabled
+                style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                <option value="">Select Subject</option>
+              </select>
+            </div>
+
+            <div class="form-group-modern">
+              <label for="attendanceDate">
+                <span class="label-icon">📆</span>
+                Date
+              </label>
+              <input type="date" id="attendanceDate" required
+                style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Table Card -->
+        <div id="attendanceTableCard" class="modern-card" style="display: none; margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-icon">👥</div>
+            <div>
+              <h3 class="card-title">Student Attendance</h3>
+              <p class="card-description"><span id="subjectName"></span> - <span id="selectedDate"></span></p>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+              <thead>
+                <tr style="background: #f8fafc;">
+                  <th
+                    style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    USN</th>
+                  <th
+                    style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Name</th>
+                  <th
+                    style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Status</th>
+                </tr>
+              </thead>
+              <tbody id="studentsList"></tbody>
+            </table>
+          </div>
+
+          <div class="button-group" style="margin-top: 24px;">
+            <button id="markAllPresent" class="btn-modern btn-secondary">
+              <span class="btn-icon">✓</span>
+              Mark All Present
+            </button>
+            <button id="saveAttendance" class="btn-modern">
+              <span class="btn-icon">💾</span>
+              Save Attendance
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Load attendance after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
-    });
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
 
-    // Initialize page transitions
-    function initializeTransitions() {
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
       setTimeout(() => {
         document.getElementById('pageContent').classList.add('show');
       }, 100);
 
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
+      // Set today's date as default
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('attendanceDate').value = today;
+    });
 
-      const buttons = document.querySelectorAll('.btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-    }
-
-    // Sidebar toggle functionality
+    // Sidebar functions
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-
       if (window.innerWidth <= 768) {
         sidebar.classList.toggle('show');
         overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
 
     // Semester selection handler
-    document.getElementById('attendanceSemester').addEventListener('change', async function() {
+    document.getElementById('attendanceSemester').addEventListener('change', async function () {
       const semester = this.value;
       const subjectSelect = document.getElementById('attendanceSubject');
 
       if (!semester) {
         subjectSelect.disabled = true;
         subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-        document.getElementById('attendanceTable').style.display = 'none';
+        document.getElementById('attendanceTableCard').style.display = 'none';
         return;
       }
 
-      // Load subjects for selected semester
-      const response = await fetch(`/admin/classes?semester=${semester}`, {
-        headers: { 'Authorization': localStorage.getItem('token') }
-      });
+      try {
+        const response = await fetch(`/admin/classes?semester=${semester}`, {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
 
-      const subjects = await response.json();
+        const subjects = await response.json();
 
-      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-      subjects.forEach(subject => {
-        const option = document.createElement('option');
-        option.value = subject.id;
-        option.textContent = `${subject.subject_code} - ${subject.name}`;
-        subjectSelect.appendChild(option);
-      });
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        subjects.forEach(subject => {
+          const option = document.createElement('option');
+          option.value = subject.id;
+          option.textContent = `${subject.subject_code} - ${subject.name}`;
+          subjectSelect.appendChild(option);
+        });
 
-      subjectSelect.disabled = false;
+        subjectSelect.disabled = false;
+      } catch (error) {
+        showToast('error', 'Load Failed', 'Error loading subjects');
+      }
     });
 
-    // Subject selection handler - automatically load students
-    document.getElementById('attendanceSubject').addEventListener('change', async function() {
+    // Subject selection handler
+    document.getElementById('attendanceSubject').addEventListener('change', async function () {
       const subjectId = this.value;
       const date = document.getElementById('attendanceDate').value;
 
       if (!subjectId) {
-        document.getElementById('attendanceTable').style.display = 'none';
+        document.getElementById('attendanceTableCard').style.display = 'none';
         return;
       }
 
       if (!date) {
-        alert('Please select a date first');
+        showToast('error', 'Date Required', 'Please select a date first');
         this.value = '';
         return;
       }
@@ -220,8 +253,8 @@
       await loadStudentsForAttendance(subjectId, date);
     });
 
-    // Date change handler - reload students if subject is selected
-    document.getElementById('attendanceDate').addEventListener('change', async function() {
+    // Date change handler
+    document.getElementById('attendanceDate').addEventListener('change', async function () {
       const subjectId = document.getElementById('attendanceSubject').value;
       const date = this.value;
 
@@ -230,10 +263,9 @@
       }
     });
 
-    // Function to load students for attendance
+    // Load students for attendance
     async function loadStudentsForAttendance(subjectId, date) {
       try {
-        // Load students for the subject
         const studentsResponse = await fetch(`/admin/attendance/students?subjectId=${subjectId}`, {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
@@ -241,45 +273,46 @@
         const students = await studentsResponse.json();
 
         if (students.length === 0) {
-          alert('No students found for this subject');
-          document.getElementById('attendanceTable').style.display = 'none';
+          showToast('info', 'No Students', 'No students found for this subject');
+          document.getElementById('attendanceTableCard').style.display = 'none';
           return;
         }
 
-        // Load existing attendance records for this subject and date
         const attendanceResponse = await fetch(`/admin/attendance/existing?subjectId=${subjectId}&date=${date}`, {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
 
         const existingAttendance = await attendanceResponse.json();
 
-        // Create a map of student ID to attendance status
         const attendanceMap = {};
         existingAttendance.forEach(record => {
           attendanceMap[record.student_id] = record.status;
         });
 
-        // Display attendance table
         const subjectSelect = document.getElementById('attendanceSubject');
         const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
         document.getElementById('subjectName').textContent = subjectText;
         document.getElementById('selectedDate').textContent = date;
-        document.getElementById('attendanceTable').style.display = 'block';
+        document.getElementById('attendanceTableCard').style.display = 'block';
 
         const tbody = document.getElementById('studentsList');
         tbody.innerHTML = '';
 
         students.forEach(student => {
-          const existingStatus = attendanceMap[student.id] || 'present'; // Default to present if no record exists
+          const existingStatus = attendanceMap[student.id] || 'present';
 
           const row = document.createElement('tr');
+          row.style.cssText = 'background: white; transition: all 0.3s;';
+          row.onmouseover = function () { this.style.background = '#f8fafc'; };
+          row.onmouseout = function () { this.style.background = 'white'; };
+
           row.innerHTML = `
-            <td>${student.usn}</td>
-            <td>${student.name}</td>
-            <td>
-              <select class="attendance-status" data-student-id="${student.id}">
-                <option value="present" ${existingStatus === 'present' ? 'selected' : ''}>Present</option>
-                <option value="absent" ${existingStatus === 'absent' ? 'selected' : ''}>Absent</option>
+            <td style="padding: 14px 16px; color: #1e293b; font-weight: 600;">${student.usn}</td>
+            <td style="padding: 14px 16px; color: #334155;">${student.name}</td>
+            <td style="padding: 14px 16px;">
+              <select class="attendance-status" data-student-id="${student.id}" style="padding: 8px 12px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 8px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;">
+                <option value="present" ${existingStatus === 'present' ? 'selected' : ''}>✓ Present</option>
+                <option value="absent" ${existingStatus === 'absent' ? 'selected' : ''}>✕ Absent</option>
               </select>
             </td>
           `;
@@ -287,9 +320,17 @@
         });
       } catch (error) {
         console.error('Error loading students:', error);
-        alert('Error loading students for attendance');
+        showToast('error', 'Load Failed', 'Error loading students for attendance');
       }
     }
+
+    // Mark all present
+    document.getElementById('markAllPresent').addEventListener('click', () => {
+      document.querySelectorAll('.attendance-status').forEach(select => {
+        select.value = 'present';
+      });
+      showToast('info', 'All Marked Present', 'All students marked as present');
+    });
 
     // Save attendance
     document.getElementById('saveAttendance').addEventListener('click', async () => {
@@ -305,32 +346,36 @@
       });
 
       if (attendanceData.length === 0) {
-        alert('No students to mark attendance for');
+        showToast('error', 'No Data', 'No students to mark attendance for');
         return;
       }
 
-      const response = await fetch('/admin/attendance', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        },
-        body: JSON.stringify({
-          subjectId,
-          date,
-          attendance: attendanceData
-        })
-      });
+      try {
+        const response = await fetch('/admin/attendance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+          body: JSON.stringify({
+            subjectId,
+            date,
+            attendance: attendanceData
+          })
+        });
 
-      const data = await response.json();
-      document.getElementById('attendanceMessage').innerText = data.message || data.error;
+        const data = await response.json();
 
-      if (response.ok) {
-        setTimeout(() => {
-          document.getElementById('attendanceMessage').innerText = '';
-        }, 3000);
+        if (response.ok) {
+          showToast('success', 'Attendance Saved', data.message);
+        } else {
+          showToast('error', 'Save Failed', data.error || 'An error occurred');
+        }
+      } catch (error) {
+        showToast('error', 'Save Failed', 'Network error occurred');
       }
     });
   </script>
 </body>
+
 </html>

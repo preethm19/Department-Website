@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Assignments</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -46,120 +49,121 @@
         <h2>AI Department - Manage Assignments</h2>
       </header>
       <main class="fade-in-up">
-      <h3>All Assignments</h3>
-      <div id="assignments">
-        <!-- Assignments will be loaded here -->
-      </div>
-    </main>
-  </div>
-  <script src="../js/auth.js"></script>
-  <script src="../js/admin.js"></script>
-  <script>
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+        <h3>All Assignments</h3>
+        <div id="assignments">
+          <!-- Assignments will be loaded here -->
+        </div>
+      </main>
+    </div>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+      // Sidebar toggle functionality
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
 
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
+        if (window.innerWidth <= 768) {
+          sidebar.classList.toggle('show');
+          overlay.classList.toggle('show');
+        } else {
+          sidebar.classList.toggle('collapsed');
+        }
       }
-    }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
+      // Close sidebar when clicking overlay
+      document.getElementById('sidebarOverlay').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
         sidebar.classList.remove('show');
         overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Load assignments after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      highlightActiveNav();
-      initializeTransitions();
-      loadAssignments();
-    });
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
       });
 
-      const buttons = document.querySelectorAll('.btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-    }
+      // Close sidebar on window resize if desktop
+      window.addEventListener('resize', function () {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
 
-    // Load assignments
-    function loadAssignments() {
-      fetch('/admin/assignments', {
-        headers: { 'Authorization': localStorage.getItem('token') }
-      })
-      .then(response => response.json())
-      .then(data => {
-        const assignmentsElement = document.getElementById('assignments');
-        if (data.length === 0) {
-          assignmentsElement.innerHTML = '<p>No assignments.</p>';
+        if (window.innerWidth > 768) {
+          sidebar.classList.remove('show');
+          overlay.classList.remove('show');
+          sidebar.classList.add('collapsed');
         } else {
-          let html = '<ul>';
-          data.forEach((assignment, index) => {
-            html += `<li style="animation-delay: ${index * 0.1}s"><strong>${assignment.title}</strong> (${assignment.class_name}) - ${assignment.description} (Due: ${assignment.due_date})</li>`;
-          });
-          html += '</ul>';
-          assignmentsElement.innerHTML = html;
-          // Add fade-in animation to assignments
-          assignmentsElement.style.opacity = '0';
-          setTimeout(() => {
-            assignmentsElement.style.opacity = '1';
-          }, 300);
+          sidebar.classList.remove('collapsed');
         }
-      })
-      .catch(error => {
-        console.error('Error loading assignments:', error);
       });
-    }
-  </script>
+
+      // Highlight active navigation link
+      function highlightActiveNav() {
+        const currentPath = window.location.pathname.split('/').pop();
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+          }
+        });
+      }
+
+      // Load assignments after authentication
+      document.addEventListener('DOMContentLoaded', function () {
+        highlightActiveNav();
+        initializeTransitions();
+        loadAssignments();
+      });
+
+      // Initialize page transitions
+      function initializeTransitions() {
+        setTimeout(() => {
+          document.getElementById('pageContent').classList.add('show');
+        }, 100);
+
+        const navLinks = document.querySelectorAll('.nav-list a');
+        navLinks.forEach(link => {
+          link.addEventListener('click', function (e) {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => this.style.transform = '', 150);
+          });
+        });
+
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+          if (!button.classList.contains('hover-lift')) {
+            button.classList.add('hover-lift');
+          }
+        });
+      }
+
+      // Load assignments
+      function loadAssignments() {
+        fetch('/admin/assignments', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        })
+          .then(response => response.json())
+          .then(data => {
+            const assignmentsElement = document.getElementById('assignments');
+            if (data.length === 0) {
+              assignmentsElement.innerHTML = '<p>No assignments.</p>';
+            } else {
+              let html = '<ul>';
+              data.forEach((assignment, index) => {
+                html += `<li style="animation-delay: ${index * 0.1}s"><strong>${assignment.title}</strong> (${assignment.class_name}) - ${assignment.description} (Due: ${assignment.due_date})</li>`;
+              });
+              html += '</ul>';
+              assignmentsElement.innerHTML = html;
+              // Add fade-in animation to assignments
+              assignmentsElement.style.opacity = '0';
+              setTimeout(() => {
+                assignmentsElement.style.opacity = '1';
+              }, 300);
+            }
+          })
+          .catch(error => {
+            console.error('Error loading assignments:', error);
+          });
+      }
+    </script>
 </body>
+
 </html>

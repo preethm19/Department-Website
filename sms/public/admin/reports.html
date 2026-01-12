@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Reports</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,163 +50,269 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Reports & Analytics</h2>
       </header>
-      <main class="fade-in-up">
-      <h3>System Reports & Analytics</h3>
 
-      <div class="reports-section">
-        <h4>Quick Statistics</h4>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <h5>Total Students</h5>
-            <div id="totalStudents">-</div>
+      <main class="fade-in-up">
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <button class="tab-button active" onclick="switchTab('overview')">
+            <span class="tab-icon">📊</span>
+            Overview
+          </button>
+          <button class="tab-button" onclick="switchTab('semester-reports')">
+            <span class="tab-icon">📅</span>
+            Semester Reports
+          </button>
+          <button class="tab-button" onclick="switchTab('export')">
+            <span class="tab-icon">📥</span>
+            Export Data
+          </button>
+        </div>
+
+        <!-- Tab 1: Overview -->
+        <div id="overview" class="tab-content active">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📊</div>
+              <div>
+                <h3 class="card-title">Quick Statistics</h3>
+                <p class="card-description">System-wide statistics overview</p>
+              </div>
+            </div>
+
+            <div class="stats-display">
+              <div class="stat-item">
+                <div class="stat-value" id="totalStudents">-</div>
+                <div class="stat-label">Total Students</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="totalAdmins">-</div>
+                <div class="stat-label">Administrators</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="totalSubjects">-</div>
+                <div class="stat-label">Subjects</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="totalAssignments">-</div>
+                <div class="stat-label">Assignments</div>
+              </div>
+            </div>
           </div>
-          <div class="stat-card">
-            <h5>Total Admins</h5>
-            <div id="totalAdmins">-</div>
-          </div>
-          <div class="stat-card">
-            <h5>Total Subjects</h5>
-            <div id="totalSubjects">-</div>
-          </div>
-          <div class="stat-card">
-            <h5>Active Assignments</h5>
-            <div id="totalAssignments">-</div>
+
+          <div class="modern-card" style="margin-top: 24px;">
+            <div class="card-header">
+              <div class="card-icon">📈</div>
+              <div>
+                <h3 class="card-title">Student Distribution</h3>
+                <p class="card-description">Students per semester</p>
+              </div>
+            </div>
+            <div id="semesterChart"></div>
           </div>
         </div>
-      </div>
 
-      <div class="reports-section">
-        <h4>Student Distribution by Semester</h4>
-        <div id="semesterChart">-</div>
-      </div>
+        <!-- Tab 2: Semester Reports -->
+        <div id="semester-reports" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📅</div>
+              <div>
+                <h3 class="card-title">Semester-wise Reports</h3>
+                <p class="card-description">View detailed reports for each semester</p>
+              </div>
+            </div>
 
-      <div class="reports-section">
-        <h4>Recent Activity</h4>
-        <div id="recentActivity">-</div>
-      </div>
+            <div class="form-group-modern" style="margin-bottom: 24px;">
+              <label for="reportSemester">
+                <span class="label-icon">🔍</span>
+                Select Semester
+              </label>
+              <select id="reportSemester"
+                style="width: 100%; max-width: 300px; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                <option value="all">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+            </div>
 
-      <div class="reports-section">
-        <h4>Export Reports</h4>
-        <button onclick="exportReport('students')" class="btn">Export Student Report</button>
-        <button onclick="exportReport('attendance')" class="btn">Export Attendance Report</button>
-        <button onclick="exportReport('grades')" class="btn">Export Grades Report</button>
-        <div id="exportMessage"></div>
-      </div>
-    </main>
+            <div id="semesterReportData">
+              <!-- Report data will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Export Data -->
+        <div id="export" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📥</div>
+              <div>
+                <h3 class="card-title">Export Reports</h3>
+                <p class="card-description">Download semester-wise data as CSV</p>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <span class="info-box-icon">ℹ️</span>
+              <div class="info-box-content">
+                <p class="info-box-title">Export Options</p>
+                <p class="info-box-text">Select a semester to export specific data, or choose "All Semesters" for
+                  complete reports</p>
+              </div>
+            </div>
+
+            <div class="form-group-modern" style="margin-bottom: 24px;">
+              <label for="exportSemester">
+                <span class="label-icon">📅</span>
+                Semester Filter
+              </label>
+              <select id="exportSemester"
+                style="width: 100%; max-width: 400px; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                <option value="all">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+              <div
+                style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 24px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">👥</div>
+                <h4 style="color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Student Report</h4>
+                <p style="color: #64748b; font-size: 13px; margin: 0 0 16px 0;">Export student data with details</p>
+                <button onclick="exportReport('students')" class="btn-modern" style="width: 100%;">
+                  <span class="btn-icon">📥</span>
+                  Export Students
+                </button>
+              </div>
+
+              <div
+                style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 24px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">✅</div>
+                <h4 style="color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Attendance Report</h4>
+                <p style="color: #64748b; font-size: 13px; margin: 0 0 16px 0;">Export attendance records</p>
+                <button onclick="exportReport('attendance')" class="btn-modern"
+                  style="width: 100%; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                  <span class="btn-icon">📥</span>
+                  Export Attendance
+                </button>
+              </div>
+
+              <div
+                style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.15) 100%); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 24px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">📈</div>
+                <h4 style="color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Grades Report</h4>
+                <p style="color: #64748b; font-size: 13px; margin: 0 0 16px 0;">Export student grades & results</p>
+                <button onclick="exportReport('grades')" class="btn-modern"
+                  style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                  <span class="btn-icon">📥</span>
+                  Export Grades
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
 
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.tab-button').classList.add('active');
+
+      if (tabId === 'semester-reports') {
+        loadSemesterReport('all');
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Load reports after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
-      loadStatistics();
-      loadSemesterDistribution();
-      loadRecentActivity();
-    });
-
-    // Initialize page transitions
-    function initializeTransitions() {
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
       setTimeout(() => {
         document.getElementById('pageContent').classList.add('show');
       }, 100);
+      loadStatistics();
+      loadSemesterDistribution();
+    });
 
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
     }
 
-    // Load system statistics
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Load statistics
     async function loadStatistics() {
       try {
-        // Get total students
-        const studentsResponse = await fetch('/admin/users?userType=students', {
-          headers: { 'Authorization': localStorage.getItem('token') }
-        });
-        const students = await studentsResponse.json();
+        const [studentsRes, adminsRes, subjectsRes, assignmentsRes] = await Promise.all([
+          fetch('/admin/users?userType=students', { headers: { 'Authorization': localStorage.getItem('token') } }),
+          fetch('/admin/users?userType=admins', { headers: { 'Authorization': localStorage.getItem('token') } }),
+          fetch('/admin/classes', { headers: { 'Authorization': localStorage.getItem('token') } }),
+          fetch('/admin/assignments', { headers: { 'Authorization': localStorage.getItem('token') } })
+        ]);
+
+        const [students, admins, subjects, assignments] = await Promise.all([
+          studentsRes.json(),
+          adminsRes.json(),
+          subjectsRes.json(),
+          assignmentsRes.json()
+        ]);
+
         document.getElementById('totalStudents').textContent = students.length;
-
-        // Get total admins
-        const adminsResponse = await fetch('/admin/users?userType=admins', {
-          headers: { 'Authorization': localStorage.getItem('token') }
-        });
-        const admins = await adminsResponse.json();
         document.getElementById('totalAdmins').textContent = admins.length;
-
-        // Get total subjects
-        const subjectsResponse = await fetch('/admin/classes', {
-          headers: { 'Authorization': localStorage.getItem('token') }
-        });
-        const subjects = await subjectsResponse.json();
         document.getElementById('totalSubjects').textContent = subjects.length;
-
-        // Get total assignments
-        const assignmentsResponse = await fetch('/admin/assignments', {
-          headers: { 'Authorization': localStorage.getItem('token') }
-        });
-        const assignments = await assignmentsResponse.json();
         document.getElementById('totalAssignments').textContent = assignments.length;
-
       } catch (error) {
         console.error('Error loading statistics:', error);
       }
@@ -221,71 +332,108 @@
           semesterCount[semester] = (semesterCount[semester] || 0) + 1;
         });
 
-        let html = '<div class="semester-distribution">';
+        let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">';
         Object.keys(semesterCount).sort().forEach(semester => {
-          html += `<div class="semester-item">
-            <span>Semester ${semester}:</span>
-            <span>${semesterCount[semester]} students</span>
-          </div>`;
+          html += `
+            <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px; padding: 16px; text-align: center;">
+              <div style="font-size: 28px; font-weight: 700; color: #3b82f6; margin-bottom: 4px;">${semesterCount[semester]}</div>
+              <div style="font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Semester ${semester}</div>
+            </div>
+          `;
         });
         html += '</div>';
 
         document.getElementById('semesterChart').innerHTML = html;
-
       } catch (error) {
         console.error('Error loading semester distribution:', error);
-        document.getElementById('semesterChart').innerHTML = 'Error loading data';
       }
     }
 
-    // Load recent activity
-    async function loadRecentActivity() {
+    // Semester report change handler
+    document.getElementById('reportSemester').addEventListener('change', function () {
+      loadSemesterReport(this.value);
+    });
+
+    // Load semester report
+    async function loadSemesterReport(semester) {
       try {
-        // This would typically fetch from an activity log table
-        // For now, show recent user additions
-        const response = await fetch('/admin/users?userType=all', {
+        const url = semester === 'all'
+          ? '/admin/users?userType=students'
+          : `/admin/users?userType=students&semester=${semester}`;
+
+        const response = await fetch(url, {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
-        const users = await response.json();
+        const students = await response.json();
 
-        // Sort by ID (assuming higher ID = more recent)
-        const recentUsers = users
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 5);
+        let html = `
+          <div class="stats-display" style="margin-bottom: 24px;">
+            <div class="stat-item">
+              <div class="stat-value">${students.length}</div>
+              <div class="stat-label">${semester === 'all' ? 'Total' : 'Semester ' + semester} Students</div>
+            </div>
+          </div>
+        `;
 
-        let html = '<ul class="activity-list">';
-        recentUsers.forEach(user => {
-          const role = user.role === 'admin' ? 'Admin' : 'Student';
-          html += `<li>${role} "${user.name}" added to system</li>`;
-        });
-        html += '</ul>';
+        if (students.length > 0) {
+          html += '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">';
+          html += `
+            <thead>
+              <tr style="background: #f8fafc;">
+                <th style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px;">USN</th>
+                <th style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px;">Name</th>
+                <th style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px;">Email</th>
+                <th style="padding: 12px 16px; text-align: left; color: #475569; font-weight: 600; font-size: 13px;">Semester</th>
+              </tr>
+            </thead>
+            <tbody>
+          `;
 
-        document.getElementById('recentActivity').innerHTML = html;
+          students.forEach(student => {
+            html += `
+              <tr style="background: white;">
+                <td style="padding: 14px 16px; color: #1e293b; font-weight: 600;">${student.usn || 'N/A'}</td>
+                <td style="padding: 14px 16px; color: #334155;">${student.name}</td>
+                <td style="padding: 14px 16px; color: #64748b;">${student.email}</td>
+                <td style="padding: 14px 16px;"><span style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Sem ${student.semester}</span></td>
+              </tr>
+            `;
+          });
 
+          html += '</tbody></table></div>';
+        } else {
+          html += '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No students found for this semester.</p>';
+        }
+
+        document.getElementById('semesterReportData').innerHTML = html;
       } catch (error) {
-        console.error('Error loading recent activity:', error);
-        document.getElementById('recentActivity').innerHTML = 'Error loading data';
+        console.error('Error loading semester report:', error);
+        showToast('error', 'Load Failed', 'Error loading semester report');
       }
     }
 
     // Export reports
     async function exportReport(type) {
+      const semester = document.getElementById('exportSemester').value;
+
       try {
         let endpoint = '';
         let filename = '';
 
         switch (type) {
           case 'students':
-            endpoint = '/admin/export-users';
-            filename = 'student_report.csv';
+            endpoint = semester === 'all'
+              ? '/admin/export-users'
+              : `/admin/export-users?semester=${semester}`;
+            filename = semester === 'all'
+              ? 'all_students_report.csv'
+              : `semester_${semester}_students.csv`;
             break;
           case 'attendance':
-            // This would need a new endpoint for attendance reports
-            alert('Attendance report export coming soon');
+            showToast('info', 'Coming Soon', 'Attendance report export will be available soon');
             return;
           case 'grades':
-            // This would need a new endpoint for grades reports
-            alert('Grades report export coming soon');
+            showToast('info', 'Coming Soon', 'Grades report export will be available soon');
             return;
         }
 
@@ -295,13 +443,11 @@
 
         if (!response.ok) {
           const error = await response.json();
-          document.getElementById('exportMessage').innerText = error.error || 'Export failed';
+          showToast('error', 'Export Failed', error.error || 'Export failed');
           return;
         }
 
         const blob = await response.blob();
-
-        // Get filename from response headers
         const contentDisposition = response.headers.get('Content-Disposition');
         let downloadFilename = filename;
         if (contentDisposition) {
@@ -309,7 +455,6 @@
           if (matches) downloadFilename = matches[1];
         }
 
-        // Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -319,13 +464,13 @@
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
 
-        document.getElementById('exportMessage').innerText = 'Report exported successfully';
-
+        showToast('success', 'Export Complete', `${type.charAt(0).toUpperCase() + type.slice(1)} report downloaded successfully`);
       } catch (error) {
         console.error('Export error:', error);
-        document.getElementById('exportMessage').innerText = 'Export failed';
+        showToast('error', 'Export Failed', 'Network error occurred');
       }
     }
   </script>
 </body>
+
 </html>

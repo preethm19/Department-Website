@@ -1,0 +1,71 @@
+/* ===================================================== */
+/*     TEXT COLOR FIXES FOR LIGHT BACKGROUND THEME       */
+/* ===================================================== */
+
+/* Card Text Colors */
+.card-title {
+    color: #1e293b !important;
+}
+
+.card-description {
+    color: #64748b !important;
+}
+
+/* Form Label Colors */
+.form-group-modern label {
+    color: #334155 !important;
+}
+
+/* Input Field Colors */
+.modern-form input[type="text"],
+.modern-form input[type="email"],
+.modern-form input[type="password"] {
+    background: #ffffff !important;
+    border: 2px solid rgba(96, 165, 250, 0.3) !important;
+    color: #1e293b !important;
+}
+
+.modern-form input:focus {
+    background: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+.modern-form input::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Upload Zone Text Colors */
+.upload-text {
+    color: #1e293b !important;
+}
+
+.upload-hint {
+    color: #64748b !important;
+}
+
+/* Info Box Text Colors */
+.info-box-title {
+    color: #2563eb !important;
+}
+
+.info-box-text {
+    color: #475569 !important;
+}
+
+/* Stats Text Colors */
+.stat-label {
+    color: #64748b !important;
+}
+
+/* Tab Button Colors (inactive) */
+.tab-button {
+    color: #64748b !important;
+}
+
+.tab-button:hover {
+    color: #1e293b !important;
+}
+
+.tab-button.active {
+    color: #ffffff !important;
+}

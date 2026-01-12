@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Users</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,94 +50,299 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Manage Users</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>User Management Tools</h3>
-      <p>Use these tools to add users to the system</p>
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <button class="tab-button active" onclick="switchTab('bulk-import')">
+            <span class="tab-icon">📤</span>
+            Bulk Import
+          </button>
+          <button class="tab-button" onclick="switchTab('create-admin')">
+            <span class="tab-icon">👤</span>
+            Create Admin
+          </button>
+          <button class="tab-button" onclick="switchTab('export-data')">
+            <span class="tab-icon">📊</span>
+            Export Data
+          </button>
+        </div>
 
-      <h3>Bulk Import Students</h3>
-      <div class="bulk-import">
-        <p><button onclick="downloadCSV()" class="btn">Download Current Users CSV</button></p>
-        <form id="bulkImportForm" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="csvFile">Select CSV File:</label>
-            <input type="file" id="csvFile" accept=".csv" required>
+        <!-- Tab 1: Bulk Import Students -->
+        <div id="bulk-import" class="tab-content active">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📤</div>
+              <div>
+                <h3 class="card-title">Bulk Import Students</h3>
+                <p class="card-description">Upload a CSV file to import multiple students at once</p>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <span class="info-box-icon">ℹ️</span>
+              <div class="info-box-content">
+                <p class="info-box-title">CSV Format Required</p>
+                <p class="info-box-text">Your CSV file must include: name, usn, email, semester, password</p>
+              </div>
+            </div>
+
+            <form id="bulkImportForm" class="modern-form" enctype="multipart/form-data">
+              <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Drag & drop your CSV file here</div>
+                <div class="upload-hint">or click to browse</div>
+                <input type="file" id="csvFile" accept=".csv" required>
+                <div id="fileInfo" class="file-info" style="display: none;">
+                  <span>📄</span>
+                  <span id="fileName"></span>
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button type="button" onclick="downloadCSV()" class="btn-modern btn-secondary">
+                  <span class="btn-icon">⬇️</span>
+                  Download Template
+                </button>
+                <button type="submit" class="btn-modern">
+                  <span class="btn-icon">📤</span>
+                  Import Students
+                </button>
+              </div>
+            </form>
           </div>
-          <button type="submit" class="btn">Import Students</button>
-        </form>
-        <div id="importMessage"></div>
-      </div>
+        </div>
 
-      <h3>Create New Admin</h3>
-      <form id="createAdminForm">
-        <div class="form-group">
-          <label for="adminName">Name:</label>
-          <input type="text" id="adminName" required>
-        </div>
-        <div class="form-group">
-          <label for="adminEmail">Email:</label>
-          <input type="email" id="adminEmail" required>
-        </div>
-        <div class="form-group">
-          <label for="adminPassword">Password:</label>
-          <input type="password" id="adminPassword" required>
-        </div>
-        <button type="submit" class="btn">Create Admin</button>
-      </form>
-      <div id="adminMessage"></div>
+        <!-- Tab 2: Create Admin -->
+        <div id="create-admin" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">👤</div>
+              <div>
+                <h3 class="card-title">Create New Administrator</h3>
+                <p class="card-description">Add a new admin user to the system</p>
+              </div>
+            </div>
 
-    </main>
+            <form id="createAdminForm" class="modern-form">
+              <div class="form-group-modern">
+                <label for="adminName">
+                  <span class="label-icon">👤</span>
+                  Full Name
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">👤</span>
+                  <input type="text" id="adminName" placeholder="Enter administrator name" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="adminEmail">
+                  <span class="label-icon">✉️</span>
+                  Email Address
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">✉️</span>
+                  <input type="email" id="adminEmail" placeholder="admin@example.com" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="adminPassword">
+                  <span class="label-icon">🔒</span>
+                  Password
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔒</span>
+                  <input type="password" id="adminPassword" placeholder="Enter secure password" required>
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button type="reset" class="btn-modern btn-secondary">
+                  <span class="btn-icon">↺</span>
+                  Reset Form
+                </button>
+                <button type="submit" class="btn-modern">
+                  <span class="btn-icon">✓</span>
+                  Create Administrator
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 3: Export Data -->
+        <div id="export-data" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📊</div>
+              <div>
+                <h3 class="card-title">Export User Data</h3>
+                <p class="card-description">Download current users as CSV file</p>
+              </div>
+            </div>
+
+            <div class="stats-display">
+              <div class="stat-item">
+                <div class="stat-value" id="totalUsers">-</div>
+                <div class="stat-label">Total Users</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="totalStudents">-</div>
+                <div class="stat-label">Students</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="totalAdmins">-</div>
+                <div class="stat-label">Administrators</div>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <span class="info-box-icon">📥</span>
+              <div class="info-box-content">
+                <p class="info-box-title">Export Information</p>
+                <p class="info-box-text">The CSV file will include all user data including names, emails, and roles.</p>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button onclick="downloadCSV()" class="btn-modern">
+                <span class="btn-icon">📥</span>
+                Download CSV File
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Load users after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
+    // Tab switching
+    function switchTab(tabId) {
+      // Remove active class from all tabs and buttons
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+      // Add active class to selected tab and button
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.tab-button').classList.add('active');
+    }
+
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+
+      const icons = {
+        success: '✓',
+        error: '✕',
+        info: 'ℹ'
+      };
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // Drag and drop functionality
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('csvFile');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, preventDefaults, false);
     });
 
-    // Initialize page transitions
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => {
+        uploadZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => {
+        uploadZone.classList.remove('drag-over');
+      });
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        fileInput.files = files;
+        updateFileInfo(files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        updateFileInfo(e.target.files[0]);
+      }
+    });
+
+    function updateFileInfo(file) {
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileInfo').style.display = 'inline-flex';
+    }
+
+    // Load user stats
+    async function loadUserStats() {
+      try {
+        const response = await fetch('/admin/users?userType=students', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const students = await response.json();
+
+        const adminResponse = await fetch('/admin/users?userType=admins', {
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+        const admins = await adminResponse.json();
+
+        document.getElementById('totalStudents').textContent = students.length;
+        document.getElementById('totalAdmins').textContent = admins.length;
+        document.getElementById('totalUsers').textContent = students.length + admins.length;
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      initializeTransitions();
+      loadUserStats();
+    });
+
     function initializeTransitions() {
       setTimeout(() => {
         document.getElementById('pageContent').classList.add('show');
       }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-
-      // Add browser back/forward navigation support
-      window.addEventListener('popstate', function(event) {
-        handleBrowserNavigation();
-      });
     }
 
-    // Handle browser back/forward navigation
-    function handleBrowserNavigation() {
-      const pageContent = document.getElementById('pageContent');
-
-      // Add fade-out transition before navigation
-      pageContent.classList.remove('show');
-      pageContent.style.opacity = '0';
-
-      // Brief delay before page unloads
-      setTimeout(() => {
-        // Browser will handle the actual navigation
-        // This creates smooth visual transition during navigation
-      }, 200);
-    }
-
-    // Sidebar toggle functionality
+    // Sidebar functions
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
@@ -140,50 +350,10 @@
       if (window.innerWidth <= 768) {
         sidebar.classList.toggle('show');
         overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Initialize sidebar functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      highlightActiveNav();
-    });
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
 
     // Bulk import form handler
     document.getElementById('bulkImportForm').addEventListener('submit', async (e) => {
@@ -191,18 +361,25 @@
       const formData = new FormData();
       formData.append('csvFile', document.getElementById('csvFile').files[0]);
 
-      const response = await fetch('/admin/bulk-import', {
-        method: 'POST',
-        headers: { 'Authorization': localStorage.getItem('token') },
-        body: formData
-      });
+      try {
+        const response = await fetch('/admin/bulk-import', {
+          method: 'POST',
+          headers: { 'Authorization': localStorage.getItem('token') },
+          body: formData
+        });
 
-      const data = await response.json();
-      document.getElementById('importMessage').innerText = data.message;
+        const data = await response.json();
 
-      if (response.ok) {
-        // Reload users list
-        location.reload();
+        if (response.ok) {
+          showToast('success', 'Import Successful', data.message);
+          document.getElementById('bulkImportForm').reset();
+          document.getElementById('fileInfo').style.display = 'none';
+          loadUserStats();
+        } else {
+          showToast('error', 'Import Failed', data.error || 'An error occurred');
+        }
+      } catch (error) {
+        showToast('error', 'Import Failed', 'Network error occurred');
       }
     });
 
@@ -213,23 +390,27 @@
       const email = document.getElementById('adminEmail').value;
       const password = document.getElementById('adminPassword').value;
 
-      const response = await fetch('/admin/create-admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        },
-        body: JSON.stringify({ name, email, password })
-      });
+      try {
+        const response = await fetch('/admin/create-admin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+          body: JSON.stringify({ name, email, password })
+        });
 
-      const data = await response.json();
-      document.getElementById('adminMessage').innerText = data.message || data.error;
+        const data = await response.json();
 
-      if (response.ok) {
-        // Clear form
-        document.getElementById('createAdminForm').reset();
-        // Reload users list
-        location.reload();
+        if (response.ok) {
+          showToast('success', 'Admin Created', data.message);
+          document.getElementById('createAdminForm').reset();
+          loadUserStats();
+        } else {
+          showToast('error', 'Creation Failed', data.error || 'An error occurred');
+        }
+      } catch (error) {
+        showToast('error', 'Creation Failed', 'Network error occurred');
       }
     });
 
@@ -242,13 +423,11 @@
 
         if (!response.ok) {
           const error = await response.json();
-          alert(error.error || 'CSV download failed');
+          showToast('error', 'Download Failed', error.error || 'CSV download failed');
           return;
         }
 
         const blob = await response.blob();
-
-        // Get filename from response headers
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = 'Current_users.csv';
         if (contentDisposition) {
@@ -256,7 +435,6 @@
           if (matches) filename = matches[1];
         }
 
-        // Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -265,11 +443,14 @@
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+
+        showToast('success', 'Download Complete', 'CSV file downloaded successfully');
       } catch (error) {
         console.error('CSV download error:', error);
-        alert('CSV download failed');
+        showToast('error', 'Download Failed', 'Network error occurred');
       }
     }
   </script>
 </body>
+
 </html>

@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Student Results</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/student-modern.css">
 </head>
+
 <body class="student-panel">
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -14,22 +20,19 @@
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <!-- Sidebar Navigation -->
-  <div class="sidebar" id="sidebar">
+  <div class="admin-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="welcome-section">
-        <h3 class="welcome-text">Welcome,</h3>
-        <h2 class="user-name" id="userName">Student</h2>
-        <p class="user-role" id="userRole">Student</p>
-      </div>
+      <h2>MIT Student</h2>
+      <p style="color: rgba(226, 232, 240, 0.7); font-size: 13px; margin: 8px 0 0 0;" id="userName">Welcome, Student</p>
     </div>
     <nav class="sidebar-nav">
       <ul>
         <li><a href="dashboard.html"><span class="icon">🏠</span>Dashboard</a></li>
-        <li><a href="profile.html"><span class="icon">🙎🏻‍♂️</span>Profile</a></li>
+        <li><a href="profile.html"><span class="icon">👤</span>Profile</a></li>
         <li><a href="classes.html"><span class="icon">📚</span>My Classes</a></li>
-        <li><a href="attendance.html"><span class="icon">📊</span>Attendance</a></li>
         <li><a href="assignments.html"><span class="icon">📝</span>Assignments</a></li>
-        <li><a href="marks.html" class="active"><span class="icon">🏆</span>My Marks</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Attendance</a></li>
+        <li><a href="marks.html" class="active"><span class="icon">📈</span>My Marks</a></li>
         <li><a href="notifications.html"><span class="icon">🔔</span>Notifications</a></li>
         <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
@@ -46,221 +49,136 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - My Marks</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>My Results</h3>
-      <div id="results" class="content-update">
-        <!-- Results will be loaded here -->
-      </div>
-    </main>
+        <!-- Marks Card -->
+        <div class="modern-card">
+          <div class="card-header">
+            <div class="card-icon">📈</div>
+            <div>
+              <h3 class="card-title">My Results</h3>
+              <p class="card-description">View your academic performance</p>
+            </div>
+          </div>
+
+          <div id="results" style="margin-top: 24px;">
+            <p style="text-align: center; color: #64748b; padding: 40px 20px;">Loading results...</p>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/student.js"></script>
   <script>
-    // Mobile navigation toggle
-    function toggleNav() {
-      const navList = document.getElementById('navList');
-      navList.classList.toggle('show');
-    }
-
-    // Function to handle IA toggle buttons
-    function showIAMarks(button, iaType, subjectName) {
-      const subjectId = subjectName.replace(/\s+/g, '-');
-
-      // Remove active class from all buttons in this result item
-      const buttons = button.parentElement.querySelectorAll('.ia-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-
-      // Add active class to clicked button
-      button.classList.add('active');
-
-      // Hide all marks displays for this subject
-      const allMarks = document.querySelectorAll(`[id^="marks-${subjectId}"], [id^="ia1-${subjectId}"], [id^="ia2-${subjectId}"], [id^="ia3-${subjectId}"]`);
-      allMarks.forEach(mark => mark.style.display = 'none');
-
-      // Show the selected IA marks
-      const selectedMarks = document.getElementById(`${iaType}-${subjectId}`);
-      if (selectedMarks) {
-        selectedMarks.style.display = 'block';
-      }
-    }
-
-    // Load results after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
       loadUserInfo();
       loadMarks();
     });
 
-    // Load user information for welcome header
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Load user info
     async function loadUserInfo() {
       try {
-        // Try to get profile information first
         const response = await fetch('/profile', {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
-
         if (response.ok) {
           const userData = await response.json();
           if (userData && userData.name) {
-            // Display user's full name
-            document.getElementById('userName').textContent = userData.name;
-          }
-        } else {
-          // Fallback: Try to decode JWT token for basic info
-          const token = localStorage.getItem('token');
-          if (token) {
-            try {
-              const payload = JSON.parse(atob(token.split('.')[1]));
-              if (payload && payload.name) {
-                document.getElementById('userName').textContent = payload.name;
-              } else if (payload && payload.username) {
-                document.getElementById('userName').textContent = payload.username;
-              }
-            } catch (parseError) {
-              console.log('Could not parse token:', parseError);
-            }
+            document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
           }
         }
       } catch (error) {
         console.log('Error loading user info:', error);
-        // Keep default "Student" if loading fails
-        document.getElementById('userName').textContent = 'Student';
       }
     }
 
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
-      }
-    }
-
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn, .ia-btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-    }
-
-    // Load results
+    // Load marks
     function loadMarks() {
       fetch('/marks', {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        const resultsElement = document.getElementById('results');
-        if (data.length === 0) {
-          resultsElement.innerHTML = '<p>No results available.</p>';
-        } else {
-          let html = '<div class="results-list">';
-          data.forEach((result, index) => {
-            // IA marks (only these are available now)
-            const ia1Marks = result.ia1_marks ? result.ia1_marks.toString() : 'Not entered';
-            const ia2Marks = result.ia2_marks ? result.ia2_marks.toString() : 'Not entered';
-            const ia3Marks = result.ia3_marks ? result.ia3_marks.toString() : 'Not entered';
+        .then(response => response.json())
+        .then(data => {
+          const resultsElement = document.getElementById('results');
+          if (data.length === 0) {
+            resultsElement.innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No results available</p>';
+          } else {
+            let html = '<div style="display: grid; gap: 20px;">';
+            data.forEach(result => {
+              const ia1 = result.ia1_marks !== null && result.ia1_marks !== undefined ? result.ia1_marks : 'N/A';
+              const ia2 = result.ia2_marks !== null && result.ia2_marks !== undefined ? result.ia2_marks : 'N/A';
+              const ia3 = result.ia3_marks !== null && result.ia3_marks !== undefined ? result.ia3_marks : 'N/A';
+              const uploadedDate = result.uploaded_at ? new Date(result.uploaded_at).toLocaleDateString() : '';
 
-            const uploadedDate = result.uploaded_at ? new Date(result.uploaded_at).toLocaleDateString() : '';
-            const uploadedBy = result.uploaded_by_name ? ` by ${result.uploaded_by_name}` : '';
-
-            html += `
-              <div class="result-item" style="animation-delay: ${index * 0.1}s">
-                <div class="result-header">
-                  <strong>${result.subject_name} (${result.subject_code})</strong>
-                  <span class="subject-info">Semester ${result.semester}${uploadedBy ? ' - Uploaded' + uploadedBy : ''}</span>
-                </div>
-
-                <!-- IA Marks Display -->
-                <div class="marks-container">
-                  <div class="ia-marks-summary">
-                    <div class="ia-mark-item">
-                      <span class="ia-label">IA1:</span>
-                      <span class="ia-value">${ia1Marks}</span>
-                    </div>
-                    <div class="ia-mark-item">
-                      <span class="ia-label">IA2:</span>
-                      <span class="ia-value">${ia2Marks}</span>
-                    </div>
-                    <div class="ia-mark-item">
-                      <span class="ia-label">IA3:</span>
-                      <span class="ia-value">${ia3Marks}</span>
-                    </div>
+              html += `
+              <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 16px; padding: 24px;">
+                <div style="margin-bottom: 20px;">
+                  <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">${result.subject_name}</h4>
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                      ${result.subject_code}
+                    </span>
+                    <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                      Semester ${result.semester}
+                    </span>
                   </div>
-                  ${uploadedDate ? `<div class="upload-info"><small>Uploaded on: ${uploadedDate}</small></div>` : ''}
                 </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                  <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 16px; text-align: center;">
+                    <div style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">IA 1</div>
+                    <div style="color: #1e293b; font-size: 28px; font-weight: 700;">${ia1}</div>
+                  </div>
+
+                  <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 16px; text-align: center;">
+                    <div style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">IA 2</div>
+                    <div style="color: #1e293b; font-size: 28px; font-weight: 700;">${ia2}</div>
+                  </div>
+
+                  <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.15) 100%); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 16px; text-align: center;">
+                    <div style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">IA 3</div>
+                    <div style="color: #1e293b; font-size: 28px; font-weight: 700;">${ia3}</div>
+                  </div>
+                </div>
+
+                ${uploadedDate ? `
+                  <div style="padding-top: 16px; border-top: 1px solid rgba(96, 165, 250, 0.15);">
+                    <p style="color: #64748b; font-size: 12px; margin: 0;">
+                      📅 Uploaded on ${uploadedDate}${result.uploaded_by_name ? ' by ' + result.uploaded_by_name : ''}
+                    </p>
+                  </div>
+                ` : ''}
               </div>
             `;
-          });
-          html += '</div>';
-          resultsElement.innerHTML = html;
-          // Add fade-in animation to results
-          resultsElement.style.opacity = '0';
-          setTimeout(() => {
-            resultsElement.style.opacity = '1';
-          }, 300);
-        }
-      })
-      .catch(error => {
-        console.error('Error loading marks:', error);
-      });
+            });
+            html += '</div>';
+            resultsElement.innerHTML = html;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading marks:', error);
+          document.getElementById('results').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading results</p>';
+        });
     }
   </script>
 </body>
+
 </html>

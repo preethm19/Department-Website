@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Subjects</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,219 +50,246 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Manage Subjects</h2>
       </header>
-      <main class="fade-in-up">
-      <h3>Create New Subject</h3>
-      <form id="createSubjectForm">
-        <div class="form-group">
-          <label for="subjectCode">Subject Code:</label>
-          <input type="text" id="subjectCode" placeholder="e.g., CS101, MATH201" required>
-        </div>
-        <div class="form-group">
-          <label for="subjectName">Subject Name:</label>
-          <input type="text" id="subjectName" placeholder="e.g., Introduction to Programming" required>
-        </div>
-        <div class="form-group">
-          <label for="subjectDescription">Description:</label>
-          <textarea id="subjectDescription" placeholder="Brief description of the subject" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="subjectSemester">Semester:</label>
-          <select id="subjectSemester" required>
-            <option value="">Select Semester</option>
-            <option value="1">Semester 1</option>
-            <option value="2">Semester 2</option>
-            <option value="3">Semester 3</option>
-            <option value="4">Semester 4</option>
-            <option value="5">Semester 5</option>
-            <option value="6">Semester 6</option>
-            <option value="7">Semester 7</option>
-            <option value="8">Semester 8</option>
-          </select>
-        </div>
-        <button type="submit" class="btn">Create Subject</button>
-      </form>
-      <div id="createMessage"></div>
 
-      <h3>All Subjects</h3>
-      <div id="subjects">
-        <!-- Subjects will be loaded here -->
-      </div>
-    </main>
+      <main class="fade-in-up">
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <button class="tab-button active" onclick="switchTab('create-subject')">
+            <span class="tab-icon">➕</span>
+            Create Subject
+          </button>
+          <button class="tab-button" onclick="switchTab('view-subjects')">
+            <span class="tab-icon">📚</span>
+            View Subjects
+          </button>
+        </div>
+
+        <!-- Tab 1: Create Subject -->
+        <div id="create-subject" class="tab-content active">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📚</div>
+              <div>
+                <h3 class="card-title">Create New Subject</h3>
+                <p class="card-description">Add a new subject to the system</p>
+              </div>
+            </div>
+
+            <form id="createSubjectForm" class="modern-form">
+              <div class="form-group-modern">
+                <label for="subjectCode">
+                  <span class="label-icon">🔢</span>
+                  Subject Code
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔢</span>
+                  <input type="text" id="subjectCode" placeholder="e.g., CS101, MATH201" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="subjectName">
+                  <span class="label-icon">📖</span>
+                  Subject Name
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📖</span>
+                  <input type="text" id="subjectName" placeholder="e.g., Introduction to Programming" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="subjectDescription">
+                  <span class="label-icon">📝</span>
+                  Description
+                </label>
+                <textarea id="subjectDescription" placeholder="Brief description of the subject" required
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; min-height: 100px; box-sizing: border-box;"></textarea>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="subjectSemester">
+                  <span class="label-icon">📅</span>
+                  Semester
+                </label>
+                <select id="subjectSemester" required
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="">Select Semester</option>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                  <option value="8">Semester 8</option>
+                </select>
+              </div>
+
+              <div class="button-group">
+                <button type="reset" class="btn-modern btn-secondary">
+                  <span class="btn-icon">↺</span>
+                  Reset Form
+                </button>
+                <button type="submit" class="btn-modern">
+                  <span class="btn-icon">✓</span>
+                  Create Subject
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 2: View Subjects -->
+        <div id="view-subjects" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📚</div>
+              <div>
+                <h3 class="card-title">All Subjects</h3>
+                <p class="card-description">View and manage all subjects</p>
+              </div>
+            </div>
+
+            <div class="form-group-modern" style="margin-bottom: 24px;">
+              <label for="filterSemester">
+                <span class="label-icon">🔍</span>
+                Filter by Semester
+              </label>
+              <select id="filterSemester"
+                style="width: 100%; max-width: 300px; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                <option value="all">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+            </div>
+
+            <div id="subjects">
+              <!-- Subjects will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Edit Modal Container -->
+  <div id="modalContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Load subjects after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
-    });
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
 
-    // Initialize page transitions
-    function initializeTransitions() {
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.tab-button').classList.add('active');
 
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn, .edit-btn, .delete-btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-
-      // Add browser back/forward navigation support
-      window.addEventListener('popstate', function(event) {
-        handleBrowserNavigation();
-      });
-    }
-
-    // Handle browser back/forward navigation
-    function handleBrowserNavigation() {
-      const pageContent = document.getElementById('pageContent');
-
-      // Add fade-out transition before navigation
-      pageContent.classList.remove('show');
-      pageContent.style.opacity = '0';
-
-      // Brief delay before page unloads
-      setTimeout(() => {
-        // Browser will handle the actual navigation
-        // This creates smooth visual transition during navigation
-      }, 200);
-    }
-
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
+      // Load subjects when switching to view tab
+      if (tabId === 'view-subjects') {
+        loadSubjects(document.getElementById('filterSemester').value);
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
 
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
 
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
 
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
     }
-
-    // Initialize sidebar functionality
-    // Note: This is initialized after the DOM is ready and subjects are loaded
-
-    // Semester selector
-    const semesterSelector = document.createElement('div');
-    semesterSelector.className = 'semester-selector';
-    semesterSelector.innerHTML = `
-      <label for="filterSemester">Filter by Semester:</label>
-      <select id="filterSemester">
-        <option value="all">All Semesters</option>
-        <option value="1">Semester 1</option>
-        <option value="2">Semester 2</option>
-        <option value="3">Semester 3</option>
-        <option value="4">Semester 4</option>
-        <option value="5">Semester 5</option>
-        <option value="6">Semester 6</option>
-        <option value="7">Semester 7</option>
-        <option value="8">Semester 8</option>
-      </select>
-    `;
-
-    // Insert semester selector before the subjects section
-    const subjectsHeading = document.querySelector('h3:last-of-type');
-    subjectsHeading.parentNode.insertBefore(semesterSelector, subjectsHeading);
 
     // Load subjects function
     function loadSubjects(semester = 'all') {
       fetch(`/admin/classes?semester=${semester}`, {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.length === 0) {
-          document.getElementById('subjects').innerHTML = '<p>No subjects found for selected semester.</p>';
-        } else {
-          let html = '<div class="subjects-grid">';
-          data.forEach(subject => {
-            html += `
-              <div class="subject-card">
-                <div class="subject-header">
-                  <h4>${subject.subject_code || 'N/A'} - ${subject.name}</h4>
-                  <span class="semester-badge">Semester ${subject.semester}</span>
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            document.getElementById('subjects').innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No subjects found for selected semester.</p>';
+          } else {
+            let html = '<div class="subjects-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 20px;">';
+            data.forEach(subject => {
+              html += `
+              <div class="subject-card" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 12px; padding: 24px; transition: all 0.3s ease;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                  <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0;">${subject.subject_code || 'N/A'}</h4>
+                  <span style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Sem ${subject.semester}</span>
                 </div>
-                <div class="subject-info">
-                  <p><strong>Description:</strong> ${subject.description}</p>
-                  <p><strong>Department:</strong> ${subject.department || 'AI'}</p>
-                </div>
-                <div class="subject-actions">
-                  <button onclick="editSubject(${subject.id}, '${subject.subject_code || ''}', '${subject.name.replace(/'/g, "\\'")}', '${subject.description.replace(/'/g, "\\'")}', ${subject.semester})" class="btn edit-btn">
+                <h5 style="color: #334155; font-size: 16px; font-weight: 600; margin: 0 0 12px 0;">${subject.name}</h5>
+                <p style="color: #64748b; font-size: 14px; margin: 0 0 16px 0; line-height: 1.5;">${subject.description}</p>
+                <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(96, 165, 250, 0.15);">
+                  <button onclick='editSubject(${subject.id}, "${subject.subject_code || ''}", "${subject.name.replace(/'/g, "\\'")}", "${subject.description.replace(/'/g, "\\'")}", ${subject.semester})' style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.3s;">
                     ✏️ Edit
                   </button>
-                  <button onclick="deleteSubject(${subject.id}, '${subject.name.replace(/'/g, "\\'")}')" class="btn delete-btn">
+                  <button onclick='deleteSubject(${subject.id}, "${subject.name.replace(/'/g, "\\'")}")' style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.3s;">
                     🗑️ Delete
                   </button>
                 </div>
               </div>
             `;
-          });
-          html += '</div>';
-          document.getElementById('subjects').innerHTML = html;
-        }
-      })
-      .catch(error => {
-        console.error('Error loading subjects:', error);
-        document.getElementById('subjects').innerHTML = '<p>Error loading subjects.</p>';
-      });
+            });
+            html += '</div>';
+            document.getElementById('subjects').innerHTML = html;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading subjects:', error);
+          showToast('error', 'Load Failed', 'Error loading subjects');
+        });
     }
 
-    // Initial load
-    loadSubjects();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
+      loadSubjects();
+    });
 
-    // Semester filter change handler
-    document.getElementById('filterSemester').addEventListener('change', function() {
-      const selectedSemester = this.value;
-      loadSubjects(selectedSemester);
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Filter change handler
+    document.getElementById('filterSemester').addEventListener('change', function () {
+      loadSubjects(this.value);
     });
 
     // Create subject form handler
@@ -268,85 +300,72 @@
       const description = document.getElementById('subjectDescription').value;
       const semester = document.getElementById('subjectSemester').value;
 
-      const response = await fetch('/admin/classes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        },
-        body: JSON.stringify({ name, description, subjectCode, semester })
-      });
+      try {
+        const response = await fetch('/admin/classes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+          body: JSON.stringify({ name, description, subjectCode, semester })
+        });
 
-      const data = await response.json();
-      document.getElementById('createMessage').innerText = data.message || data.error;
+        const data = await response.json();
 
-      if (response.ok) {
-        // Clear form
-        document.getElementById('createSubjectForm').reset();
-        // Reload subjects
-        loadSubjects(document.getElementById('filterSemester').value);
+        if (response.ok) {
+          showToast('success', 'Subject Created', data.message);
+          document.getElementById('createSubjectForm').reset();
+          loadSubjects(document.getElementById('filterSemester').value);
+        } else {
+          showToast('error', 'Creation Failed', data.error || 'An error occurred');
+        }
+      } catch (error) {
+        showToast('error', 'Creation Failed', 'Network error occurred');
       }
     });
 
     // Edit subject function
     async function editSubject(id, subjectCode, name, description, semester) {
-      // Create edit modal
       const modal = document.createElement('div');
       modal.className = 'modal';
+      modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;';
       modal.innerHTML = `
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>Edit Subject</h3>
-            <span class="close" onclick="closeModal()">&times;</span>
+        <div style="background: white; border-radius: 16px; padding: 32px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 style="color: #1e293b; font-size: 24px; font-weight: 700; margin: 0;">Edit Subject</h3>
+            <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; color: #64748b; cursor: pointer; padding: 0; width: 32px; height: 32px;">×</button>
           </div>
-          <div class="modal-body">
-            <form id="editSubjectForm">
-              <div class="form-group">
-                <label for="editSubjectCode">Subject Code:</label>
-                <input type="text" id="editSubjectCode" value="${subjectCode}" placeholder="e.g., CS101, MATH201" required>
-              </div>
-              <div class="form-group">
-                <label for="editSubjectName">Subject Name:</label>
-                <input type="text" id="editSubjectName" value="${name}" placeholder="e.g., Introduction to Programming" required>
-              </div>
-              <div class="form-group">
-                <label for="editSubjectDescription">Description:</label>
-                <textarea id="editSubjectDescription" placeholder="Brief description of the subject" required>${description}</textarea>
-              </div>
-              <div class="form-group">
-                <label for="editSubjectSemester">Semester:</label>
-                <select id="editSubjectSemester" required>
-                  <option value="">Select Semester</option>
-                  <option value="1" ${semester === 1 ? 'selected' : ''}>Semester 1</option>
-                  <option value="2" ${semester === 2 ? 'selected' : ''}>Semester 2</option>
-                  <option value="3" ${semester === 3 ? 'selected' : ''}>Semester 3</option>
-                  <option value="4" ${semester === 4 ? 'selected' : ''}>Semester 4</option>
-                  <option value="5" ${semester === 5 ? 'selected' : ''}>Semester 5</option>
-                  <option value="6" ${semester === 6 ? 'selected' : ''}>Semester 6</option>
-                  <option value="7" ${semester === 7 ? 'selected' : ''}>Semester 7</option>
-                  <option value="8" ${semester === 8 ? 'selected' : ''}>Semester 8</option>
-                </select>
-              </div>
-              <div class="modal-actions">
-                <button type="submit" class="btn">Update Subject</button>
-                <button type="button" class="btn cancel-btn" onclick="closeModal()">Cancel</button>
-              </div>
-            </form>
-          </div>
+          <form id="editSubjectForm" class="modern-form">
+            <div class="form-group-modern">
+              <label>Subject Code</label>
+              <input type="text" id="editSubjectCode" value="${subjectCode}" required style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+            </div>
+            <div class="form-group-modern">
+              <label>Subject Name</label>
+              <input type="text" id="editSubjectName" value="${name}" required style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+            </div>
+            <div class="form-group-modern">
+              <label>Description</label>
+              <textarea id="editSubjectDescription" required style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; min-height: 100px; box-sizing: border-box;">${description}</textarea>
+            </div>
+            <div class="form-group-modern">
+              <label>Semester</label>
+              <select id="editSubjectSemester" required style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                ${[1, 2, 3, 4, 5, 6, 7, 8].map(s => `<option value="${s}" ${semester === s ? 'selected' : ''}>Semester ${s}</option>`).join('')}
+              </select>
+            </div>
+            <div class="button-group">
+              <button type="button" onclick="closeModal()" class="btn-modern btn-secondary">Cancel</button>
+              <button type="submit" class="btn-modern">Update Subject</button>
+            </div>
+          </form>
         </div>
       `;
 
-      document.body.appendChild(modal);
+      document.getElementById('modalContainer').appendChild(modal);
 
-      // Handle edit form submission
       document.getElementById('editSubjectForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        const updatedSubjectCode = document.getElementById('editSubjectCode').value;
-        const updatedName = document.getElementById('editSubjectName').value;
-        const updatedDescription = document.getElementById('editSubjectDescription').value;
-        const updatedSemester = document.getElementById('editSubjectSemester').value;
-
         try {
           const response = await fetch(`/admin/classes/${id}`, {
             method: 'PUT',
@@ -355,36 +374,30 @@
               'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
-              name: updatedName,
-              description: updatedDescription,
-              subjectCode: updatedSubjectCode,
-              semester: updatedSemester
+              name: document.getElementById('editSubjectName').value,
+              description: document.getElementById('editSubjectDescription').value,
+              subjectCode: document.getElementById('editSubjectCode').value,
+              semester: document.getElementById('editSubjectSemester').value
             })
           });
 
           const data = await response.json();
-
           if (response.ok) {
-            alert('Subject updated successfully!');
+            showToast('success', 'Subject Updated', 'Subject updated successfully');
             closeModal();
             loadSubjects(document.getElementById('filterSemester').value);
           } else {
-            alert(data.error || 'Failed to update subject');
+            showToast('error', 'Update Failed', data.error || 'Failed to update subject');
           }
         } catch (error) {
-          console.error('Error updating subject:', error);
-          alert('Error updating subject');
+          showToast('error', 'Update Failed', 'Network error occurred');
         }
       });
     }
 
     // Delete subject function
     async function deleteSubject(id, name) {
-      const confirmDelete = confirm(
-        `Are you sure you want to delete "${name}"?\n\nThis will also delete:\n• All assignments for this subject\n• All submissions and grades\n• All materials and files\n• All enrollments\n• All attendance records\n\nThis action cannot be undone!`
-      );
-
-      if (!confirmDelete) return;
+      if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis will also delete:\n• All assignments\n• All submissions and grades\n• All materials\n• All enrollments\n• All attendance records\n\nThis action cannot be undone!`)) return;
 
       try {
         const response = await fetch(`/admin/classes/${id}`, {
@@ -393,33 +406,23 @@
         });
 
         const data = await response.json();
-
         if (response.ok) {
-          alert(`Subject "${name}" and all related data deleted successfully!`);
+          showToast('success', 'Subject Deleted', `Subject "${name}" deleted successfully`);
           loadSubjects(document.getElementById('filterSemester').value);
         } else {
-          alert(data.error || 'Failed to delete subject');
+          showToast('error', 'Delete Failed', data.error || 'Failed to delete subject');
         }
       } catch (error) {
-        console.error('Error deleting subject:', error);
-        alert('Error deleting subject');
+        showToast('error', 'Delete Failed', 'Network error occurred');
       }
     }
 
     // Close modal function
     function closeModal() {
       const modal = document.querySelector('.modal');
-      if (modal) {
-        modal.remove();
-      }
+      if (modal) modal.remove();
     }
-
-    // Close modal when clicking outside
-    document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('modal')) {
-        closeModal();
-      }
-    });
   </script>
 </body>
+
 </html>

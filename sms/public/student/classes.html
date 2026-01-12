@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Student Subjects</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/student-modern.css">
 </head>
+
 <body class="student-panel">
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -14,22 +20,19 @@
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <!-- Sidebar Navigation -->
-  <div class="sidebar" id="sidebar">
+  <div class="admin-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="welcome-section">
-        <h3 class="welcome-text">Welcome,</h3>
-        <h2 class="user-name" id="userName">Student</h2>
-        <p class="user-role" id="userRole">Student</p>
-      </div>
+      <h2>MIT Student</h2>
+      <p style="color: rgba(226, 232, 240, 0.7); font-size: 13px; margin: 8px 0 0 0;" id="userName">Welcome, Student</p>
     </div>
     <nav class="sidebar-nav">
       <ul>
         <li><a href="dashboard.html"><span class="icon">🏠</span>Dashboard</a></li>
-        <li><a href="profile.html"><span class="icon">🙎🏻‍♂️</span>Profile</a></li>
+        <li><a href="profile.html"><span class="icon">👤</span>Profile</a></li>
         <li><a href="classes.html" class="active"><span class="icon">📚</span>My Classes</a></li>
         <li><a href="assignments.html"><span class="icon">📝</span>Assignments</a></li>
-        <li><a href="attendance.html"><span class="icon">📊</span>Attendance</a></li>
-        <li><a href="marks.html"><span class="icon">🏆</span>My Marks</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Attendance</a></li>
+        <li><a href="marks.html"><span class="icon">📈</span>My Marks</a></li>
         <li><a href="notifications.html"><span class="icon">🔔</span>Notifications</a></li>
         <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
@@ -46,28 +49,53 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - My Classes</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>My Enrolled Subjects</h3>
-      <div id="subjects" class="content-update">
-        <!-- Subjects will be loaded here -->
-      </div>
-    </main>
+        <!-- Classes Card -->
+        <div class="modern-card">
+          <div class="card-header">
+            <div class="card-icon">📚</div>
+            <div>
+              <h3 class="card-title">My Enrolled Subjects</h3>
+              <p class="card-description">View all your enrolled subjects and schedules</p>
+            </div>
+          </div>
+
+          <div id="subjects" style="margin-top: 24px;">
+            <p style="text-align: center; color: #64748b; padding: 40px 20px;">Loading subjects...</p>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/student.js"></script>
   <script>
-    // Load subjects after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
       loadUserInfo();
       loadSubjects();
     });
 
-    // Load user information for welcome header
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Load user information
     async function loadUserInfo() {
       try {
-        // Try to get profile information first
         const response = await fetch('/profile', {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
@@ -75,19 +103,15 @@
         if (response.ok) {
           const userData = await response.json();
           if (userData && userData.name) {
-            // Display user's full name
-            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
           }
         } else {
-          // Fallback: Try to decode JWT token for basic info
           const token = localStorage.getItem('token');
           if (token) {
             try {
               const payload = JSON.parse(atob(token.split('.')[1]));
               if (payload && payload.name) {
-                document.getElementById('userName').textContent = payload.name;
-              } else if (payload && payload.username) {
-                document.getElementById('userName').textContent = payload.username;
+                document.getElementById('userName').textContent = `Welcome, ${payload.name}`;
               }
             } catch (parseError) {
               console.log('Could not parse token:', parseError);
@@ -96,84 +120,7 @@
         }
       } catch (error) {
         console.log('Error loading user info:', error);
-        // Keep default "Student" if loading fails
-        document.getElementById('userName').textContent = 'Student';
       }
-    }
-
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
-      }
-    }
-
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      // Add slight delay for smooth page transition
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      // Add navigation transition effects
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => {
-            this.style.transform = '';
-          }, 150);
-        });
-      });
-
-      // Add hover-lift to buttons
-      const buttons = document.querySelectorAll('.btn, .delete-btn, .upload-proof-btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
     }
 
     // Load subjects
@@ -181,31 +128,56 @@
       fetch('/subjects', {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          const subjectsElement = document.getElementById('subjects');
-          if (data.length === 0) {
-            subjectsElement.innerHTML = '<p>No subjects enrolled.</p>';
-          } else {
-            let html = '<ul>';
-            data.forEach(subject => {
-              html += `<li><strong>${subject.name}</strong> - ${subject.description} (Schedule: ${subject.schedule})</li>`;
-            });
-            html += '</ul>';
-            subjectsElement.innerHTML = html;
+        .then(response => response.json())
+        .then(data => {
+          if (data) {
+            const subjectsElement = document.getElementById('subjects');
+            if (data.length === 0) {
+              subjectsElement.innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No subjects enrolled.</p>';
+            } else {
+              const colors = [
+                { bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.2)', icon: '📘' },
+                { bg: 'rgba(16, 185, 129, 0.1)', border: 'rgba(16, 185, 129, 0.2)', icon: '📗' },
+                { bg: 'rgba(245, 158, 11, 0.1)', border: 'rgba(245, 158, 11, 0.2)', icon: '📙' },
+                { bg: 'rgba(139, 92, 246, 0.1)', border: 'rgba(139, 92, 246, 0.2)', icon: '📕' },
+                { bg: 'rgba(236, 72, 153, 0.1)', border: 'rgba(236, 72, 153, 0.2)', icon: '📔' },
+                { bg: 'rgba(14, 165, 233, 0.1)', border: 'rgba(14, 165, 233, 0.2)', icon: '📓' }
+              ];
+
+              let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">';
+              data.forEach((subject, index) => {
+                const color = colors[index % colors.length];
+                html += `
+                <div style="background: linear-gradient(135deg, ${color.bg} 0%, ${color.bg} 100%); border: 1px solid ${color.border}; border-radius: 16px; padding: 24px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                  <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 16px;">
+                    <div style="font-size: 48px;">${color.icon}</div>
+                    <div style="flex: 1;">
+                      <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">${subject.name}</h4>
+                      <p style="color: #64748b; font-size: 13px; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Subject Code: ${subject.subject_code || 'N/A'}</p>
+                    </div>
+                  </div>
+                  <p style="color: #334155; font-size: 14px; margin: 0 0 16px 0; line-height: 1.6;">${subject.description || 'No description available'}</p>
+                  <div style="padding-top: 16px; border-top: 1px solid ${color.border};">
+                    <div style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 13px;">
+                      <span>📅</span>
+                      <span style="font-weight: 600;">Schedule:</span>
+                      <span>${subject.schedule || 'Not specified'}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+              });
+              html += '</div>';
+              subjectsElement.innerHTML = html;
+            }
           }
-          // Add fade-in animation to content
-          subjectsElement.style.opacity = '0';
-          setTimeout(() => {
-            subjectsElement.style.opacity = '1';
-          }, 300);
-        }
-      })
-      .catch(error => {
-        console.error('Error loading subjects:', error);
-      });
+        })
+        .catch(error => {
+          console.error('Error loading subjects:', error);
+          document.getElementById('subjects').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading subjects</p>';
+        });
     }
   </script>
 </body>
+
 </html>

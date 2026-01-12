@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Materials</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,112 +50,213 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Manage Materials</h2>
       </header>
-      <main class="fade-in-up">
-      <h3>Upload Study Materials</h3>
-      <form id="uploadMaterialForm" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="materialSubject">Subject:</label>
-          <select id="materialSubject" required>
-            <option value="">Select Subject</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="materialTitle">Material Title:</label>
-          <input type="text" id="materialTitle" required>
-        </div>
-        <div class="form-group">
-          <label for="materialFile">Select File:</label>
-          <input type="file" id="materialFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" required>
-        </div>
-        <button type="submit" class="btn">Upload Material</button>
-      </form>
-      <div id="uploadMessage"></div>
 
-      <h3>All Materials</h3>
-      <div id="materials">
-        <!-- Materials will be loaded here -->
-      </div>
-    </main>
+      <main class="fade-in-up">
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <button class="tab-button active" onclick="switchTab('upload-material')">
+            <span class="tab-icon">📤</span>
+            Upload Material
+          </button>
+          <button class="tab-button" onclick="switchTab('view-materials')">
+            <span class="tab-icon">📖</span>
+            View Materials
+          </button>
+        </div>
+
+        <!-- Tab 1: Upload Material -->
+        <div id="upload-material" class="tab-content active">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📤</div>
+              <div>
+                <h3 class="card-title">Upload Study Material</h3>
+                <p class="card-description">Upload files for students to download</p>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <span class="info-box-icon">ℹ️</span>
+              <div class="info-box-content">
+                <p class="info-box-title">Supported File Types</p>
+                <p class="info-box-text">PDF, DOC, DOCX, PPT, PPTX, ZIP files are supported (Max 10MB)</p>
+              </div>
+            </div>
+
+            <form id="uploadMaterialForm" class="modern-form" enctype="multipart/form-data">
+              <div class="form-group-modern">
+                <label for="materialSubject">
+                  <span class="label-icon">📚</span>
+                  Subject
+                </label>
+                <select id="materialSubject" required
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="">Select Subject</option>
+                </select>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="materialTitle">
+                  <span class="label-icon">📝</span>
+                  Material Title
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📝</span>
+                  <input type="text" id="materialTitle" placeholder="e.g., Chapter 1 Notes" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label>
+                  <span class="label-icon">📎</span>
+                  Select File
+                </label>
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('materialFile').click()">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">Drag & drop your file here</div>
+                  <div class="upload-hint">or click to browse</div>
+                  <input type="file" id="materialFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" required>
+                  <div id="fileInfo" class="file-info" style="display: none;">
+                    <span>📄</span>
+                    <span id="fileName"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button type="reset" class="btn-modern btn-secondary" onclick="resetFileUpload()">
+                  <span class="btn-icon">↺</span>
+                  Reset Form
+                </button>
+                <button type="submit" class="btn-modern">
+                  <span class="btn-icon">📤</span>
+                  Upload Material
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 2: View Materials -->
+        <div id="view-materials" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📖</div>
+              <div>
+                <h3 class="card-title">All Materials</h3>
+                <p class="card-description">View and download study materials</p>
+              </div>
+            </div>
+
+            <div class="form-group-modern" style="margin-bottom: 24px;">
+              <label for="filterSubject">
+                <span class="label-icon">🔍</span>
+                Filter by Subject
+              </label>
+              <select id="filterSubject"
+                style="width: 100%; max-width: 400px; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                <option value="all">All Subjects</option>
+              </select>
+            </div>
+
+            <div id="materials">
+              <!-- Materials will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Load materials after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
-      loadSubjects();
-      loadMaterials();
-    });
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
 
-    // Initialize page transitions
-    function initializeTransitions() {
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.tab-button').classList.add('active');
+
+      if (tabId === 'view-materials') {
+        loadMaterials(document.getElementById('filterSubject').value);
+      }
+    }
+
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
       setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
     }
 
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+    // Drag and drop functionality
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('materialFile');
 
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
-      }
-    }
-
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, preventDefaults, false);
     });
 
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => {
+        uploadZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => {
+        uploadZone.classList.remove('drag-over');
+      });
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        fileInput.files = files;
+        updateFileInfo(files[0]);
       }
     });
 
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        updateFileInfo(e.target.files[0]);
+      }
+    });
 
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
+    function updateFileInfo(file) {
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileInfo').style.display = 'inline-flex';
+    }
+
+    function resetFileUpload() {
+      document.getElementById('fileInfo').style.display = 'none';
     }
 
     // Load subjects for dropdown
@@ -158,44 +264,107 @@
       fetch('/admin/classes', {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        const select = document.getElementById('materialSubject');
-        data.forEach(subject => {
-          const option = document.createElement('option');
-          option.value = subject.id;
-          option.textContent = `${subject.name} (Semester ${subject.semester})`;
-          select.appendChild(option);
+        .then(response => response.json())
+        .then(data => {
+          const select = document.getElementById('materialSubject');
+          const filterSelect = document.getElementById('filterSubject');
+
+          data.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = `${subject.name} (Semester ${subject.semester})`;
+            select.appendChild(option);
+
+            const filterOption = option.cloneNode(true);
+            filterSelect.appendChild(filterOption);
+          });
         });
-      });
     }
 
-    // Load materials
-    function loadMaterials() {
-      const selectedSemester = localStorage.getItem('selectedSemester') || 'all';
-      fetch(`/admin/materials?semester=${selectedSemester}`, {
+    // Load materials function
+    function loadMaterials(subjectFilter = 'all') {
+      let url = '/admin/materials';
+      if (subjectFilter !== 'all') {
+        url += `?subjectId=${subjectFilter}`;
+      }
+
+      fetch(url, {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        const materialsElement = document.getElementById('materials');
-        if (data.length === 0) {
-          materialsElement.innerHTML = '<p>No materials uploaded yet.</p>';
-        } else {
-          let html = '<ul>';
-          data.forEach((material, index) => {
-            html += `<li style="animation-delay: ${index * 0.1}s"><strong>${material.title}</strong> - ${material.subject_name} (Semester ${material.semester}) <button onclick="downloadFile('material', ${material.id})" class="btn hover-lift">Download</button></li>`;
-          });
-          html += '</ul>';
-          materialsElement.innerHTML = html;
-          // Add fade-in animation to materials
-          materialsElement.style.opacity = '0';
-          setTimeout(() => {
-            materialsElement.style.opacity = '1';
-          }, 300);
-        }
-      });
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            document.getElementById('materials').innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No materials uploaded yet.</p>';
+          } else {
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 20px;">';
+            data.forEach(material => {
+              const fileIcon = getFileIcon(material.file_path);
+              html += `
+              <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 12px; padding: 20px; transition: all 0.3s ease;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                  <span style="font-size: 32px;">${fileIcon}</span>
+                  <div style="flex: 1;">
+                    <h4 style="color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 4px 0;">${material.title}</h4>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">${material.subject_name}</p>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid rgba(96, 165, 250, 0.15);">
+                  <span style="color: #64748b; font-size: 12px;">Sem ${material.semester}</span>
+                  <button onclick="downloadFile('material', ${material.id})" style="padding: 8px 16px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.3s;">
+                    📥 Download
+                  </button>
+                </div>
+              </div>
+            `;
+            });
+            html += '</div>';
+            document.getElementById('materials').innerHTML = html;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading materials:', error);
+          showToast('error', 'Load Failed', 'Error loading materials');
+        });
     }
+
+    function getFileIcon(filePath) {
+      const ext = filePath.split('.').pop().toLowerCase();
+      const icons = {
+        'pdf': '📕',
+        'doc': '📘',
+        'docx': '📘',
+        'ppt': '📊',
+        'pptx': '📊',
+        'zip': '📦'
+      };
+      return icons[ext] || '📄';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
+      loadSubjects();
+      loadMaterials();
+    });
+
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Filter change handler
+    document.getElementById('filterSubject').addEventListener('change', function () {
+      loadMaterials(this.value);
+    });
 
     // Upload material form handler
     document.getElementById('uploadMaterialForm').addEventListener('submit', async (e) => {
@@ -205,18 +374,25 @@
       formData.append('title', document.getElementById('materialTitle').value);
       formData.append('file', document.getElementById('materialFile').files[0]);
 
-      const response = await fetch('/admin/materials', {
-        method: 'POST',
-        headers: { 'Authorization': localStorage.getItem('token') },
-        body: formData
-      });
+      try {
+        const response = await fetch('/admin/materials', {
+          method: 'POST',
+          headers: { 'Authorization': localStorage.getItem('token') },
+          body: formData
+        });
 
-      const data = await response.json();
-      document.getElementById('uploadMessage').innerText = data.message || data.error;
+        const data = await response.json();
 
-      if (response.ok) {
-        document.getElementById('uploadMaterialForm').reset();
-        location.reload();
+        if (response.ok) {
+          showToast('success', 'Upload Successful', data.message);
+          document.getElementById('uploadMaterialForm').reset();
+          resetFileUpload();
+          loadMaterials(document.getElementById('filterSubject').value);
+        } else {
+          showToast('error', 'Upload Failed', data.error || 'An error occurred');
+        }
+      } catch (error) {
+        showToast('error', 'Upload Failed', 'Network error occurred');
       }
     });
 
@@ -229,13 +405,11 @@
 
         if (!response.ok) {
           const error = await response.json();
-          alert(error.error || 'Download failed');
+          showToast('error', 'Download Failed', error.error || 'Download failed');
           return;
         }
 
         const blob = await response.blob();
-
-        // Get filename from response headers
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = 'download';
         if (contentDisposition) {
@@ -243,7 +417,6 @@
           if (matches) filename = matches[1];
         }
 
-        // Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -252,11 +425,14 @@
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+
+        showToast('success', 'Download Complete', 'File downloaded successfully');
       } catch (error) {
         console.error('Download error:', error);
-        alert('Download failed');
+        showToast('error', 'Download Failed', 'Network error occurred');
       }
     }
   </script>
 </body>
+
 </html>

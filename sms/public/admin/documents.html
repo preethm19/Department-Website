@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-panel">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Admin Documents</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/admin-modern.css">
 </head>
+
 <body>
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -45,119 +50,261 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Document Management</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>Admin Document Management</h3>
+        <!-- Tabs -->
+        <div class="tabs-container">
+          <button class="tab-button active" onclick="switchTab('upload-document')">
+            <span class="tab-icon">📤</span>
+            Upload Document
+          </button>
+          <button class="tab-button" onclick="switchTab('view-documents')">
+            <span class="tab-icon">📁</span>
+            View Documents
+          </button>
+        </div>
 
-      <div class="document-upload">
-        <h4>Upload Document</h4>
-        <form id="uploadDocumentForm" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="documentTitle">Document Title:</label>
-            <input type="text" id="documentTitle" required placeholder="e.g., Academic Calendar 2025">
+        <!-- Tab 1: Upload Document -->
+        <div id="upload-document" class="tab-content active">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📄</div>
+              <div>
+                <h3 class="card-title">Upload Document</h3>
+                <p class="card-description">Share documents with users</p>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <span class="info-box-icon">ℹ️</span>
+              <div class="info-box-content">
+                <p class="info-box-title">Supported File Types</p>
+                <p class="info-box-text">PDF, DOC, DOCX, TXT, JPG, PNG files are supported (Max 10MB)</p>
+              </div>
+            </div>
+
+            <form id="uploadDocumentForm" class="modern-form" enctype="multipart/form-data">
+              <div class="form-group-modern">
+                <label for="documentTitle">
+                  <span class="label-icon">📝</span>
+                  Document Title
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📝</span>
+                  <input type="text" id="documentTitle" placeholder="e.g., Academic Calendar 2025" required>
+                </div>
+              </div>
+
+              <div class="form-group-modern">
+                <label for="recipientType">
+                  <span class="label-icon">👥</span>
+                  Send To
+                </label>
+                <select id="recipientType" required
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="">Select Recipients</option>
+                  <option value="all">All Users</option>
+                  <option value="students">All Students</option>
+                  <option value="admins">All Admins</option>
+                  <option value="specific">Specific User</option>
+                </select>
+              </div>
+
+              <div id="specificUserGroup" class="form-group-modern" style="display: none;">
+                <label for="specificUser">
+                  <span class="label-icon">👤</span>
+                  Select User
+                </label>
+                <select id="specificUser"
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="">Select User</option>
+                </select>
+              </div>
+
+              <div id="semesterGroup" class="form-group-modern" style="display: none;">
+                <label for="semesterSelect">
+                  <span class="label-icon">📅</span>
+                  Filter by Semester
+                </label>
+                <select id="semesterSelect"
+                  style="width: 100%; padding: 14px 18px; background: #ffffff; border: 2px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #1e293b; font-family: 'Inter', sans-serif; font-size: 15px; box-sizing: border-box;">
+                  <option value="all">All Semesters</option>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                  <option value="8">Semester 8</option>
+                </select>
+              </div>
+
+              <div class="form-group-modern">
+                <label>
+                  <span class="label-icon">📎</span>
+                  Select File
+                </label>
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('documentFile').click()">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">Drag & drop your file here</div>
+                  <div class="upload-hint">or click to browse</div>
+                  <input type="file" id="documentFile" accept=".pdf,.doc,.docx,.txt,.jpg,.png" required>
+                  <div id="fileInfo" class="file-info" style="display: none;">
+                    <span>📄</span>
+                    <span id="fileName"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button type="reset" class="btn-modern btn-secondary" onclick="resetFileUpload()">
+                  <span class="btn-icon">↺</span>
+                  Reset Form
+                </button>
+                <button type="submit" class="btn-modern">
+                  <span class="btn-icon">📤</span>
+                  Upload Document
+                </button>
+              </div>
+            </form>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="recipientType">Send to:</label>
-            <select id="recipientType" required>
-              <option value="">Select Recipients</option>
-              <option value="all">All Users</option>
-              <option value="students">All Students</option>
-              <option value="admins">All Admins</option>
-              <option value="specific">Specific User</option>
-            </select>
+        <!-- Tab 2: View Documents -->
+        <div id="view-documents" class="tab-content">
+          <div class="modern-card">
+            <div class="card-header">
+              <div class="card-icon">📁</div>
+              <div>
+                <h3 class="card-title">Uploaded Documents</h3>
+                <p class="card-description">View and manage all documents</p>
+              </div>
+            </div>
+
+            <div id="documentsContainer">
+              <!-- Documents will be loaded here -->
+            </div>
           </div>
-
-          <div class="form-group" id="specificUserGroup" style="display: none;">
-            <label for="specificUser">Select User:</label>
-            <select id="specificUser">
-              <option value="">Select User</option>
-            </select>
-          </div>
-
-          <div class="form-group" id="semesterGroup" style="display: none;">
-            <label for="semesterSelect">Filter by Semester (Students only):</label>
-            <select id="semesterSelect">
-              <option value="all">All Semesters</option>
-              <option value="1">Semester 1</option>
-              <option value="2">Semester 2</option>
-              <option value="3">Semester 3</option>
-              <option value="4">Semester 4</option>
-              <option value="5">Semester 5</option>
-              <option value="6">Semester 6</option>
-              <option value="7">Semester 7</option>
-              <option value="8">Semester 8</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="documentFile">Select File:</label>
-            <input type="file" id="documentFile" accept=".pdf,.doc,.docx,.txt,.jpg,.png" required>
-          </div>
-
-          <button type="submit" class="btn">Upload Document</button>
-        </form>
-        <div id="uploadMessage"></div>
-      </div>
-
-      <div class="document-list">
-        <h4>Uploaded Documents</h4>
-        <div id="documentsContainer">-</div>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/admin.js"></script>
   <script>
-    // Sidebar toggle functionality
+    // Toast notification system
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type]}</span>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.tab-button').classList.add('active');
+
+      if (tabId === 'view-documents') {
+        loadDocuments();
+      }
+    }
+
+    // Drag and drop functionality
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('documentFile');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => {
+        uploadZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => {
+        uploadZone.classList.remove('drag-over');
+      });
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        fileInput.files = files;
+        updateFileInfo(files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        updateFileInfo(e.target.files[0]);
+      }
+    });
+
+    function updateFileInfo(file) {
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileInfo').style.display = 'inline-flex';
+    }
+
+    function resetFileUpload() {
+      document.getElementById('fileInfo').style.display = 'none';
+      document.getElementById('specificUserGroup').style.display = 'none';
+      document.getElementById('semesterGroup').style.display = 'none';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
+    });
+
+    // Sidebar functions
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-
       if (window.innerWidth <= 768) {
         sidebar.classList.toggle('show');
         overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
 
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Handle recipient type change
-    document.getElementById('recipientType').addEventListener('change', function() {
+    // Recipient type change handler
+    document.getElementById('recipientType').addEventListener('change', function () {
       const recipientType = this.value;
       const specificUserGroup = document.getElementById('specificUserGroup');
       const semesterGroup = document.getElementById('semesterGroup');
@@ -175,7 +322,7 @@
       }
     });
 
-    // Load users for specific user selection
+    // Load users for specific selection
     async function loadUsers() {
       try {
         const response = await fetch('/admin/users?userType=all', {
@@ -210,12 +357,12 @@
       const file = document.getElementById('documentFile').files[0];
 
       if (!title || !recipientType || !file) {
-        document.getElementById('uploadMessage').innerText = 'Please fill in all required fields';
+        showToast('error', 'Missing Fields', 'Please fill in all required fields');
         return;
       }
 
       if (recipientType === 'specific' && !specificUser) {
-        document.getElementById('uploadMessage').innerText = 'Please select a specific user';
+        showToast('error', 'User Required', 'Please select a specific user');
         return;
       }
 
@@ -236,48 +383,17 @@
         const data = await response.json();
 
         if (response.ok) {
-          document.getElementById('uploadMessage').innerText = 'Document sent successfully!';
+          showToast('success', 'Document Sent', 'Document sent successfully!');
           document.getElementById('uploadDocumentForm').reset();
-          loadDocuments();
+          resetFileUpload();
         } else {
-          document.getElementById('uploadMessage').innerText = data.error || 'Upload failed';
+          showToast('error', 'Upload Failed', data.error || 'Upload failed');
         }
       } catch (error) {
         console.error('Upload error:', error);
-        document.getElementById('uploadMessage').innerText = 'Upload failed';
+        showToast('error', 'Upload Failed', 'Network error occurred');
       }
     });
-
-
-
-    // Load documents after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
-      loadDocuments();
-    });
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => this.style.transform = '', 150);
-        });
-      });
-
-      const buttons = document.querySelectorAll('.btn, .delete-btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
-    }
 
     // Load documents
     async function loadDocuments() {
@@ -290,19 +406,29 @@
           const documents = await response.json();
 
           if (documents.length === 0) {
-            document.getElementById('documentsContainer').innerHTML = '<p>No documents uploaded yet.</p>';
+            document.getElementById('documentsContainer').innerHTML = '<p style="text-align: center; color: #64748b; padding: 40px 20px;">No documents uploaded yet.</p>';
           } else {
-            let html = '<div class="documents-grid">';
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 20px;">';
             documents.forEach(doc => {
               const uploadDate = new Date(doc.uploaded_at).toLocaleDateString();
+              const fileIcon = getFileIcon(doc.file_path);
 
               html += `
-                <div class="document-card">
-                  <h5>${doc.title}</h5>
-                  <p><strong>Uploaded:</strong> ${uploadDate}</p>
-                  <div class="document-actions">
-                    <button onclick="downloadDocument(${doc.id})" class="btn">Download</button>
-                    <button onclick="deleteDocument(${doc.id}, '${doc.title}')" class="btn delete-btn">Delete</button>
+                <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 12px; padding: 20px;">
+                  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span style="font-size: 32px;">${fileIcon}</span>
+                    <div style="flex: 1;">
+                      <h4 style="color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 4px 0;">${doc.title}</h4>
+                      <p style="color: #64748b; font-size: 12px; margin: 0;">📅 ${uploadDate}</p>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(96, 165, 250, 0.15);">
+                    <button onclick="downloadDocument(${doc.id})" style="flex: 1; padding: 8px 16px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer;">
+                      📥 Download
+                    </button>
+                    <button onclick="deleteDocument(${doc.id}, '${doc.title}')" style="flex: 1; padding: 8px 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer;">
+                      🗑️ Delete
+                    </button>
                   </div>
                 </div>
               `;
@@ -311,12 +437,25 @@
             document.getElementById('documentsContainer').innerHTML = html;
           }
         } else {
-          document.getElementById('documentsContainer').innerHTML = '<p>Error loading documents.</p>';
+          document.getElementById('documentsContainer').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading documents.</p>';
         }
       } catch (error) {
         console.error('Error loading documents:', error);
-        document.getElementById('documentsContainer').innerHTML = '<p>Error loading documents.</p>';
+        document.getElementById('documentsContainer').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading documents.</p>';
       }
+    }
+
+    function getFileIcon(filePath) {
+      const ext = filePath.split('.').pop().toLowerCase();
+      const icons = {
+        'pdf': '📕',
+        'doc': '📘',
+        'docx': '📘',
+        'txt': '📝',
+        'jpg': '🖼️',
+        'png': '🖼️'
+      };
+      return icons[ext] || '📄';
     }
 
     // Download document
@@ -328,13 +467,11 @@
 
         if (!response.ok) {
           const error = await response.json();
-          alert(error.error || 'Download failed');
+          showToast('error', 'Download Failed', error.error || 'Download failed');
           return;
         }
 
         const blob = await response.blob();
-
-        // Get filename from response headers
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = 'document';
         if (contentDisposition) {
@@ -342,7 +479,6 @@
           if (matches) filename = matches[1];
         }
 
-        // Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -351,9 +487,11 @@
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+
+        showToast('success', 'Download Complete', 'Document downloaded successfully');
       } catch (error) {
         console.error('Download error:', error);
-        alert('Download failed');
+        showToast('error', 'Download Failed', 'Network error occurred');
       }
     }
 
@@ -369,17 +507,18 @@
           const data = await response.json();
 
           if (response.ok) {
-            alert('Document deleted successfully');
+            showToast('success', 'Document Deleted', 'Document deleted successfully');
             loadDocuments();
           } else {
-            alert(data.error || 'Failed to delete document');
+            showToast('error', 'Delete Failed', data.error || 'Failed to delete document');
           }
         } catch (error) {
           console.error('Error deleting document:', error);
-          alert('Error deleting document');
+          showToast('error', 'Delete Failed', 'Network error occurred');
         }
       }
     }
   </script>
 </body>
+
 </html>

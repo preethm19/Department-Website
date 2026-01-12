@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIT AI SMS - Student Profile</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/users-modern.css">
+  <link rel="stylesheet" href="../css/users-text-fix.css">
+  <link rel="stylesheet" href="../css/student-modern.css">
 </head>
+
 <body class="student-panel">
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -14,22 +20,19 @@
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <!-- Sidebar Navigation -->
-  <div class="sidebar" id="sidebar">
+  <div class="admin-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="welcome-section">
-        <h3 class="welcome-text">Welcome,</h3>
-        <h2 class="user-name" id="userName">Student</h2>
-        <p class="user-role" id="userRole">Student</p>
-      </div>
+      <h2>MIT Student</h2>
+      <p style="color: rgba(226, 232, 240, 0.7); font-size: 13px; margin: 8px 0 0 0;" id="userName">Welcome, Student</p>
     </div>
     <nav class="sidebar-nav">
       <ul>
         <li><a href="dashboard.html"><span class="icon">🏠</span>Dashboard</a></li>
-        <li><a href="profile.html" class="active"><span class="icon">🙎🏻‍♂️</span>Profile</a></li>
+        <li><a href="profile.html" class="active"><span class="icon">👤</span>Profile</a></li>
         <li><a href="classes.html"><span class="icon">📚</span>My Classes</a></li>
         <li><a href="assignments.html"><span class="icon">📝</span>Assignments</a></li>
-        <li><a href="attendance.html"><span class="icon">📊</span>Attendance</a></li>
-        <li><a href="marks.html"><span class="icon">🏆</span>My Marks</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Attendance</a></li>
+        <li><a href="marks.html"><span class="icon">📈</span>My Marks</a></li>
         <li><a href="notifications.html"><span class="icon">🔔</span>Notifications</a></li>
         <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
@@ -46,28 +49,53 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Student Profile</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>Your Profile</h3>
-      <div id="profile" class="content-update">
-        <!-- Profile info will be loaded here -->
-      </div>
-    </main>
+        <!-- Profile Card -->
+        <div class="modern-card">
+          <div class="card-header">
+            <div class="card-icon">👤</div>
+            <div>
+              <h3 class="card-title">Your Profile</h3>
+              <p class="card-description">View your personal information</p>
+            </div>
+          </div>
+
+          <div id="profile" style="margin-top: 24px;">
+            <p style="text-align: center; color: #64748b; padding: 40px 20px;">Loading profile...</p>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/student.js"></script>
   <script>
-    // Load profile after authentication
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeTransitions();
-      highlightActiveNav();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(() => {
+        document.getElementById('pageContent').classList.add('show');
+      }, 100);
       loadUserInfo();
       loadProfile();
     });
 
-    // Load user information for welcome header
+    // Sidebar functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+      }
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+
+    // Load user information
     async function loadUserInfo() {
       try {
-        // Try to get profile information first
         const response = await fetch('/profile', {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
@@ -75,19 +103,15 @@
         if (response.ok) {
           const userData = await response.json();
           if (userData && userData.name) {
-            // Display user's full name
-            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
           }
         } else {
-          // Fallback: Try to decode JWT token for basic info
           const token = localStorage.getItem('token');
           if (token) {
             try {
               const payload = JSON.parse(atob(token.split('.')[1]));
               if (payload && payload.name) {
-                document.getElementById('userName').textContent = payload.name;
-              } else if (payload && payload.username) {
-                document.getElementById('userName').textContent = payload.username;
+                document.getElementById('userName').textContent = `Welcome, ${payload.name}`;
               }
             } catch (parseError) {
               console.log('Could not parse token:', parseError);
@@ -96,84 +120,7 @@
         }
       } catch (error) {
         console.log('Error loading user info:', error);
-        // Keep default "Student" if loading fails
-        document.getElementById('userName').textContent = 'Student';
       }
-    }
-
-    // Sidebar toggle functionality
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
-      }
-    }
-
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
-
-    // Initialize page transitions
-    function initializeTransitions() {
-      // Add slight delay for smooth page transition
-      setTimeout(() => {
-        document.getElementById('pageContent').classList.add('show');
-      }, 100);
-
-      // Add navigation transition effects
-      const navLinks = document.querySelectorAll('.nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          this.style.transform = 'scale(0.95)';
-          setTimeout(() => {
-            this.style.transform = '';
-          }, 150);
-        });
-      });
-
-      // Add hover-lift to buttons
-      const buttons = document.querySelectorAll('.btn, .delete-btn');
-      buttons.forEach(button => {
-        if (!button.classList.contains('hover-lift')) {
-          button.classList.add('hover-lift');
-        }
-      });
     }
 
     // Load profile
@@ -181,29 +128,57 @@
       fetch('/profile', {
         headers: { 'Authorization': localStorage.getItem('token') }
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          const profileElement = document.getElementById('profile');
-          profileElement.innerHTML = `
-            <p><strong>Name:</strong> ${data.name}</p>
-            <p><strong>USN:</strong> ${data.usn}</p>
-            <p><strong>Semester:</strong> ${data.semester}</p>
-            <p><strong>Phone:</strong> ${data.phone}</p>
-            <p><strong>Email:</strong> ${data.email}</p>
-            <p><strong>Date of Birth:</strong> ${data.dob}</p>
+        .then(response => response.json())
+        .then(data => {
+          if (data) {
+            const profileElement = document.getElementById('profile');
+            profileElement.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+              <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 20px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">👤</div>
+                <div style="color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Full Name</div>
+                <div style="color: #1e293b; font-size: 18px; font-weight: 700;">${data.name}</div>
+              </div>
+
+              <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 20px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">🎓</div>
+                <div style="color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">USN</div>
+                <div style="color: #1e293b; font-size: 18px; font-weight: 700;">${data.usn}</div>
+              </div>
+
+              <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.15) 100%); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 20px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">📅</div>
+                <div style="color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Semester</div>
+                <div style="color: #1e293b; font-size: 18px; font-weight: 700;">Semester ${data.semester}</div>
+              </div>
+
+              <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.15) 100%); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 20px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">📧</div>
+                <div style="color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Email</div>
+                <div style="color: #1e293b; font-size: 16px; font-weight: 600; word-break: break-all;">${data.email}</div>
+              </div>
+
+              <div style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(219, 39, 119, 0.15) 100%); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 12px; padding: 20px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">📱</div>
+                <div style="color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Phone</div>
+                <div style="color: #1e293b; font-size: 18px; font-weight: 700;">${data.phone}</div>
+              </div>
+
+              <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(2, 132, 199, 0.15) 100%); border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 12px; padding: 20px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">🎂</div>
+                <div style="color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Date of Birth</div>
+                <div style="color: #1e293b; font-size: 18px; font-weight: 700;">${new Date(data.dob).toLocaleDateString()}</div>
+              </div>
+            </div>
           `;
-          // Add fade-in animation to content
-          profileElement.style.opacity = '0';
-          setTimeout(() => {
-            profileElement.style.opacity = '1';
-          }, 300);
-        }
-      })
-      .catch(error => {
-        console.error('Error loading profile:', error);
-      });
+          }
+        })
+        .catch(error => {
+          console.error('Error loading profile:', error);
+          document.getElementById('profile').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 20px;">Error loading profile</p>';
+        });
     }
   </script>
 </body>
+
 </html>

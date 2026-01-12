@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +18,10 @@
   <meta name="msapplication-TileImage" content="../images/logo.png">
   <meta name="msapplication-TileColor" content="#4f46e5">
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/student-modern.css">
 </head>
+
 <body class="student-panel">
   <!-- Sidebar Overlay for Mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -26,24 +30,21 @@
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <!-- Sidebar Navigation -->
-  <div class="sidebar" id="sidebar">
+  <div class="admin-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="welcome-section">
-        <h3 class="welcome-text">Welcome,</h3>
-        <h2 class="user-name" id="userName">Student</h2>
-        <p class="user-role" id="userRole">Student</p>
-      </div>
+      <h2>MIT Student</h2>
+      <p style="color: rgba(226, 232, 240, 0.7); font-size: 13px; margin: 8px 0 0 0;" id="userName">Welcome, Student</p>
     </div>
     <nav class="sidebar-nav">
       <ul>
-        <li><a href="dashboard.html"><span class="icon">🏠</span>Dashboard</a></li>
-        <li><a href="profile.html"><span class="icon">🙎🏻‍♂️</span>Profile</a></li>
+        <li><a href="dashboard.html" class="active"><span class="icon">🏠</span>Dashboard</a></li>
+        <li><a href="profile.html"><span class="icon">👤</span>Profile</a></li>
         <li><a href="classes.html"><span class="icon">📚</span>My Classes</a></li>
         <li><a href="assignments.html"><span class="icon">📝</span>Assignments</a></li>
-        <li><a href="attendance.html"><span class="icon">📊</span>Attendance</a></li>
-        <li><a href="marks.html"><span class="icon">🏆</span>My Marks</a></li>
+        <li><a href="attendance.html"><span class="icon">✅</span>Attendance</a></li>
+        <li><a href="marks.html"><span class="icon">📈</span>My Marks</a></li>
         <li><a href="notifications.html"><span class="icon">🔔</span>Notifications</a></li>
-        <li><a href="documents.html" class="active"><span class="icon">📄</span>Documents</a></li>
+        <li><a href="documents.html"><span class="icon">📄</span>Documents</a></li>
       </ul>
     </nav>
     <div class="sidebar-footer">
@@ -58,47 +59,93 @@
         <h1>Maharaja Institute Of Technology</h1>
         <h2>AI Department - Student Dashboard</h2>
       </header>
+
       <main class="fade-in-up">
-      <h3>Welcome to your dashboard</h3>
-      <p>Select an option from the menu to view details.</p>
-
-      <!-- Quick Access Cards -->
-      <div class="dashboard-cards stagger-container">
-        <div class="dashboard-card" onclick="window.location.href='notifications.html'">
-          <h4>📢 Notifications</h4>
-          <p>View admin announcements and system messages</p>
-          <div id="notificationCount" class="notification-badge">0</div>
+        <!-- Welcome Section -->
+        <div
+          style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+          <h3 style="color: #1e293b; font-size: 28px; font-weight: 700; margin: 0 0 8px 0;">Welcome to your Dashboard
+          </h3>
+          <p style="color: #64748b; font-size: 16px; margin: 0;">Quick access to all your academic resources and
+            information</p>
         </div>
 
-        <div class="dashboard-card" onclick="window.location.href='assignments.html'">
-          <h4>📝 Assignments</h4>
-          <p>Check your pending assignments</p>
+        <!-- Quick Access Cards -->
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px;">
+          <div onclick="window.location.href='notifications.html'"
+            style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.12) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.3s ease; position: relative;"
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(59, 130, 246, 0.15)'"
+            onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="font-size: 40px; margin-bottom: 16px;">📢</div>
+            <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Notifications</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">View admin announcements</p>
+            <div id="notificationCount"
+              style="position: absolute; top: 20px; right: 20px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+              0</div>
+          </div>
+
+          <div onclick="window.location.href='assignments.html'"
+            style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.12) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.3s ease;"
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(16, 185, 129, 0.15)'"
+            onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="font-size: 40px; margin-bottom: 16px;">📝</div>
+            <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Assignments</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">Check pending assignments</p>
+          </div>
+
+          <div onclick="window.location.href='marks.html'"
+            style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.12) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.3s ease;"
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(245, 158, 11, 0.15)'"
+            onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="font-size: 40px; margin-bottom: 16px;">📊</div>
+            <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Marks</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">View academic performance</p>
+          </div>
+
+          <div onclick="window.location.href='attendance.html'"
+            style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(124, 58, 237, 0.12) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.3s ease;"
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(139, 92, 246, 0.15)'"
+            onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="font-size: 40px; margin-bottom: 16px;">📅</div>
+            <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Attendance</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">Check attendance record</p>
+          </div>
+
+          <div onclick="window.location.href='documents.html'"
+            style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(219, 39, 119, 0.12) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.3s ease; position: relative;"
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(236, 72, 153, 0.15)'"
+            onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="font-size: 40px; margin-bottom: 16px;">📄</div>
+            <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Documents</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">View admin documents</p>
+            <div id="documentCount"
+              style="position: absolute; top: 20px; right: 20px; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+              0</div>
+          </div>
+
+          <div onclick="window.location.href='classes.html'"
+            style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(2, 132, 199, 0.12) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.3s ease;"
+            onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(14, 165, 233, 0.15)'"
+            onmouseout="this.style.transform=''; this.style.boxShadow=''">
+            <div style="font-size: 40px; margin-bottom: 16px;">📚</div>
+            <h4 style="color: #1e293b; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">My Classes</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">View enrolled subjects</p>
+          </div>
         </div>
 
-        <div class="dashboard-card" onclick="window.location.href='marks.html'">
-          <h4>📊 Marks</h4>
-          <p>View your academic performance</p>
+        <!-- Recent Notifications -->
+        <div
+          style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 16px; padding: 24px;">
+          <h4 style="color: #1e293b; font-size: 20px; font-weight: 700; margin: 0 0 20px 0;">Recent Notifications</h4>
+          <div id="recentNotificationsPreview">
+            <p style="text-align: center; color: #64748b; padding: 20px;">Loading...</p>
+          </div>
         </div>
-
-        <div class="dashboard-card" onclick="window.location.href='attendance.html'">
-          <h4>📅 Attendance</h4>
-          <p>Check your attendance record</p>
-        </div>
-
-        <div class="dashboard-card" onclick="window.location.href='documents.html'">
-          <h4>📄 Documents</h4>
-          <p>View admin documents and your uploads</p>
-          <div id="documentCount" class="notification-badge">0</div>
-        </div>
-      </div>
-
-      <!-- Recent Notifications Preview -->
-      <div class="recent-notifications">
-        <h4>Recent Notifications</h4>
-        <div id="recentNotificationsPreview">-</div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
+
   <script src="../js/auth.js"></script>
   <script src="../js/student.js"></script>
   <script>
@@ -112,107 +159,30 @@
           console.log('Service Worker registration failed:', error);
         });
     }
-  </script>
-  <script>
-    // Load dashboard data after authentication is verified
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize transitions
-      initializeTransitions();
-      highlightActiveNav();
 
-      // Load user information for welcome header
-      loadUserInfo();
-
-      // Authentication is handled by auth.js, just load dashboard data
-      loadNotificationCount();
-      loadRecentNotifications();
-      loadDocumentCount();
-      loadRecentDocuments();
-    });
-
-    // Initialize page transitions and animations
-    function initializeTransitions() {
-      // Add slight delay for smooth page transition
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
       setTimeout(() => {
         document.getElementById('pageContent').classList.add('show');
       }, 100);
 
-      // Initialize card stagger animations
-      setTimeout(() => {
-        animateDashboardCards();
-      }, 600); // After page transition
-    }
+      loadUserInfo();
+      loadNotificationCount();
+      loadRecentNotifications();
+      loadDocumentCount();
+    });
 
-    // Animate dashboard cards with stagger effect
-    function animateDashboardCards() {
-      const cards = document.querySelectorAll('.dashboard-card');
-      cards.forEach((card, index) => {
-        card.classList.add('stagger-item');
-        // Add hover-lift class to cards for better interaction
-        if (!card.classList.contains('hover-lift')) {
-          card.classList.add('hover-lift');
-        }
-        // Ensure cards are visible
-        card.style.opacity = '1';
-        card.style.visibility = 'visible';
-        card.style.display = 'block';
-      });
-
-      // Ensure parent container is also visible
-      const container = document.querySelector('.dashboard-cards');
-      if (container) {
-        container.style.opacity = '1';
-        container.style.visibility = 'visible';
-      }
-    }
-
-    // Sidebar toggle functionality
+    // Sidebar functions
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-
       if (window.innerWidth <= 768) {
         sidebar.classList.toggle('show');
         overlay.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
       }
     }
 
-    // Close sidebar when clicking overlay
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.remove('show');
-      overlay.classList.remove('show');
-    });
-
-    // Close sidebar on window resize if desktop
-    window.addEventListener('resize', function() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-
-      if (window.innerWidth > 768) {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-        sidebar.classList.add('collapsed');
-      } else {
-        sidebar.classList.remove('collapsed');
-      }
-    });
-
-    // Highlight active navigation link
-    function highlightActiveNav() {
-      const currentPath = window.location.pathname.split('/').pop();
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('active');
-        }
-      });
-    }
+    document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
 
     // Load notification count
     async function loadNotificationCount() {
@@ -223,20 +193,14 @@
 
         if (response.ok) {
           const notifications = await response.json();
-          const count = notifications.length;
-          document.getElementById('notificationCount').textContent = count;
-
-          // Add visual indicator for new notifications
-          if (count > 0) {
-            document.getElementById('notificationCount').classList.add('has-notifications');
-          }
+          document.getElementById('notificationCount').textContent = notifications.length;
         }
       } catch (error) {
         console.error('Error loading notification count:', error);
       }
     }
 
-    // Load recent notifications preview
+    // Load recent notifications
     async function loadRecentNotifications() {
       try {
         const response = await fetch('/notifications', {
@@ -245,35 +209,31 @@
 
         if (response.ok) {
           const notifications = await response.json();
-          const recentNotifications = notifications.slice(0, 3); // Show last 3
+          const recent = notifications.slice(0, 3);
 
-          if (recentNotifications.length === 0) {
-            document.getElementById('recentNotificationsPreview').innerHTML = '<p>No recent notifications</p>';
+          if (recent.length === 0) {
+            document.getElementById('recentNotificationsPreview').innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">No recent notifications</p>';
           } else {
             let html = '';
-            recentNotifications.forEach(notification => {
+            recent.forEach(notification => {
               const date = new Date(notification.created_at).toLocaleDateString();
-              const isAdmin = notification.source === 'admin';
-
               html += `
-                <div class="notification-preview ${isAdmin ? 'admin-preview' : 'student-preview'}">
-                  <div class="preview-header">
-                    <strong>${notification.title || 'System Notification'}</strong>
-                    <small>${date}</small>
+                <div style="background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(96, 165, 250, 0.15); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <strong style="color: #1e293b; font-size: 15px;">${notification.title || 'System Notification'}</strong>
+                    <small style="color: #64748b; font-size: 12px;">${date}</small>
                   </div>
-                  <p>${notification.message.substring(0, 100)}${notification.message.length > 100 ? '...' : ''}</p>
+                  <p style="color: #334155; font-size: 14px; margin: 0; line-height: 1.5;">${notification.message.substring(0, 100)}${notification.message.length > 100 ? '...' : ''}</p>
                 </div>
               `;
             });
-            html += '<p><a href="notifications.html" class="view-all-link">View all notifications →</a></p>';
+            html += '<p style="text-align: center; margin-top: 16px;"><a href="notifications.html" style="color: #3b82f6; text-decoration: none; font-weight: 600;">View all notifications →</a></p>';
             document.getElementById('recentNotificationsPreview').innerHTML = html;
           }
-        } else {
-          document.getElementById('recentNotificationsPreview').innerHTML = '<p>Error loading notifications</p>';
         }
       } catch (error) {
         console.error('Error loading recent notifications:', error);
-        document.getElementById('recentNotificationsPreview').innerHTML = '<p>Error loading notifications</p>';
+        document.getElementById('recentNotificationsPreview').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 20px;">Error loading notifications</p>';
       }
     }
 
@@ -286,74 +246,16 @@
 
         if (response.ok) {
           const documents = await response.json();
-          const count = documents.length;
-          document.getElementById('documentCount').textContent = count;
-
-          // Add visual indicator for documents
-          if (count > 0) {
-            document.getElementById('documentCount').classList.add('has-notifications');
-          }
+          document.getElementById('documentCount').textContent = documents.length;
         }
       } catch (error) {
         console.error('Error loading document count:', error);
       }
     }
 
-    // Load recent documents preview
-    async function loadRecentDocuments() {
-      try {
-        const response = await fetch('/documents', {
-          headers: { 'Authorization': localStorage.getItem('token') }
-        });
-
-        if (response.ok) {
-          const documents = await response.json();
-          const recentDocuments = documents.slice(0, 3); // Show last 3
-
-          if (recentDocuments.length === 0) {
-            // If no documents, don't show the section
-            return;
-          }
-
-          // Add recent documents section after notifications
-          const notificationsSection = document.querySelector('.recent-notifications');
-          const documentsSection = document.createElement('div');
-          documentsSection.className = 'recent-notifications';
-          documentsSection.innerHTML = `
-            <h4>Recent Documents</h4>
-            <div id="recentDocumentsPreview"></div>
-          `;
-
-          notificationsSection.parentNode.insertBefore(documentsSection, notificationsSection.nextSibling);
-
-          let html = '';
-          recentDocuments.forEach(doc => {
-            const date = new Date(doc.uploaded_at || doc.created_at).toLocaleDateString();
-            const isAdmin = doc.source === 'admin';
-
-            html += `
-              <div class="document-preview ${isAdmin ? 'admin-preview' : 'student-preview'}">
-                <div class="preview-header">
-                  <strong>${doc.title}</strong>
-                  <small>${date}</small>
-                </div>
-                <p><em>${doc.original_filename}</em></p>
-                ${isAdmin ? '<small style="color: #28a745;">📄 Admin Document</small>' : '<small style="color: #007bff;">📝 Your Document</small>'}
-              </div>
-            `;
-          });
-          html += '<p><a href="documents.html" class="view-all-link">View all documents →</a></p>';
-          document.getElementById('recentDocumentsPreview').innerHTML = html;
-        }
-      } catch (error) {
-        console.error('Error loading recent documents:', error);
-      }
-    }
-
-    // Load user information for welcome header
+    // Load user information
     async function loadUserInfo() {
       try {
-        // Try to get profile information first
         const response = await fetch('/profile', {
           headers: { 'Authorization': localStorage.getItem('token') }
         });
@@ -361,19 +263,15 @@
         if (response.ok) {
           const userData = await response.json();
           if (userData && userData.name) {
-            // Display user's full name
-            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userName').textContent = `Welcome, ${userData.name}`;
           }
         } else {
-          // Fallback: Try to decode JWT token for basic info
           const token = localStorage.getItem('token');
           if (token) {
             try {
               const payload = JSON.parse(atob(token.split('.')[1]));
               if (payload && payload.name) {
-                document.getElementById('userName').textContent = payload.name;
-              } else if (payload && payload.username) {
-                document.getElementById('userName').textContent = payload.username;
+                document.getElementById('userName').textContent = `Welcome, ${payload.name}`;
               }
             } catch (parseError) {
               console.log('Could not parse token:', parseError);
@@ -382,10 +280,9 @@
         }
       } catch (error) {
         console.log('Error loading user info:', error);
-        // Keep default "Student" if loading fails
-        document.getElementById('userName').textContent = 'Student';
       }
     }
   </script>
 </body>
+
 </html>
