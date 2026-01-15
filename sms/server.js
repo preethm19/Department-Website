@@ -1238,20 +1238,40 @@ app.post('/admin/bulk-import', authenticate, upload.single('csvFile'), async (re
       students.push(data);
     })
     .on('end', async () => {
+      console.log(`Processing ${students.length} rows from CSV`);
+
       for (const student of students) {
-        const { Name: name, USN: usn, Email: email, Semester: semester, Phone: phone, DOB: dob } = student;
+        // Support multiple column name formats (case-insensitive)
+        const name = student.Name || student.name || student.NAME;
+        const usn = student.USN || student.usn || student.Usn;
+        const email = student.Email || student.email || student.EMAIL;
+        const semester = student.Semester || student.semester || student.SEMESTER;
+        const phone = student.Phone || student.phone || student.PHONE;
+        const dob = student.DOB || student.dob || student['Date of Birth'] || student.DateOfBirth;
 
         // Skip empty rows
         if (!name && !usn && !email) continue;
 
         // Validation
         if (!name || !usn || !email || !semester) {
-          errors.push({ row: students.indexOf(student) + 1, error: 'Missing required fields' });
+          const missingFields = [];
+          if (!name) missingFields.push('Name');
+          if (!usn) missingFields.push('USN');
+          if (!email) missingFields.push('Email');
+          if (!semester) missingFields.push('Semester');
+
+          console.error(`Row ${students.indexOf(student) + 1}: Missing fields - ${missingFields.join(', ')}`);
+          errors.push({
+            row: students.indexOf(student) + 1,
+            error: `Missing required fields: ${missingFields.join(', ')}`,
+            data: { name, usn, email, semester }
+          });
           continue;
         }
 
         if (semester < 1 || semester > 8) {
-          errors.push({ row: students.indexOf(student) + 1, error: 'Invalid semester (1-8)' });
+          console.error(`Row ${students.indexOf(student) + 1}: Invalid semester ${semester}`);
+          errors.push({ row: students.indexOf(student) + 1, error: `Invalid semester (1-8): ${semester}` });
           continue;
         }
 
@@ -1259,19 +1279,22 @@ app.post('/admin/bulk-import', authenticate, upload.single('csvFile'), async (re
         try {
           const [existing] = await db.promise().query('SELECT id FROM users WHERE usn = ? OR email = ?', [usn, email]);
           if (existing.length > 0) {
-            errors.push({ row: students.indexOf(student) + 1, error: 'Duplicate USN or email' });
+            console.error(`Row ${students.indexOf(student) + 1}: Duplicate USN or email`);
+            errors.push({ row: students.indexOf(student) + 1, error: 'Duplicate USN or email', data: { usn, email } });
             continue;
           }
 
           // Hash password
-          const hashedPassword = await bcrypt.hash('password', process.env.BCRYPT_ROUNDS || 10);
+          const hashedPassword = await bcrypt.hash('password', parseInt(process.env.BCRYPT_ROUNDS) || 10);
 
           // Insert student
           await db.promise().query('INSERT INTO users (name, usn, email, password, role, semester, phone, dob, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [name, usn, email, hashedPassword, 'student', semester, phone || null, dob || null, process.env.DEPARTMENT || 'AI']);
 
+          console.log(`Successfully imported: ${name} (${usn})`);
           results.push({ name, usn, email, semester });
         } catch (err) {
+          console.error(`Row ${students.indexOf(student) + 1}: Database error - ${err.message}`);
           errors.push({ row: students.indexOf(student) + 1, error: err.message });
         }
       }

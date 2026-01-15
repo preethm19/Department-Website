@@ -92,7 +92,7 @@
                 <div class="upload-icon">📄</div>
                 <div class="upload-text">Drag & drop your CSV file here</div>
                 <div class="upload-hint">or click to browse</div>
-                <input type="file" id="csvFile" accept=".csv" required>
+                <input type="file" id="csvFile" accept=".csv" style="display: none;">
                 <div id="fileInfo" class="file-info" style="display: none;">
                   <span>📄</span>
                   <span id="fileName"></span>
@@ -358,8 +358,16 @@
     // Bulk import form handler
     document.getElementById('bulkImportForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // Validate file is selected
+      const fileInput = document.getElementById('csvFile');
+      if (!fileInput.files || !fileInput.files[0]) {
+        showToast('error', 'No File Selected', 'Please select a CSV file to import');
+        return;
+      }
+
       const formData = new FormData();
-      formData.append('csvFile', document.getElementById('csvFile').files[0]);
+      formData.append('csvFile', fileInput.files[0]);
 
       try {
         const response = await fetch('/admin/bulk-import', {
