@@ -27,13 +27,20 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
 
 -- Add cleanup event to automatically remove expired tokens
 -- This runs daily at 2 AM to clean up old blacklisted tokens
-DROP EVENT IF EXISTS cleanup_expired_tokens;
+-- Note: If you get an error with the EVENT, you can skip it - it's optional
+DELIMITER $$
+
+DROP EVENT IF EXISTS cleanup_expired_tokens$$
 
 CREATE EVENT cleanup_expired_tokens
 ON SCHEDULE EVERY 1 DAY
 STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY + INTERVAL 2 HOUR)
 DO
+BEGIN
   DELETE FROM token_blacklist WHERE expires_at < NOW();
+END$$
+
+DELIMITER ;
 
 -- Verify table creation
 DESCRIBE token_blacklist;

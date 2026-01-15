@@ -691,6 +691,46 @@ app.post('/admin/materials', authenticate, upload.single('file'), (req, res) => 
     });
 });
 
+// Delete material
+app.delete('/admin/materials/:id', authenticate, (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Access denied' });
+
+  const { id } = req.params;
+
+  // First get the file path to delete the physical file
+  db.query('SELECT file_path FROM materials WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Error fetching material:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Material not found' });
+    }
+
+    const filePath = results[0].file_path;
+
+    // Delete from database
+    db.query('DELETE FROM materials WHERE id = ?', [id], (err) => {
+      if (err) {
+        console.error('Error deleting material:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      // Try to delete the physical file
+      const fullPath = `.${filePath}`;
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+          // Don't fail the request if file deletion fails
+        }
+      });
+
+      res.json({ message: 'Material deleted successfully' });
+    });
+  });
+});
+
 // Get students for attendance (automatic based on subject semester)
 app.get('/admin/attendance/students', authenticate, (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Access denied' });
@@ -958,10 +998,51 @@ app.post('/upload-document', authenticate, upload.single('file'), (req, res) => 
     });
 });
 
-// Create new admin
-app.post('/admin/create-admin', authenticate, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Access denied' });
+// Delete document
+app.delete('/documents/:id', authenticate, (req, res) => {
+  const { id } = req.params;
 
+  // First get the document to verify ownership and get file path
+  db.query('SELECT file_path, user_id FROM documents WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Error fetching document:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    // Verify ownership (users can only delete their own documents)
+    if (results[0].user_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const filePath = results[0].file_path;
+
+    // Delete from database
+    db.query('DELETE FROM documents WHERE id = ?', [id], (err) => {
+      if (err) {
+        console.error('Error deleting document:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      // Try to delete the physical file
+      const fullPath = `.${filePath}`;
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+          // Don't fail the request if file deletion fails
+        }
+      });
+
+      res.json({ message: 'Document deleted successfully' });
+    });
+  });
+});
+
+// Create new admin
+app.post('/admin/create-admin', async (req, res) => {
   const { name, email, password } = req.body;
 
   // Validation
@@ -970,6 +1051,34 @@ app.post('/admin/create-admin', authenticate, async (req, res) => {
   }
 
   try {
+    // Check if any admin exists
+    const [adminCount] = await db.promise().query('SELECT COUNT(*) as count FROM users WHERE role = ?', ['admin']);
+    const hasAdmins = adminCount[0].count > 0;
+
+    // If admins exist, require authentication
+    if (hasAdmins) {
+      const token = req.header('Authorization');
+      if (!token) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      try {
+        // Check if token is blacklisted
+        const blacklisted = await isTokenBlacklisted(token);
+        if (blacklisted) {
+          return res.status(401).json({ error: 'Token has been invalidated' });
+        }
+
+        // Verify token and check if user is admin
+        const verified = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+        if (verified.role !== 'admin') {
+          return res.status(403).json({ error: 'Access denied' });
+        }
+      } catch (err) {
+        return res.status(401).json({ error: 'Invalid or expired token' });
+      }
+    }
+
     // Check if email already exists
     const [existing] = await db.promise().query('SELECT id FROM users WHERE email = ?', [email]);
     if (existing.length > 0) {
@@ -977,14 +1086,18 @@ app.post('/admin/create-admin', authenticate, async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, process.env.BCRYPT_ROUNDS || 10);
+    const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_ROUNDS) || 10);
 
     // Insert admin
     await db.promise().query('INSERT INTO users (name, email, password, role, department) VALUES (?, ?, ?, ?, ?)',
       [name, email, hashedPassword, 'admin', process.env.DEPARTMENT || 'AI']);
 
-    res.json({ message: 'Admin created successfully' });
+    res.json({
+      message: 'Admin created successfully',
+      isFirstAdmin: !hasAdmins
+    });
   } catch (err) {
+    console.error('Error creating admin:', err);
     res.status(500).json({ error: 'Failed to create admin' });
   }
 });
@@ -1228,7 +1341,10 @@ app.post('/admin/send-document', authenticate, upload.single('file'), (req, res)
 
   // Get recipient IDs
   db.query(recipientQuery, recipientParams, (err, recipients) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
+    if (err) {
+      console.error('Error fetching recipients:', err);
+      return res.status(500).json({ error: 'Database error fetching recipients', details: err.message });
+    }
 
     if (recipients.length === 0) {
       return res.status(400).json({ error: 'No recipients found for the selected criteria' });
@@ -1237,7 +1353,10 @@ app.post('/admin/send-document', authenticate, upload.single('file'), (req, res)
     // Insert document record
     db.query('INSERT INTO admin_documents (title, recipient_type, file_path, original_filename, uploaded_by) VALUES (?, ?, ?, ?, ?)',
       [title, recipientTypeLabel, file_path, original_filename, req.user.id], (err, result) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) {
+          console.error('Error inserting admin_document:', err);
+          return res.status(500).json({ error: 'Database error inserting document', details: err.message });
+        }
 
         const documentId = result.insertId;
 
@@ -1248,7 +1367,10 @@ app.post('/admin/send-document', authenticate, upload.single('file'), (req, res)
 
         db.query(`INSERT INTO document_recipients (document_id, user_id) VALUES ${placeholders}`,
           flattenedValues, (err) => {
-            if (err) return res.status(500).json({ error: 'Database error' });
+            if (err) {
+              console.error('Error inserting document_recipients:', err);
+              return res.status(500).json({ error: 'Database error inserting recipients', details: err.message });
+            }
 
             res.json({
               message: `Document sent to ${recipients.length} recipient(s)`,

@@ -341,9 +341,16 @@
                   <p style="color: #64748b; font-size: 12px; margin: 0;">📅 ${date}</p>
                   ${isAdmin && doc.sender_name ? `<p style="color: #64748b; font-size: 12px; margin: 4px 0 0 0;">👤 ${doc.sender_name}</p>` : ''}
                 </div>
-                <button onclick="downloadFile('${isAdmin ? 'admin-document' : 'document'}', ${doc.id})" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer;">
-                  📥 Download
-                </button>
+                <div style="display: flex; gap: 8px;">
+                  <button onclick="downloadFile('${isAdmin ? 'admin-document' : 'document'}', ${doc.id})" style="flex: 1; padding: 10px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer;">
+                    📥 Download
+                  </button>
+                  ${!isAdmin ? `
+                  <button onclick="deleteDocument(${doc.id}, '${doc.title}')" style="padding: 10px 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer;">
+                    🗑️
+                  </button>
+                  ` : ''}
+                </div>
               </div>
             `;
             });
@@ -404,6 +411,32 @@
       } catch (error) {
         console.error('Download error:', error);
         showToast('error', 'Download Failed', 'Network error occurred');
+      }
+    }
+
+    // Delete document function
+    async function deleteDocument(id, title) {
+      if (!confirm(`Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/documents/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': localStorage.getItem('token') }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showToast('success', 'Deleted', data.message);
+          loadDocuments();
+        } else {
+          showToast('error', 'Delete Failed', data.error || 'An error occurred');
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        showToast('error', 'Delete Failed', 'Network error occurred');
       }
     }
   </script>
